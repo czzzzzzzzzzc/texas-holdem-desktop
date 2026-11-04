@@ -1,0 +1,9 @@
+{
+  "name": "texas-holdem-desktop",
+  "version": "1.0.0",
+  "description": "九人无限注德州扑克单机版：性格各异的机器人、动态读牌、内置回放、可自定义快捷下注与键盘快捷键",
+  "main": "main.js",
+  "scripts": { "start": "electron ." },
+  "devDependencies": { "electron": "^31.0.0" },
+  "license": "MIT"
+}
