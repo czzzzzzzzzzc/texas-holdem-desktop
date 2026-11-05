@@ -80,7 +80,7 @@ main{padding:8px}.controls{padding:10px}}
 </div>
 <div class="raise-row" id="quickPre"></div><div class="raise-row" id="quickPost" style="display:none"></div><div class="raise-row" id="raiseControls"><input type="range" id="raiseSlider" step="0.5"><input type="number" id="raiseNumber" step="0.5"><span class="small">BB</span><button id="allin">全下</button><button id="raise" class="gold">确认加注</button></div>
 </div></div>
-<div class="below-bar"><label class="small"><input type="checkbox" id="showEquity"> 显示我的胜率</label> <button id="openReplay">⏪ 牌局回放</button> <button id="reset">重置整个会话</button> <span class="small">快捷键：F 弃牌 · C 让牌/跟注 · A 全下 · 1–4 快捷注 · ↑↓ 调额 · 回车确认 · N 下一手</span></div>
+<div class="below-bar"><label class="small"><input type="checkbox" id="showEquity"> 显示我的胜率</label> <button id="openReplay">⏪ 牌局回放</button> <button id="reset">重置整个会话</button> <span class="small" id="gtoPanel">GTO 参考线（简化模型）：你每次行动后，这里会显示参考打法与你的选择对比。</span></div>
 <div id="result"></div>
 <div class="columns">
 <section class="panel"><strong>牌局播报</strong><div id="log"></div></section>
@@ -280,7 +280,7 @@ clearTimeout(timer);
 let used=new Set(players.slice(1).filter(p=>p.stack>0).map(p=>p.base.id));
 for(let i=1;i<9;i++)if(players[i].stack<=0){let b=shuffle(roster.filter(b=>!used.has(b.id)))[0];players[i]=makePlayer(i,b);used.add(b.id);log(b.name+" 入座，买入 50BB")}
 for(let p of players){
-p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.bluffs=[];p.initial=p.stack;p.rfp=false;
+p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.bluffs=[];p.initial=p.stack;p.rfp=false;p.trapStreet=-1;
 p.live.bluff=1+(p.live.bluff-1)*.94;p.live.tilt*=.79;p.live.confidence*=.80;
 }
 running=true;reveal=false;instant=false;skipRest=false;iteration=0;board=[];deck=shuffle(Array.from({length:52},(_,i)=>i));street=0;highest=2;minRaise=2;actor=-1;
@@ -324,6 +324,8 @@ if(!running||actor!==p.seat||!canAct(p))return;
 iteration++;
 if(iteration>500){type=highest>p.bet?"fold":"check";log("安全推进：自动"+(type==="fold"?"弃牌":"让牌"))}
 let owed=Math.max(0,highest-p.bet),oldHigh=highest,wasRaise=false;
+let snap0=null;
+if(p.seat===0)snap0={street,board:board.slice(),hole:p.hole.slice(),pot:potTotal(),owed,highest,opps:contenders().filter(q=>q.seat!==0).length};
 if(type==="raise"&&!mayRaise(p))type=owed?"call":"check";
 if(type==="check"&&owed)type="call";
 if(type==="call"&&!owed)type="check";
@@ -342,8 +344,49 @@ if(street===0)p.rfp=true;
 if(p.base&&eq<.34)p.bluffs.push({street,penalized:false});
 }
 if(p.seat===0){humanActions.push(streetNames[street]+":"+(type==="raise"?"加注到"+fmtBB(highest):type==="call"?"跟注"+fmtBB(Math.min(owed,p.bet)):type==="fold"?"弃牌":"让牌"));if(street===0&&(type==="raise"||type==="call"))handVpip=true;if(street===0&&wasRaise)handPfr=true;if(type==="raise")handRaised=true}
+if(p.seat===0&&snap0)renderGto(snap0,type);
 if(handRecord)handRecord.actions.push({seat:p.seat,street,type,bet:p.bet,total:p.total,folded:p.folded,allin:p.allin});
 acted.add(p.seat);pending.delete(p.seat);actor=-1;advance(p.seat)
+}
+let gtoLog=[];
+function gtoAdvice(s){
+let rec,why,eq=null,odds=0;
+if(s.street===0){
+let q=preScore(s.hole);
+if(s.highest<=2){
+rec=q>=.55?"raise":(s.owed===0?"check":(q>=.40?"call":"fold"));
+}else{
+rec=q>=.68?"raise":(q>=.57?"call":(q>=.48&&s.owed<=6?"call":"fold"));
+}
+why=`起手强度 ${(q*100)|0}`;
+return {rec,why,eq,odds};
+}
+let tight=clamp(.26+s.street*.10+(s.owed>0?.20:0)+(s.owed>s.pot*.5?.10:0),0,.8);
+eq=equity(s.hole,s.board,Math.max(1,s.opps),300,tight);
+odds=s.owed>0?s.owed/(s.pot+s.owed):0;
+if(s.owed>0){
+rec=eq>=.66?"raise":(eq>=odds-.05?"call":"fold");
+why=`胜率 ${(eq*100).toFixed(0)}% ，跟注所需 ${(odds*100).toFixed(0)}%`;
+}else{
+rec=eq>=.60?"raise":"check";
+why=`胜率 ${(eq*100).toFixed(0)}%`+(eq>=.45&&eq<.60?"，中等牌控池":"");
+}
+return {rec,why,eq,odds};
+}
+function renderGto(s,myType){
+let gp=document.getElementById("gtoPanel");if(!gp)return;
+let a=gtoAdvice(s);
+let names={fold:"弃牌",check:"让牌",call:"跟注",raise:"加注"};
+let verdict,mark;
+if(myType===a.rec){verdict="与参考线一致";mark="✓"}
+else if(a.rec==="fold"&&myType==="call"&&a.eq>=a.odds-.05){verdict="边界跟注，可接受";mark="≈"}
+else if(a.rec==="call"&&myType==="raise"&&a.eq>=.55){verdict="偏凶一档，可接受";mark="≈"}
+else if(a.rec==="raise"&&(myType==="call"||myType==="check")&&a.eq>=.55){verdict="偏弱一档，可接受";mark="≈"}
+else{verdict="与参考线偏差";mark="✗"}
+let bluffNote=(myType==="raise"&&a.eq!==null&&a.eq<.34&&s.street>0)?"（此为诈唬下注）":"";
+gtoLog.unshift(`#${handNo} ${streetNames[s.street]}：你【${names[myType]}】· GTO 参考【${names[a.rec]}】— ${a.why} ${mark} ${verdict}${bluffNote}`);
+gtoLog=gtoLog.slice(0,3);
+gp.innerHTML=gtoLog.join("<br>");
 }
 function boardWet(b){
 if(!b||b.length<3)return 0;
@@ -389,14 +432,14 @@ let bluffP=b.bluff*(wet>.55?.6:1)*(b.id===14?.8:b.id===15?1.15:1);
 if(ctx.humanPresent&&ctx.bigCallRate!==null&&ctx.bigCallRate>.55)bluffP*=.5;
 if(ctx.humanPresent&&ctx.rfRate!==null&&ctx.rfRate>.45)bluffP*=1.4;
 if(!owed){
-if(eq>.85&&street<3&&Math.random()<.25)return {type:"check",eq};
+if(eq>.85&&street<3&&p.trapStreet<0&&Math.random()<.25){p.trapStreet=street;return {type:"check",eq};}
 if(eq>vt)return {type:"raise",to:betTo((street===3?.75:.55+wet*.2)*(b.id===14?1.1:1)),eq};
 if(p.rfp&&street===1&&(opps<=2||eq>=.25)&&Math.random()<.62-wet*.3)return {type:"raise",to:betTo(.45),eq};
 if(street===3&&eq<.3&&opps===1&&Math.random()<bluffP*.6)return {type:"raise",to:betTo(.75),eq};
 if(street<3&&eq>=.2&&eq<.45&&Math.random()<bluffP)return {type:"raise",to:betTo(.5),eq};
 return {type:"check",eq};
 }
-if(eq>.85&&street<3&&Math.random()<.2)return {type:"call",eq};
+if(eq>.85&&street<3&&p.trapStreet<0&&Math.random()<.2){p.trapStreet=street;return {type:"call",eq};}
 if(eq>vt+.12&&mayRaise(p))return {type:"raise",to:betTo(.7),eq};
 if(eq>=odds+.03)return {type:"call",eq};
 if(eq<.22&&street<3&&mayRaise(p)&&Math.random()<bluffP*.7)return {type:"raise",to:betTo(.65),eq};
@@ -438,24 +481,30 @@ return {type:"raise",to:Math.min(p.bet+p.stack,Math.max(highest+minRaise,Math.ro
 let tight=.18+street*.09+(owed>0?.22:0)+(owed>pot*.5?.15:0)+(opps===1?.08:0);
 eq=equity(p.hole,board,opps,250,clamp(tight,0,.85));
 }
+let madeCat=0;
+if(street>0&&board.length>=3)madeCat=Math.floor(rank([...p.hole,...board])/15**5);
 let thin=(humanPresent&&reads.faced>=20&&reads.call/reads.faced>.55?.055:0)+(humanPresent&&bigCallRate!==null&&bigCallRate>.55?.05:0);
 let valueThreshold=street===0?.66:clamp(.56+opps*.025-thin,.52,.80);
 if(b.id===3)valueThreshold+=.12;
 if(b.id===11)valueThreshold+=.06;
-let monster=eq>.78,trap=monster&&Math.random()<b.trap*(street<2?1:.4);
+let monster=eq>.78,trap=monster&&p.trapStreet<0&&street===1&&Math.random()<b.trap;
+if(trap)p.trapStreet=street;
 let selective=b.id===13?(!owed&&opps<=2?1:.22):1;
 let wet=street>0?boardWet(board):0;
 let cbetBoost=p.rfp&&street===1?(1.3-wet*.75):1;
 let doBluff=eq<.34&&Math.random()<bluff*selective*cbetBoost/(1+Math.max(0,opps-1)*.28);
 if(street===3&&(opps>2||Math.random()<.45))doBluff=false;
+if(madeCat>=1)doBluff=false;
 let strongMade=false;
 if(street>0&&board.length>=3){
 let topB=Math.max(...board.map(c=>c%13+2)),h1=p.hole[0]%13+2,h2=p.hole[1]%13+2;
 strongMade=(h1===h2&&h1>topB)||(Math.max(h1,h2)===topB&&Math.min(h1,h2)>=13);
 }
 let value=eq>(strongMade?valueThreshold-.05:valueThreshold)&&Math.random()<(strongMade?Math.max(ag,.62):ag);
+if(!value&&madeCat>=2&&Math.random()<(madeCat>=3?.85:.70))value=true;
+if(!value&&strongMade&&Math.random()<.6)value=true;
 if(b.id===11)doBluff=false;
-if(!owed&&street>=2&&!strongMade&&eq>=.34&&eq<=.58&&Math.random()<.5)return {type:"check",eq};
+if(!owed&&street>=2&&!strongMade&&madeCat<2&&eq>=.34&&eq<=.58&&Math.random()<.5)return {type:"check",eq};
 if(mayRaise(p)&&!trap&&(value||doBluff)){
 let fraction=b.size*(.8+Math.random()*.4)*(1+L.tilt*.18);
 if(street>0)fraction*=value?(1+wet*.25):(1-wet*.1);
@@ -473,6 +522,11 @@ if(highest<=2&&mayRaise(p)&&skill>.45&&quality>=.5&&Math.random()<.45)return {ty
 return {type:"call",eq};
 }
 return {type:"fold",eq};
+}
+if(street>0&&madeCat<3&&!trap){
+let streetCapBB=(madeCat===2?30:(strongMade?26:16))*(b.call>.8?1.4:b.call<.2?.7:1);
+if(owed>streetCapBB*2&&eq<.62)return {type:"fold",eq};
+if(street===3&&madeCat<=1&&owed>pot*.4&&eq<.58)return {type:"fold",eq};
 }
 let threshold=odds+.075-b.call*.16-L.tilt*.065;
 if(b.id===3)threshold=Math.max(odds+.16,.46);
