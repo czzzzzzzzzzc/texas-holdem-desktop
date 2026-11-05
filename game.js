@@ -215,6 +215,16 @@ quality=preScore(p.hole);eq=clamp(.12+quality*.7-(opps-1)*.025,.04,.9);
 let cutoff=.80-vp*.67;
 let costly=owed>6?Math.min(.23,Math.log2(owed/2)*.045):0;
 if(owed&&quality<cutoff+costly&&Math.random()>vp*.12)return {type:"fold",eq};
+let rHi=Math.max(p.hole[0]%13+2,p.hole[1]%13+2),rLo=Math.min(p.hole[0]%13+2,p.hole[1]%13+2),isPair=p.hole[0]%13===p.hole[1]%13;
+let pS=isPair&&rHi>=13,pA=(isPair&&rHi===12)||(rHi===14&&rLo===13),pB=(isPair&&rHi===11)||(rHi===14&&rLo===12);
+let goRaise=pS||(pA&&(highest<=12||Math.random()<.55))||(pB&&highest<=12&&Math.random()<.9);
+if(goRaise&&mayRaise(p)){
+let target;
+if(highest<=2)target=Math.max(highest+minRaise,Math.round(2*(2+b.size*2)));
+else if(highest<=12)target=Math.max(highest+minRaise*2,Math.round(highest*2.4));
+else target=Math.max(highest+minRaise,Math.round(highest*2.1));
+return {type:"raise",to:Math.min(p.bet+p.stack,target),eq};
+}
 }else eq=equity(p.hole,board,opps);
 let thin=humanPresent&&reads.faced>=20&&reads.call/reads.faced>.55?.055:0;
 let valueThreshold=street===0?.66:clamp(.56+opps*.025-thin,.52,.80);
@@ -223,7 +233,12 @@ if(b.id===11)valueThreshold+=.06;
 let monster=eq>.78,trap=monster&&Math.random()<b.trap*(street<2?1:.4);
 let selective=b.id===13?(!owed&&opps<=2?1:.22):1;
 let doBluff=eq<.34&&Math.random()<bluff*selective/(1+Math.max(0,opps-1)*.28);
-let value=eq>valueThreshold&&Math.random()<ag;
+let strongMade=false;
+if(street>0&&board.length>=3){
+let topB=Math.max(...board.map(c=>c%13+2)),h1=p.hole[0]%13+2,h2=p.hole[1]%13+2;
+strongMade=(h1===h2&&h1>topB)||(Math.max(h1,h2)===topB&&Math.min(h1,h2)>=13);
+}
+let value=eq>(strongMade?valueThreshold-.05:valueThreshold)&&Math.random()<(strongMade?Math.max(ag,.62):ag);
 if(b.id===11)doBluff=false;
 if(mayRaise(p)&&!trap&&(value||doBluff)){
 let fraction=b.size*(.8+Math.random()*.4)*(1+L.tilt*.18);
