@@ -69,7 +69,8 @@ for(let c=0;c<52;c++)if(!known.has(c))pool.push(c);
 let sum=0;
 for(let t=0;t<samples;t++){
 let a=pool.slice(),need=5-community.length+2*n;
-for(let k=0;k<need;k++){let j=k+Math.floor(Math.random()*(a.length-k));[a[k],a[j]]=[a[j],a[k]]}
+if(tight>0){for(let k=a.length-1;k>0;k--){let j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}}
+else for(let k=0;k<need;k++){let j=k+Math.floor(Math.random()*(a.length-k));[a[k],a[j]]=[a[j],a[k]]}
 let b=community.concat(a.slice(0,5-community.length)),idx=5-community.length,mine=rank([...hole,...b]),ties=1,lost=false;
 for(let o=0;o<n;o++){
 let c1=a[idx],c2=a[idx+1];
@@ -153,7 +154,7 @@ clearTimeout(timer);
 let used=new Set(players.slice(1).filter(p=>p.stack>0).map(p=>p.base.id));
 for(let i=1;i<9;i++)if(players[i].stack<=0){let b=shuffle(roster.filter(b=>!used.has(b.id)))[0];players[i]=makePlayer(i,b);used.add(b.id);log(b.name+" 入座，买入 50BB")}
 for(let p of players){
-p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.bluffs=[];p.initial=p.stack;p.rfp=false;p.trapStreet=-1;
+p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.bluffs=[];p.initial=p.stack;p.rfp=false;p.trapStreet=-1;p._facedTurn=false;
 p.live.bluff=1+(p.live.bluff-1)*.94;p.live.tilt*=.79;p.live.confidence*=.80;
 }
 running=true;reveal=false;instant=false;skipRest=false;iteration=0;board=[];deck=shuffle(Array.from({length:52},(_,i)=>i));street=0;highest=2;minRaise=2;actor=-1;
@@ -214,6 +215,7 @@ else for(let q of players)if(canAct(q)&&q.bet<highest)pending.add(q.seat);
 p.last=(oldHigh?"加注到 ":"下注 ")+fmtBB(highest);log(p.name+" "+p.last+(p.allin?"，全下":""));
 for(let q of players)if(q!==p)for(let b of q.bluffs)if(!b.penalized){q.live.bluff=clamp(q.live.bluff*.85,.4,1.8);b.penalized=true}
 if(street===0)p.rfp=true;
+if(type==="raise"){p._sr=(p._srStreet===street?(p._sr||0)+1:1);p._srStreet=street}
 if(p.base&&eq<.34)p.bluffs.push({street,penalized:false});
 }
 if(p.seat===0){humanActions.push(streetNames[street]+":"+(type==="raise"?"加注到"+fmtBB(highest):type==="call"?"跟注"+fmtBB(Math.min(owed,p.bet)):type==="fold"?"弃牌":"让牌"));if(street===0&&(type==="raise"||type==="call"))handVpip=true;if(street===0&&wasRaise)handPfr=true;if(type==="raise")handRaised=true}
@@ -295,6 +297,7 @@ if(price<=2&&quality>=.42)return {type:"call",eq};
 return {type:"fold",eq};
 }
 let tight=.26+street*.10+(owed>0?.20:0)+(owed>pot*.5?.10:0);
+if(street===2&&owed>0)p._facedTurn=true;
 let eq=equity(p.hole,board,opps,300,clamp(tight,0,.8));
 let wet=boardWet(board),odds=price/Math.max(1,pot+price);
 let topB=Math.max(...board.map(c=>c%13+2));
@@ -308,7 +311,7 @@ if(!owed){
 if(eq>.85&&street<3&&p.trapStreet<0&&Math.random()<.25){p.trapStreet=street;return {type:"check",eq};}
 if(eq>vt)return {type:"raise",to:betTo((street===3?.75:.55+wet*.2)*(b.id===14?1.1:1)),eq};
 if(p.rfp&&street===1&&(opps<=2||eq>=.25)&&Math.random()<.62-wet*.3)return {type:"raise",to:betTo(.45),eq};
-if(street===3&&eq<.3&&opps===1&&Math.random()<bluffP*.6)return {type:"raise",to:betTo(.75),eq};
+if(street===3&&eq<.3&&opps===1&&!p._facedTurn&&Math.random()<bluffP*.6)return {type:"raise",to:betTo(.75),eq};
 if(street<3&&eq>=.2&&eq<.45&&Math.random()<bluffP)return {type:"raise",to:betTo(.5),eq};
 return {type:"check",eq};
 }
@@ -351,13 +354,14 @@ if(highest<=2&&limpers>=1&&mayRaise(p)&&quality>=.52-ag*.12&&Math.random()<clamp
 return {type:"raise",to:Math.min(p.bet+p.stack,Math.max(highest+minRaise,Math.round(2*(3+b.size*2)+limpers*2))),eq};
 }
 }else{
-let tight=.18+street*.09+(owed>0?.22:0)+(owed>pot*.5?.15:0)+(opps===1?.08:0);
+let tight=.18+street*.09+(owed>0?.22:0)+(owed>pot*.5?.15:0)+(opps===1?.08:0)+(owed>pot?.08:0);
 eq=equity(p.hole,board,opps,250,clamp(tight,0,.85));
 }
 let madeCat=0;
 if(street>0&&board.length>=3)madeCat=Math.floor(rank([...p.hole,...board])/15**5);
 let thin=(humanPresent&&reads.faced>=20&&reads.call/reads.faced>.55?.055:0)+(humanPresent&&bigCallRate!==null&&bigCallRate>.55?.05:0);
 let valueThreshold=street===0?.66:clamp(.56+opps*.025-thin,.52,.80);
+if(madeCat===1&&street>0)valueThreshold+=.08;
 if(b.id===3)valueThreshold+=.12;
 if(b.id===11)valueThreshold+=.06;
 let monster=eq>.78,trap=monster&&p.trapStreet<0&&street===1&&Math.random()<b.trap;
@@ -378,7 +382,7 @@ if(!value&&madeCat>=2&&Math.random()<(madeCat>=3?.85:.70))value=true;
 if(!value&&strongMade&&Math.random()<.6)value=true;
 if(b.id===11)doBluff=false;
 if(!owed&&street>=2&&!strongMade&&madeCat<2&&eq>=.34&&eq<=.58&&Math.random()<.5)return {type:"check",eq};
-if(mayRaise(p)&&!trap&&(value||doBluff)){
+if(mayRaise(p)&&!trap&&(value||doBluff)&&!((p._srStreet===street?(p._sr||0):0)>=1&&madeCat<3)){
 let fraction=b.size*(.8+Math.random()*.4)*(1+L.tilt*.18);
 if(street>0)fraction*=value?(1+wet*.25):(1-wet*.1);
 if(street===3&&doBluff&&!value)fraction=Math.max(fraction,.7);
@@ -397,6 +401,7 @@ return {type:"call",eq};
 return {type:"fold",eq};
 }
 if(street>0&&madeCat<3&&!trap){
+if((p._srStreet===street?(p._sr||0):0)>=1&&madeCat<=1&&eq<.68)return {type:"fold",eq};
 let streetCapBB=(madeCat===2?30:(strongMade?26:16))*(b.call>.8?1.4:b.call<.2?.7:1);
 if(owed>streetCapBB*2&&eq<.62)return {type:"fold",eq};
 if(street===3&&madeCat<=1&&owed>pot*.4&&eq<.58)return {type:"fold",eq};
