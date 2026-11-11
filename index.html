@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -63,8 +63,53 @@ main{padding:8px}.controls{padding:10px}}
 .controls .raise-row{margin-top:6px}
 .below-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 2px}
 @media(max-width:700px){.felt{inset:56px 18px 112px}.controls{padding:7px 8px}.controls button{padding:8px 9px}}
+
+/* texture v5: desaturated felt + walnut rail + softer cards + chip-like bet markers (CSS only) */
+.felt{background:radial-gradient(ellipse at 50% 42%,#1a5a4a 0%,#12463a 55%,#0a332b 100%);border-color:#3a2b1c;box-shadow:0 14px 38px #000a,inset 0 0 46px #0009,inset 0 2px 0 #ffffff14,0 0 0 3px #241a10}
+.felt::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.055;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+.card{border-radius:6px;background:linear-gradient(180deg,#fbfaf6,#efeee8);box-shadow:0 1px 2px #0006,0 4px 9px #0004}
+.card.back{background:repeating-linear-gradient(45deg,#1a3357,#1a3357 3px,#24436e 3px,#24436e 6px);border:1px solid #5f7694}
+.bet-chip{background:radial-gradient(circle at 35% 30%,#2a2f38,#0d1117);border-color:#d8b25e}
+.bet-chip::before{width:11px;height:11px;background:#b98a2f;border:2px dashed #f7e3ae;vertical-align:-3px}
+.seat .avatar{background:#22303f;border-color:#3c4c5a}
+
+/* small screens v5 (<=520px): no horizontal scroll, readable seats, 44px touch targets */
+@media(max-width:520px){
+html,body{overflow-x:hidden}
+main{padding:6px}
+header{padding:8px}
+.table-wrap{height:604px;margin:2px -4px}
+.felt{inset:52px 4px 160px;border-width:8px}
+.center{width:74%;top:36%}
+.board .card{width:34px;height:48px;font-size:15px}
+.seat{width:74px}
+.seat .avatar{width:40px;height:40px;font-size:21px}
+.seat:first-child .avatar{width:50px;height:50px;font-size:27px}
+.seat .pill{font-size:11px;min-width:50px;padding:2px 6px}
+.seat .card{width:22px;height:30px;font-size:11px}
+.seat .cards{min-height:30px}
+.seat:first-child .card{width:30px;height:42px;font-size:14px}
+.seat:first-child .cards{min-height:42px}
+.controls{width:99%;padding:8px 6px;bottom:2px}
+.controls button{min-height:44px;padding:10px 12px}
+.qbtn{min-height:44px;padding:10px 12px}
+.raise-row{gap:7px;margin-top:8px}
+input[type=range]{height:44px}
+input[type=range]::-webkit-slider-thumb{width:26px;height:26px}
+input[type=number]{min-height:44px}
+.below-bar button{min-height:44px;padding:10px 12px}
+.below-bar{gap:8px}
+.panel{padding:11px}
+details>summary{padding:10px 0}
+#log{height:150px}
+.pot{font-size:19px}
+}
 </style>
-<style>#replayView button,#replayView input,#replayView textarea,#replayView select{font:inherit}#replayView button{border:1px solid #415164;background:#233549;color:white;border-radius:8px;padding:9px 12px;cursor:pointer}#replayView button:hover:enabled{background:#34516c}#replayView button:disabled{opacity:.35;cursor:default}#replayView .gold{background:#745421;color:#ffe8ac}#replayView .table-wrap{position:relative;height:600px;margin:10px 0}#replayView .felt{position:absolute;inset:64px 60px 84px;border:12px solid #44382c;border-radius:48%;background:radial-gradient(ellipse,#145e50,#083d35);box-shadow:0 12px 35px #0008,inset 0 0 30px #0007}#replayView .seat{position:absolute;width:100px;padding:2px;text-align:center;transform:translate(-50%,-50%);z-index:2}#replayView .seat.folded{opacity:.5}#replayView .seat.avatar{width:52px;height:52px;border-radius:50%;background:#233549;border:2px solid #415164;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto;position:relative}#replayView .seat.actor.avatar{border-color:var(--gold);box-shadow:0 0 0 3px #e6bc48,0 0 18px #e6bc4888}#replayView .seat.winner.avatar{border-color:#61f2a0;box-shadow:0 0 0 3px #4ce39b,0 0 18px #4ce39b88}#replayView .seat:first-child.avatar{width:66px;height:66px;font-size:37px}#replayView .seat.dealer{position:absolute;right:-9px;top:-5px;background:#ffd21f;color:#111;border-radius:50%;width:21px;height:21px;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px #0009}#replayView .seat.code{font-size:9px;color:#cfe0ee;background:#0008;border-radius:4px;padding:1px 5px;display:inline-block;margin-top:2px}#replayView .seat.pill{background:#101418e0;color:#fff;border-radius:7px;padding:2px 9px;font-weight:700;font-size:13px;display:inline-block;margin-top:3px;min-width:62px}#replayView .seat.cards{display:flex;justify-content:center;gap:4px;min-height:46px;margin-top:3px}#replayView .card{display:inline-flex;align-items:center;justify-content:center;width:34px;height:46px;border-radius:5px;background:#f3f2ed;color:#151b26;font-weight:800;font-size:15px;box-shadow:0 2px 3px #0005}#replayView .card.red{color:#c63341}#replayView .card.back{color:#9bb3d4;background:repeating-linear-gradient(45deg,#1d3b64,#1d3b64 3px,#294b77 3px,#294b77 6px);border:1px solid #7189aa}#replayView .seat:first-child.card{width:40px;height:54px;font-size:17px}#replayView .center{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);width:65%;text-align:center;z-index:1}#replayView .board{display:flex;justify-content:center;gap:4px;min-height:70px}#replayView .board.card{width:52px;height:70px;font-size:22px}#replayView .pot{font-size:22px;font-weight:bold;color:#ffe0a0;margin:10px 0 4px}#replayView .small{font-size:12px;color:var(--muted)}#replayView .bet-chip{position:absolute;transform:translate(-50%,-50%);background:#0d1117f2;border:1.5px solid #f4c76b;color:#ffe9b0;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px;z-index:3;box-shadow:0 2px 7px #000b;white-space:nowrap}#replayView .bet-chip::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle,#ffedb5,#d9a441);margin-right:5px;vertical-align:-1px}#replayView .panel{padding:14px;background:#141f2b;border:1px solid #29394a;border-radius:12px;margin:10px 0}#replayView .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}#replayView #rpcaption{font-size:16px;line-height:1.7;color:#ffe1a5;text-align:center;min-height:27px}#replayView #rpnote{line-height:1.8;color:#d7ecdf;white-space:pre-wrap}#replayView #rpnote.steptag{color:#f0c778;font-weight:700}#replayView select{background:#0c1722;color:white;border:1px solid #415164;border-radius:6px;padding:8px}#replayView textarea{width:100%;height:110px;background:#0a121c;color:#bcd1df;border:1px solid #40556b;padding:10px;margin-top:10px}#replayView input[type=file]{color:#bdcad5}@media(max-width:700px){#replayView .table-wrap{height:600px;margin:5px -9px}#replayView .felt{inset:52px 16px 76px;border-width:7px}#replayView .seat{width:82px}#replayView .seat.avatar{width:44px;height:44px;font-size:23px}#replayView .seat:first-child.avatar{width:56px;height:56px;font-size:31px}#replayView .seat.pill{font-size:11px;min-width:52px;padding:2px 6px}#replayView .seat.dealer{width:18px;height:18px;font-size:10px;right:-7px}#replayView .seat.card{width:26px;height:35px;font-size:12px}#replayView .seat:first-child.card{width:34px;height:46px;font-size:15px}#replayView .seat.cards{min-height:35px}#replayView .seat:first-child.cards{min-height:46px}#replayView .board.card{width:36px;height:50px;font-size:16px}#replayView .board{min-height:50px}#replayView .pot{font-size:17px}#replayView .bet-chip{font-size:12px;padding:2px 8px}}</style>
+<style>#replayView button,#replayView input,#replayView textarea,#replayView select{font:inherit}#replayView button{border:1px solid #415164;background:#233549;color:white;border-radius:8px;padding:9px 12px;cursor:pointer}#replayView button:hover:enabled{background:#34516c}#replayView button:disabled{opacity:.35;cursor:default}#replayView .gold{background:#745421;color:#ffe8ac}#replayView .table-wrap{position:relative;height:600px;margin:10px 0}#replayView .felt{position:absolute;inset:64px 60px 84px;border:12px solid #44382c;border-radius:48%;background:radial-gradient(ellipse,#145e50,#083d35);box-shadow:0 12px 35px #0008,inset 0 0 30px #0007}#replayView .seat{position:absolute;width:100px;padding:2px;text-align:center;transform:translate(-50%,-50%);z-index:2}#replayView .seat.folded{opacity:.5}#replayView .seat.avatar{width:52px;height:52px;border-radius:50%;background:#233549;border:2px solid #415164;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto;position:relative}#replayView .seat.actor.avatar{border-color:var(--gold);box-shadow:0 0 0 3px #e6bc48,0 0 18px #e6bc4888}#replayView .seat.winner.avatar{border-color:#61f2a0;box-shadow:0 0 0 3px #4ce39b,0 0 18px #4ce39b88}#replayView .seat:first-child.avatar{width:66px;height:66px;font-size:37px}#replayView .seat.dealer{position:absolute;right:-9px;top:-5px;background:#ffd21f;color:#111;border-radius:50%;width:21px;height:21px;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px #0009}#replayView .seat.code{font-size:9px;color:#cfe0ee;background:#0008;border-radius:4px;padding:1px 5px;display:inline-block;margin-top:2px}#replayView .seat.pill{background:#101418e0;color:#fff;border-radius:7px;padding:2px 9px;font-weight:700;font-size:13px;display:inline-block;margin-top:3px;min-width:62px}#replayView .seat.cards{display:flex;justify-content:center;gap:4px;min-height:46px;margin-top:3px}#replayView .card{display:inline-flex;align-items:center;justify-content:center;width:34px;height:46px;border-radius:5px;background:#f3f2ed;color:#151b26;font-weight:800;font-size:15px;box-shadow:0 2px 3px #0005}#replayView .card.red{color:#c63341}#replayView .card.back{color:#9bb3d4;background:repeating-linear-gradient(45deg,#1d3b64,#1d3b64 3px,#294b77 3px,#294b77 6px);border:1px solid #7189aa}#replayView .seat:first-child.card{width:40px;height:54px;font-size:17px}#replayView .center{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);width:65%;text-align:center;z-index:1}#replayView .board{display:flex;justify-content:center;gap:4px;min-height:70px}#replayView .board.card{width:52px;height:70px;font-size:22px}#replayView .pot{font-size:22px;font-weight:bold;color:#ffe0a0;margin:10px 0 4px}#replayView .small{font-size:12px;color:var(--muted)}#replayView .bet-chip{position:absolute;transform:translate(-50%,-50%);background:#0d1117f2;border:1.5px solid #f4c76b;color:#ffe9b0;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px;z-index:3;box-shadow:0 2px 7px #000b;white-space:nowrap}#replayView .bet-chip::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle,#ffedb5,#d9a441);margin-right:5px;vertical-align:-1px}#replayView .panel{padding:14px;background:#141f2b;border:1px solid #29394a;border-radius:12px;margin:10px 0}#replayView .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}#replayView #rpcaption{font-size:16px;line-height:1.7;color:#ffe1a5;text-align:center;min-height:27px}#replayView #rpnote{line-height:1.8;color:#d7ecdf;white-space:pre-wrap}#replayView #rpnote.steptag{color:#f0c778;font-weight:700}#replayView select{background:#0c1722;color:white;border:1px solid #415164;border-radius:6px;padding:8px}#replayView textarea{width:100%;height:110px;background:#0a121c;color:#bcd1df;border:1px solid #40556b;padding:10px;margin-top:10px}#replayView input[type=file]{color:#bdcad5}@media(max-width:700px){#replayView .table-wrap{height:600px;margin:5px -9px}#replayView .felt{inset:52px 16px 76px;border-width:7px}#replayView .seat{width:82px}#replayView .seat.avatar{width:44px;height:44px;font-size:23px}#replayView .seat:first-child.avatar{width:56px;height:56px;font-size:31px}#replayView .seat.pill{font-size:11px;min-width:52px;padding:2px 6px}#replayView .seat.dealer{width:18px;height:18px;font-size:10px;right:-7px}#replayView .seat.card{width:26px;height:35px;font-size:12px}#replayView .seat:first-child.card{width:34px;height:46px;font-size:15px}#replayView .seat.cards{min-height:35px}#replayView .seat:first-child.cards{min-height:46px}#replayView .board.card{width:36px;height:50px;font-size:16px}#replayView .board{min-height:50px}#replayView .pot{font-size:17px}#replayView .bet-chip{font-size:12px;padding:2px 8px}}
+/* texture v5 (replay): match main table */
+#replayView .felt{background:radial-gradient(ellipse at 50% 42%,#1a5a4a 0%,#12463a 55%,#0a332b 100%);border-color:#3a2b1c;box-shadow:0 14px 38px #000a,inset 0 0 46px #0009,inset 0 2px 0 #ffffff14,0 0 0 3px #241a10}
+#replayView .card{border-radius:6px;background:linear-gradient(180deg,#fbfaf6,#efeee8);box-shadow:0 1px 2px #0006,0 4px 9px #0004}
+@media(max-width:520px){#replayView .table-wrap{height:560px;margin:2px -4px}#replayView .felt{inset:48px 4px 96px;border-width:8px}#replayView button{min-height:44px;padding:10px 12px}#replayView select{min-height:44px}#replayView .board .card{width:34px;height:48px;font-size:15px}#replayView .pot{font-size:19px}}</style>
 </head>
 <body>
 <header><h1>♠ 九人无限注德州扑克</h1><div class="small">现金桌 · 小盲 1 / 大盲 2 · 买入 100 · 永不升盲</div></header>
@@ -87,6 +132,16 @@ main{padding:8px}.controls{padding:10px}}
 <section class="panel"><details open><summary>本桌阵容与动态</summary><div id="lineup" class="small"></div></details><p class="small">机器人依据牌力、底池赔率与个性行动。诈唬反馈、情绪与对你的观察会随牌局变化。</p><div id="reads" class="small"></div></section>
 </div>
 <section class="panel"><details><summary>复盘记录（最近 200 手）</summary><div id="history" class="history"></div></details><p><button id="share" class="gold">分享数据</button> <button id="export">导出复盘数据</button> <button id="copy" hidden>复制数据</button></p><p class="small">进度保存在本机浏览器本地，重开自动恢复；导出文件可跨设备转移、或发我做复盘。恢复进度：<input type="file" id="importFile" accept=".json,application/json"> <button id="importText">从文本框恢复</button></p><textarea id="exportText" hidden readonly></textarea><span id="copyStatus" class="small"></span></section>
+<section class="panel"><details open><summary>对局设置（难度与职业人数）</summary>
+<p class="small">难度五档：新手 / 入门 / 进阶（默认，与原版手感最接近）/ 高手 / 职业。难度按新版行为校准（参数缩放，不靠放水），切换后<b>下一手起生效</b>，不会中途改变已发牌的一手。职业人数可选「按难度默认」或 0–8 人，同样下一手起生效。</p>
+<p><label class="small">难度 <select id="setDifficulty" style="min-height:44px;background:#0c1722;color:white;border:1px solid #415164;border-radius:6px;padding:7px">
+<option value="novice">新手</option><option value="starter">入门</option><option value="intermediate">进阶</option><option value="expert">高手</option><option value="pro">职业</option>
+</select></label>
+<label class="small">本桌职业人数 <select id="setPros" style="min-height:44px;background:#0c1722;color:white;border:1px solid #415164;border-radius:6px;padding:7px">
+<option value="default">按难度默认</option><option value="0">0 人</option><option value="1">1 人</option><option value="2">2 人</option><option value="3">3 人</option><option value="4">4 人</option><option value="5">5 人</option><option value="6">6 人</option><option value="7">7 人</option><option value="8">8 人</option>
+</select></label></p>
+<p class="small" id="diffHint"></p>
+</details></section>
 <section class="panel"><details><summary>快捷下注设置（预设按钮可自定义，跟其他扑克软件一样）</summary>
 <p class="small">翻前快捷按钮 = 加注到多少 BB（点按钮即出手）：</p>
 <p><input type="number" id="setPre1" step="0.5" style="width:72px"> <input type="number" id="setPre2" step="0.5" style="width:72px"> <input type="number" id="setPre3" step="0.5" style="width:72px"> <input type="number" id="setPre4" step="0.5" style="width:72px"> <span class="small">BB</span></p>
@@ -126,27 +181,1317 @@ main{padding:8px}.controls{padding:10px}}
 </main><footer>桌面版 · 本地单机 · 筹码无现金价值 · 战绩保存在本机浏览器</footer>
 <script>
 
+
 "use strict";
 const $=id=>document.getElementById(id), BB=2, KEY="holdem-nine-v1";
-const roster=[
-["阿紧","TAG 紧凶",.23,.76,.035,.30,.08,.65,.45],
-["疯狗","Maniac 松凶",.80,.94,.32,.65,.02,1.25,1.2],
-["跟注站","Calling station",.87,.07,.008,.98,.02,.40,.45],
-["石头","Rock",.10,.42,.005,.06,.08,.55,.03],
-["渔夫","Loose-passive fish",.70,.18,.025,.78,.04,.38,.6],
-["诈唬哥","Bluffer",.46,.82,.31,.40,.05,.85,.8],
-["陷阱哥","Trapper",.30,.55,.045,.48,.72,.85,.35],
-["均衡哥","Balanced",.32,.59,.075,.43,.12,.65,.3],
-["老狐狸","Tricky TAG",.25,.73,.12,.36,.30,.75,.25],
-["数学家","Odds robot",.28,.48,.008,.32,.04,.60,.05],
-["好奇宝宝","Curious beginner",.81,.15,.018,.65,.02,.35,.65],
-["ABC大叔","Straightforward ABC",.26,.57,0,.25,.02,.65,.2],
-["情绪哥","Tilter",.46,.66,.13,.53,.06,.85,2.8],
-["冷面女王","Composed LAG",.43,.77,.13,.39,.12,.80,.02],
-["冷锋","Pro TAG",.24,.72,.10,.34,0,.72,.02],
-["猎手","Pro LAG",.34,.80,.14,.38,0,.78,.02]
-].map((r,id)=>Object.freeze({id,name:r[0],style:r[1],vpip:r[2],aggression:r[3],bluff:r[4],call:r[5],trap:r[6],size:r[7],tiltGain:r[8]}));
-const PROS=new Set([14,15]);
+// ===== 移植自 poker-trainer（brain/roster.js + app/config.js）：46 人名单与五档难度 =====
+// 前 16 人与原版逐值对应（代号01-16 身份不变，老存档 reads/战绩不串人）；参数序：vpip, aggression, bluff, call, trap, size, tiltGain
+const ROSTER46=[
+["\u4ee3\u53f701","normal","TAG \u7d27\u51f6",[0.23,0.76,0.035,0.3,0.08,0.65,0.45]],
+["\u4ee3\u53f702","normal","Maniac \u677e\u51f6",[0.8,0.94,0.32,0.65,0.02,1.25,1.2]],
+["\u4ee3\u53f703","normal","Calling station",[0.87,0.07,0.008,0.98,0.02,0.4,0.45]],
+["\u4ee3\u53f704","normal","Rock",[0.1,0.42,0.005,0.06,0.08,0.55,0.03]],
+["\u4ee3\u53f705","normal","Loose-passive fish",[0.7,0.18,0.025,0.78,0.04,0.38,0.6]],
+["\u4ee3\u53f706","normal","Bluffer",[0.46,0.82,0.31,0.4,0.05,0.85,0.8]],
+["\u4ee3\u53f707","normal","Trapper",[0.3,0.55,0.045,0.48,0.72,0.85,0.35]],
+["\u4ee3\u53f708","normal","Balanced",[0.32,0.59,0.075,0.43,0.12,0.65,0.3]],
+["\u4ee3\u53f709","normal","Tricky TAG",[0.25,0.73,0.12,0.36,0.3,0.75,0.25]],
+["\u4ee3\u53f710","normal","Odds robot",[0.28,0.48,0.008,0.32,0.04,0.6,0.05]],
+["\u4ee3\u53f711","normal","Curious beginner",[0.81,0.15,0.018,0.65,0.02,0.35,0.65]],
+["\u4ee3\u53f712","normal","Straightforward ABC",[0.26,0.57,0,0.25,0.02,0.65,0.2]],
+["\u4ee3\u53f713","normal","Tilter",[0.46,0.66,0.13,0.53,0.06,0.85,2.8]],
+["\u4ee3\u53f714","normal","Composed LAG",[0.43,0.77,0.13,0.39,0.12,0.8,0.02]],
+["\u4ee3\u53f715","pro","\u51b7\u950b / Pro TAG",[0.24,0.72,0.1,0.34,0,0.72,0.02]],
+["\u4ee3\u53f716","pro","\u730e\u624b / Pro LAG",[0.34,0.8,0.14,0.38,0,0.78,0.02]],
+["\u4ee3\u53f717","normal","\u6162\u70ed\u578b",[0.21,0.39,0.016,0.35,0.14,0.48,0.3]],
+["\u4ee3\u53f718","normal","\u8ddf\u98ce\u578b",[0.59,0.37,0.055,0.72,0.03,0.52,0.85]],
+["\u4ee3\u53f719","normal","\u5927\u76f2\u9632\u5b88\u72c2",[0.66,0.46,0.065,0.88,0.04,0.57,0.95]],
+["\u4ee3\u53f720","normal","\u6309\u94ae\u4f4d\u5f3a\u76d7",[0.49,0.86,0.21,0.31,0.03,0.68,0.7]],
+["\u4ee3\u53f721","normal","\u8ddb\u5165\u7231\u597d\u8005",[0.74,0.12,0.012,0.82,0.09,0.32,0.55]],
+["\u4ee3\u53f722","normal","\u8d85\u6c60\u7231\u597d\u8005",[0.4,0.84,0.19,0.45,0.02,1.55,1.35]],
+["\u4ee3\u53f723","normal","\u5c0f\u7403\u6d3e",[0.37,0.52,0.065,0.5,0.16,0.28,0.25]],
+["\u4ee3\u53f724","normal","\u6cb3\u724c\u6293\u8bc8\u578b",[0.33,0.43,0.025,0.86,0.11,0.58,0.4]],
+["\u4ee3\u53f725","normal","\u7ffb\u724c\u6d6e\u52a8\u578b",[0.53,0.58,0.095,0.76,0.07,0.54,0.75]],
+["\u4ee3\u53f726","normal","3-bet \u504f\u6267\u72c2",[0.38,0.93,0.24,0.29,0.01,1.05,1.6]],
+["\u4ee3\u53f727","normal","\u5e7f\u64ad\u724c\u578b",[0.19,0.61,0,0.19,0,0.92,0.2]],
+["\u4ee3\u53f728","normal","\u5468\u672b\u73a9\u5bb6",[0.63,0.31,0.045,0.69,0.05,0.46,1.1]],
+["\u4ee3\u53f729","normal","\u9000\u4f11\u5927\u7237\u578b",[0.16,0.24,0.002,0.22,0.24,0.42,0.1]],
+["\u4ee3\u53f730","normal","\u8868\u6f14\u578b",[0.57,0.88,0.29,0.58,0.18,1.18,2.2]],
+["\u4ee3\u53f731","normal","\u95f7\u58f0\u53d1\u8d22\u578b",[0.22,0.64,0.022,0.28,0.48,0.7,0.15]],
+["\u4ee3\u53f732","pro","\u8001\u6d3e TAG",[0.2,0.78,0.065,0.28,0.06,0.76,0.025]],
+["\u4ee3\u53f733","pro","\u6570\u5b66\u6559\u6388\u578b",[0.27,0.75,0.055,0.33,0.03,0.63,0.005]],
+["\u4ee3\u53f734","pro","\u9526\u6807\u8d5b\u51a0\u519b\u578b",[0.3,0.87,0.125,0.32,0.07,0.82,0.035]],
+["\u4ee3\u53f735","pro","\u73b0\u91d1\u684c\u8001\u70ae",[0.29,0.81,0.095,0.4,0.13,0.86,0.03]],
+["\u4ee3\u53f736","pro","\u7ebf\u4e0a\u8f6c\u578b\u578b",[0.35,0.91,0.155,0.35,0.02,0.7,0.045]],
+["\u4ee3\u53f737","pro","\u51b7\u9177\u8bfb\u724c\u578b",[0.25,0.83,0.105,0.3,0.15,0.79,0.01]],
+["\u4ee3\u53f738","pro","\u538b\u69a8\u578b LAG",[0.41,0.95,0.195,0.37,0.01,0.94,0.055]],
+["\u4ee3\u53f739","pro","\u5e73\u8861\u5927\u5e08\u578b",[0.31,0.82,0.115,0.36,0.1,0.67,0.015]],
+["\u4ee3\u53f740","pro","\u72d9\u51fb\u624b\u578b",[0.18,0.85,0.045,0.23,0.08,0.97,0.02]],
+["\u4ee3\u53f741","pro","\u96f6\u60c5\u7eea\u578b",[0.26,0.79,0.075,0.31,0.04,0.69,0]],
+["\u4ee3\u53f742","pro","\u53d8\u901f\u578b",[0.36,0.89,0.165,0.34,0.19,0.88,0.07]],
+["\u4ee3\u53f743","pro","\u9677\u9631\u5927\u5e08\u578b",[0.23,0.77,0.085,0.38,0.82,0.83,0.025]],
+["\u4ee3\u53f744","pro","\u4ef7\u503c\u673a\u5668\u578b",[0.28,0.9,0.035,0.27,0.02,1.02,0.01]],
+["\u4ee3\u53f745","pro","\u9632\u5b88\u5927\u5e08\u578b",[0.32,0.76,0.08,0.49,0.09,0.61,0.02]],
+["\u4ee3\u53f746","pro","\u5fc3\u7406\u6218\u578b",[0.39,0.93,0.215,0.39,0.23,0.91,0.08]]
+].map(([id,kind,archetype,params])=>Object.freeze({id,name:id,kind,archetype,params:Object.freeze(params)}));
+const DIFFICULTIES=[{"key": "novice", "name": "新手", "index": 40, "noise": 0.24, "tight": -0.06, "fishRatio": 0.6, "proDefault": 0, "proRange": [0, 0], "readsLevel": 0, "exploit": 0.4}, {"key": "starter", "name": "入门", "index": 51, "noise": 0.16, "tight": -0.02, "fishRatio": 0.45, "proDefault": 1, "proRange": [0, 1], "readsLevel": 1, "exploit": 0.6}, {"key": "intermediate", "name": "进阶", "index": 64, "noise": 0.1, "tight": 0.03, "fishRatio": 0.3, "proDefault": 2, "proRange": [1, 2], "readsLevel": 2, "exploit": 0.8}, {"key": "expert", "name": "高手", "index": 81, "noise": 0.06, "tight": 0.08, "fishRatio": 0.15, "proDefault": 3, "proRange": [2, 3], "readsLevel": 3, "exploit": 1}, {"key": "pro", "name": "职业", "index": 100, "noise": 0.03, "tight": 0.14, "fishRatio": 0, "proDefault": 4, "proRange": [3, 5], "readsLevel": 4, "exploit": 1.15}];
+const ENGBASES=ROSTER46.map((e,i)=>Object.freeze({id:i,code:e.id,kind:e.kind,style:e.archetype,vpip:e.params[0],aggression:e.params[1],bluff:e.params[2],call:e.params[3],trap:e.params[4],size:e.params[5],tiltGain:e.params[6]}));
+const SETTINGS_KEY="holdem-settings-v1";
+let settings={preBB:[2.5,3,4,5],postPct:[33,50,66,100],difficultyKey:"intermediate",proCount:null};
+try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s){if(Array.isArray(s.preBB)&&s.preBB.length)settings.preBB=s.preBB;if(Array.isArray(s.postPct)&&s.postPct.length)settings.postPct=s.postPct;if(DIFFICULTIES.some(d=>d.key===s.difficultyKey))settings.difficultyKey=s.difficultyKey;if(Number.isInteger(s.proCount)&&s.proCount>=0&&s.proCount<=8)settings.proCount=s.proCount}}catch(e){}
+
+const BrainModule = (() => {
+"use strict";
+
+/**
+ * 无 DOM、localStorage 或可变模块级对局状态。
+ *
+ * providerFor({
+ *   seat,
+ *   rosterId,             // ROSTER 中的字符串 id；也可传 base: rosterEntry
+ *   humanSeat = 0,
+ *   stats                 // 可选：恢复时的人类 {hands, vpip, pfr}
+ * }) => (player, view) => action
+ *
+ * view：
+ * {
+ *   hole, board, street, pot, toCall, minRaiseTo,
+ *   players: [{seat, stack, bet, total, folded, allin, inHand?}],
+ *   button, bb,           // 也可放在 view.position 中
+ *   highest?, minRaise?,  // 推荐提供原始值，尤其 minRaiseTo 被全下上限截断时
+ *   mayRaise?,            // 可选 boolean；提供时以 engine 的合法性判断为准
+ *   stats?                // 可选：当前已完成手数的 {hands, vpip, pfr}
+ * }
+ *
+ * toCall 可以是封顶跟注额；原版 owed 优先使用 highest - player.bet，
+ * highest 缺省时取 players 的最大 bet。
+ * minRaiseTo 应为未按玩家筹码封顶的最小加注目标；若已封顶，须提供 minRaise。
+ * 缺省 inHand 视为 true；未参与本手的座位应显式给出 inHand: false。
+ *
+ * observe 事件适配约定：
+ *
+ * {type: "handStart", players, stats?}
+ *   players 至少提供 seat、stack、inHand；stack 是扣盲注前筹码。
+ *   可同时提供 initial 表示明确的本手初始筹码。
+ *
+ * {type: "action", seat, street, action: {type, amount?}, owed}
+ *   必须是 engine 已接受、完成合法化后的实际动作。
+ *   owed 是执行前未按筹码封顶的最高下注差额。
+ *   bet/raise 均代表原版 raise 分支；amount 是该街累计目标额。
+ *
+ * {type: "handEnd", showdown, players, winners}
+ *   players 是退款、分池完成且尚未清理本手标记的快照：
+ *     {seat, stack, folded, won?}
+ *   winners 是获得任一有竞争底池的座位数组，不包含只收回未跟注款的人。
+ *
+ * 每个事件必须按执行顺序且只投递一次。事件名及字段是本模块显式定义的
+ * 适配格式；题面没有给定 engine 事件 schema，不能假设任意事件流可直接兼容。
+ *
+ * 同一座位换机器人时重新调用 providerFor，并传入新的 rosterId。
+ * 同一手的一次真实决策调用后，应投递对应 action，再请求下一次决策。
+ */
+
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
+const PARAM_KEYS = [
+  "vpip", "aggression", "bluff", "call", "trap", "size", "tiltGain"
+];
+
+const READ_DEFAULTS = Object.freeze({
+  faced: 0,
+  fold: 0,
+  call: 0,
+  bigN: 0,
+  bigC: 0,
+  rfF: 0,
+  rfN: 0
+});
+
+// 未传 difficulty 时直接返回原概率，不改变旧行为或随机数消耗。
+function exploitProbability(p, difficulty) {
+  return difficulty ? Math.min(.95, p * difficulty.exploit) : p;
+}
+
+function rank(cards) {
+  const counts = Array(15).fill(0);
+  const suits = [[], [], [], []];
+
+  for (const c of cards) {
+    const r = c % 13 + 2;
+    counts[r]++;
+    suits[Math.floor(c / 13)].push(r);
+  }
+
+  const rs = [];
+  for (let r = 14; r >= 2; r--) {
+    if (counts[r]) rs.push(r);
+  }
+
+  function straight(a) {
+    const mask = new Set(a);
+    if (mask.has(14)) mask.add(1);
+
+    for (let top = 14; top >= 5; top--) {
+      let ok = true;
+      for (let j = 0; j < 5; j++) {
+        if (!mask.has(top - j)) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) return top;
+    }
+    return 0;
+  }
+
+  function score(cat, ks) {
+    let n = cat;
+    for (let i = 0; i < 5; i++) n = n * 15 + (ks[i] || 0);
+    return n;
+  }
+
+  const flush = suits.find(a => a.length >= 5);
+  if (flush) {
+    const st = straight(flush);
+    if (st) return score(8, [st]);
+  }
+
+  const quads = rs.filter(r => counts[r] === 4);
+  const trips = rs.filter(r => counts[r] >= 3);
+  const pairs = rs.filter(r => counts[r] >= 2);
+
+  if (quads.length) {
+    return score(7, [
+      quads[0],
+      ...rs.filter(r => r !== quads[0]).slice(0, 1)
+    ]);
+  }
+
+  if (trips.length) {
+    const p = pairs.find(r => r !== trips[0]);
+    if (p) return score(6, [trips[0], p]);
+  }
+
+  if (flush) return score(5, flush.sort((a, b) => b - a).slice(0, 5));
+
+  const st = straight(rs);
+  if (st) return score(4, [st]);
+
+  if (trips.length) {
+    return score(3, [
+      trips[0],
+      ...rs.filter(r => r !== trips[0]).slice(0, 2)
+    ]);
+  }
+
+  if (pairs.length >= 2) {
+    return score(2, [
+      pairs[0],
+      pairs[1],
+      ...rs.filter(r => r !== pairs[0] && r !== pairs[1]).slice(0, 1)
+    ]);
+  }
+
+  if (pairs.length) {
+    return score(1, [
+      pairs[0],
+      ...rs.filter(r => r !== pairs[0]).slice(0, 3)
+    ]);
+  }
+
+  return score(0, rs.slice(0, 5));
+}
+
+function preScore(hole) {
+  const a = hole[0] % 13 + 2;
+  const b = hole[1] % 13 + 2;
+  const hi = Math.max(a, b);
+  const lo = Math.min(a, b);
+  const gap = hi - lo;
+
+  if (a === b) return clamp(.44 + (hi - 2) * .045, 0, 1);
+
+  let v = .12 + (hi - 2) * .032 + (lo - 2) * .018;
+
+  if (Math.floor(hole[0] / 13) === Math.floor(hole[1] / 13)) v += .08;
+
+  if (gap === 1) v += .06;
+  else if (gap === 2) v += .025;
+  else if (gap > 4) v -= .07;
+
+  if (hi === 14 && lo <= 5) v += .035;
+  return clamp(v, 0, 1);
+}
+
+function equity(hole, community, n, samples = 250, tight = 0) {
+  if (n < 1) return 1;
+
+  const known = new Set([...hole, ...community]);
+  const pool = [];
+
+  for (let c = 0; c < 52; c++) {
+    if (!known.has(c)) pool.push(c);
+  }
+
+  let sum = 0;
+
+  for (let t = 0; t < samples; t++) {
+    const a = pool.slice();
+    const need = 5 - community.length + 2 * n;
+
+    if (tight > 0) {
+      // tight 筛选可能使用 need 之后的替换牌，必须洗完整个未知牌堆。
+      // 后续从完整洗匀的尾部无放回重采样，不从有序小牌尾部补牌。
+      for (let k = a.length - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [a[k], a[j]] = [a[j], a[k]];
+      }
+    } else {
+      for (let k = 0; k < need; k++) {
+        const j = k + Math.floor(Math.random() * (a.length - k));
+        [a[k], a[j]] = [a[j], a[k]];
+      }
+    }
+
+    const b = community.concat(a.slice(0, 5 - community.length));
+    let idx = 5 - community.length;
+    const mine = rank([...hole, ...b]);
+    let ties = 1;
+    let lost = false;
+
+    for (let o = 0; o < n; o++) {
+      let c1 = a[idx];
+      let c2 = a[idx + 1];
+
+      if (tight > 0) {
+        let tries = 0;
+
+        while (
+          tries < 3 &&
+          Math.random() >
+            Math.min(1, Math.pow(preScore([c1, c2]), .6 + tight * 2) * 1.2)
+        ) {
+          const s1 = need + tries * 2;
+          const s2 = s1 + 1;
+          if (s2 >= a.length) break;
+
+          [a[idx], a[s1]] = [a[s1], a[idx]];
+          [a[idx + 1], a[s2]] = [a[s2], a[idx + 1]];
+          c1 = a[idx];
+          c2 = a[idx + 1];
+          tries++;
+        }
+      }
+
+      const s = rank([c1, c2, ...b]);
+      idx += 2;
+
+      if (s > mine) {
+        lost = true;
+        break;
+      }
+      if (s === mine) ties++;
+    }
+
+    if (!lost) sum += 1 / ties;
+  }
+
+  return sum / samples;
+}
+
+function boardWet(b) {
+  if (!b || b.length < 3) return 0;
+
+  const suits = {};
+  const ranks = b.map(c => c % 13 + 2);
+
+  b.forEach(c => {
+    const s = Math.floor(c / 13);
+    suits[s] = (suits[s] || 0) + 1;
+  });
+
+  const maxSuit = Math.max(...Object.values(suits));
+  const uniq = [...new Set(ranks)].sort((x, y) => x - y);
+  const span = uniq.length >= 3
+    ? (
+      uniq[uniq.length - 1] - uniq[0] <= 4
+        ? 1
+        : uniq[uniq.length - 1] - uniq[0] <= 6 ? .5 : 0
+    )
+    : 0;
+
+  let wet = 0;
+  if (maxSuit >= 3) wet += .45;
+  else if (maxSuit === 2) wet += .2;
+
+  wet += span * .35;
+  if (ranks.length - uniq.length > 0) wet += .15;
+
+  return clamp(wet, 0, 1);
+}
+
+function inHand(p) {
+  return p.inHand !== false;
+}
+
+function canAct(p) {
+  return inHand(p) && !p.folded && !p.allin;
+}
+
+function contenders(players) {
+  return players.filter(p => inHand(p) && !p.folded);
+}
+
+function normalizeBase(entry, index) {
+  const base = {
+    id: index,
+    code: entry.id,
+    name: entry.name,
+    kind: entry.kind,
+    style: entry.archetype || entry.name
+  };
+
+  PARAM_KEYS.forEach((key, i) => {
+    base[key] = entry.params[i];
+  });
+
+  return Object.freeze(base);
+}
+
+function newState(base = null) {
+  return {
+    base,
+    live: { bluff: 1, tilt: 0, confidence: 0 },
+    bluffs: [],
+    rfp: false,
+    trapStreet: -1,
+    _facedTurn: false,
+    _sr: 0,
+    _srStreet: -1,
+    initial: undefined,
+    pending: null
+  };
+}
+
+/**
+ * 原版 dyn 的展示状态判断；漂移的更新由 observe 完成。
+ * player 可以是 {base, live}，不读 engine 玩家对象之外的全局状态。
+ */
+function dyn(player) {
+  if (!player.base) return "";
+  if (player.live.tilt > .55) return "上头中";
+  if (player.live.bluff < .78) return "收紧了";
+  if (player.live.confidence > .1 || player.live.bluff > 1.25) {
+    return "手风正顺";
+  }
+  return player.base.style;
+}
+
+function mayRaise(p, ctx) {
+  if (typeof ctx.raiseAllowed === "boolean") return ctx.raiseAllowed;
+
+  return (
+    canAct(p) &&
+    p.bet + p.stack > ctx.highest &&
+    !ctx.acted.has(p.seat) &&
+    ctx.players.some(q => q.seat !== p.seat && canAct(q))
+  );
+}
+
+function proDecision(p, ctx) {
+  const { board, street, highest, minRaise, button, players } = ctx;
+  const difficulty = ctx.difficulty;
+  const b = p.base;
+  const opps = contenders(players).filter(q => q.seat !== p.seat).length;
+  const pot = ctx.pot;
+  const owed = Math.max(0, highest - p.bet);
+  const price = Math.min(owed, p.stack);
+
+  const posIdx = ((p.seat - button) % 9 + 9) % 9;
+  const early = posIdx === 3 || posIdx === 4;
+  const late = posIdx === 0 || posIdx === 7 || posIdx === 8;
+
+  const rHi = Math.max(p.hole[0] % 13 + 2, p.hole[1] % 13 + 2);
+  const rLo = Math.min(p.hole[0] % 13 + 2, p.hole[1] % 13 + 2);
+
+  const openTo = Math.max(highest + minRaise, Math.round(2 * (2 + b.size * 2)));
+  const betTo = f => Math.min(
+    p.bet + p.stack,
+    highest + Math.max(minRaise, Math.round((pot + owed) * f))
+  );
+
+  if (street === 0) {
+    const quality = difficulty
+      ? clamp(
+        preScore(p.hole) - difficulty.tight +
+          (Math.random() * 2 - 1) * difficulty.noise * .5,
+        0,
+        1
+      )
+      : preScore(p.hole);
+    const eq = clamp(.12 + quality * .7 - (opps - 1) * .025, .04, .9);
+    const openQ = (early ? .60 : late ? .50 : .55) +
+      (b.id === 14 ? .04 : b.id === 15 ? -.03 : 0);
+    const facing = highest > 2;
+
+    if (mayRaise(p, ctx)) {
+      if (quality >= .68) {
+        return {
+          type: "raise",
+          to: Math.min(
+            p.bet + p.stack,
+            facing
+              ? Math.max(highest + minRaise, Math.round(highest * 2.5))
+              : openTo
+          ),
+          eq
+        };
+      }
+
+      if (!facing && quality >= openQ) {
+        return { type: "raise", to: Math.min(p.bet + p.stack, openTo), eq };
+      }
+
+      if (
+        facing &&
+        rHi === 14 &&
+        quality >= .55 &&
+        Math.random() < exploitProbability(.3, difficulty)
+      ) {
+        return {
+          type: "raise",
+          to: Math.min(
+            p.bet + p.stack,
+            Math.max(highest + minRaise, Math.round(highest * 2.5))
+          ),
+          eq
+        };
+      }
+    }
+
+    if (!owed) return { type: "check", eq };
+    if (quality >= (facing ? .58 : openQ - .05)) return { type: "call", eq };
+    if (price <= 2 && quality >= .42) return { type: "call", eq };
+
+    return { type: "fold", eq };
+  }
+
+  const tight = .26 + street * .10 +
+    (owed > 0 ? .20 : 0) +
+    (owed > pot * .5 ? .10 : 0);
+
+  if (street === 2 && owed > 0) p._facedTurn = true;
+
+  let eq = equity(
+    p.hole,
+    board,
+    opps,
+    300,
+    difficulty
+      ? clamp(tight + difficulty.tight, -.1, .95)
+      : clamp(tight, 0, .8)
+  );
+  if (difficulty) {
+    eq = clamp(eq + (Math.random() * 2 - 1) * difficulty.noise * .5, 0, 1);
+  }
+  const wet = boardWet(board);
+  const odds = price / Math.max(1, pot + price);
+  const topB = Math.max(...board.map(c => c % 13 + 2));
+  const strongMade = (rHi === rLo && rHi > topB) ||
+    (rHi === topB && rLo >= 13);
+
+  let vt = .57 + opps * .02 - (strongMade ? .04 : 0);
+
+  if (
+    ctx.humanPresent &&
+    ctx.bigCallRate !== null &&
+    ctx.bigCallRate > .55
+  ) {
+    vt -= .06;
+  }
+
+  let bluffP = b.bluff * (wet > .55 ? .6 : 1) *
+    (b.id === 14 ? .8 : b.id === 15 ? 1.15 : 1);
+
+  if (
+    ctx.humanPresent &&
+    ctx.bigCallRate !== null &&
+    ctx.bigCallRate > .55
+  ) {
+    bluffP *= .5;
+  }
+
+  if (ctx.humanPresent && ctx.rfRate !== null && ctx.rfRate > .45) {
+    bluffP *= 1.4;
+  }
+
+  if (!owed) {
+    if (eq > .85 && street < 3 && p.trapStreet < 0 && Math.random() < .25) {
+      p.trapStreet = street;
+      return { type: "check", eq };
+    }
+
+    if (eq > vt) {
+      return {
+        type: "raise",
+        to: betTo(
+          (street === 3 ? .75 : .55 + wet * .2) * (b.id === 14 ? 1.1 : 1)
+        ),
+        eq
+      };
+    }
+
+    if (
+      p.rfp &&
+      street === 1 &&
+      (opps <= 2 || eq >= .25) &&
+      Math.random() < exploitProbability(.62 - wet * .3, difficulty)
+    ) {
+      return { type: "raise", to: betTo(.45), eq };
+    }
+
+    if (
+      street === 3 &&
+      eq < .3 &&
+      opps === 1 &&
+      !p._facedTurn &&
+      Math.random() < exploitProbability(bluffP * .6, difficulty)
+    ) {
+      return { type: "raise", to: betTo(.75), eq };
+    }
+
+    if (
+      street < 3 &&
+      eq >= .2 &&
+      eq < .45 &&
+      Math.random() < exploitProbability(bluffP, difficulty)
+    ) {
+      return { type: "raise", to: betTo(.5), eq };
+    }
+
+    return { type: "check", eq };
+  }
+
+  if (eq > .85 && street < 3 && p.trapStreet < 0 && Math.random() < .2) {
+    p.trapStreet = street;
+    return { type: "call", eq };
+  }
+
+  if (eq > vt + .12 && mayRaise(p, ctx)) {
+    return { type: "raise", to: betTo(.7), eq };
+  }
+
+  if (eq >= odds + .03) return { type: "call", eq };
+
+  if (
+    eq < .22 &&
+    street < 3 &&
+    mayRaise(p, ctx) &&
+    Math.random() < exploitProbability(bluffP * .7, difficulty)
+  ) {
+    return { type: "raise", to: betTo(.65), eq };
+  }
+
+  return { type: "fold", eq };
+}
+
+function botDecision(p, ctx, reads) {
+  const { board, street, highest, minRaise, button, players, stats, bb } = ctx;
+  const difficulty = ctx.difficulty;
+  const readsLevel = difficulty ? difficulty.readsLevel : 2;
+  const facedMinimum = readsLevel >= 4 ? 14 : 20;
+  const bigMinimum = readsLevel >= 4 ? 4 : 6;
+  const rfMinimum = readsLevel >= 4 ? 6 : 8;
+  const b = p.base;
+  const L = readsLevel >= 2
+    ? p.live
+    : { bluff: 1, tilt: 0, confidence: 0 };
+  const opps = contenders(players).length - 1;
+  const owed = Math.max(0, highest - p.bet);
+  const price = Math.min(owed, p.stack);
+  const pot = ctx.pot;
+  const odds = price / (pot + price || 1);
+
+  const vp = clamp(b.vpip + L.tilt * .13 + L.confidence, .07, .96);
+  const ag = clamp(b.aggression + L.tilt * .18, .03, .98);
+  const human = players.find(q => q.seat === ctx.humanSeat);
+  const humanPresent = Boolean(human && inHand(human) && !human.folded);
+
+  const read = readsLevel >= 2 && reads.faced >= facedMinimum
+    ? clamp(
+      1 +
+        (reads.fold / reads.faced - .45) * 1.3 -
+        (reads.call / reads.faced - .35) * .8,
+      .5,
+      1.5
+    )
+    : 1;
+
+  let bluff = b.bluff * L.bluff * (1 + L.tilt * .55) *
+    (humanPresent ? read : 1);
+
+  const rfSample = reads.rfF + reads.rfN;
+  const rfRate = readsLevel >= 2 && rfSample >= rfMinimum
+    ? reads.rfF / rfSample
+    : null;
+  const bigCallRate = readsLevel >= 1 && reads.bigN >= bigMinimum
+    ? reads.bigC / reads.bigN
+    : null;
+
+  if (humanPresent && rfRate !== null && rfRate > .45) bluff *= 1.35;
+  if (humanPresent && bigCallRate !== null && bigCallRate > .55) bluff *= .55;
+
+  if (b.kind === "pro") {
+    return proDecision(p, { ...ctx, humanPresent, rfRate, bigCallRate });
+  }
+
+  let eq;
+  let quality;
+
+  const posIdx = ((p.seat - button) % 9 + 9) % 9;
+  const early = posIdx === 3 || posIdx === 4;
+  const late = posIdx === 0 || posIdx === 7 || posIdx === 8;
+
+  if (street === 0) {
+    quality = difficulty
+      ? clamp(
+        preScore(p.hole) - difficulty.tight +
+          (Math.random() * 2 - 1) * difficulty.noise * .5,
+        0,
+        1
+      )
+      : preScore(p.hole);
+    eq = clamp(.12 + quality * .7 - (opps - 1) * .025, .04, .9);
+
+    const cutoff = .80 - vp * .67 + (early ? .055 : late ? -.035 : 0);
+    const costly = owed > 6 ? Math.min(.23, Math.log2(owed / 2) * .045) : 0;
+
+    if (owed && quality < cutoff + costly && Math.random() > vp * .12) {
+      return { type: "fold", eq };
+    }
+
+    const rHi = Math.max(p.hole[0] % 13 + 2, p.hole[1] % 13 + 2);
+    const rLo = Math.min(p.hole[0] % 13 + 2, p.hole[1] % 13 + 2);
+    const isPair = p.hole[0] % 13 === p.hole[1] % 13;
+
+    const pS = isPair && rHi >= 13;
+    const pA = (isPair && rHi === 12) || (rHi === 14 && rLo === 13);
+    const pB = (isPair && rHi === 11) || (rHi === 14 && rLo === 12);
+
+    const goRaise = pS ||
+      (pA && (highest <= 12 || Math.random() < .55)) ||
+      (pB && highest <= 12 && Math.random() < .9);
+
+    if (goRaise && mayRaise(p, ctx)) {
+      let target;
+
+      if (highest <= 2) {
+        target = Math.max(highest + minRaise, Math.round(2 * (2 + b.size * 2)));
+      } else if (highest <= 12) {
+        target = Math.max(highest + minRaise * 2, Math.round(highest * 2.4));
+      } else {
+        target = Math.max(highest + minRaise, Math.round(highest * 2.1));
+      }
+
+      return { type: "raise", to: Math.min(p.bet + p.stack, target), eq };
+    }
+
+    const bigBlind = players.find(q => q.seat === bb);
+    const limpers = players.filter(q =>
+      q.seat !== p.seat &&
+      inHand(q) &&
+      !q.folded &&
+      q.bet >= 2
+    ).length - (bigBlind && inHand(bigBlind) ? 1 : 0);
+
+    if (
+      highest <= 2 &&
+      limpers >= 1 &&
+      mayRaise(p, ctx) &&
+      quality >= .52 - ag * .12 &&
+      Math.random() <
+        clamp(.25 + ag * .65, 0, .9) *
+        (
+          readsLevel >= 2 &&
+          stats.hands >= 25 &&
+          (stats.vpip - stats.pfr) / stats.hands > .25
+            ? 1.3
+            : 1
+        )
+    ) {
+      return {
+        type: "raise",
+        to: Math.min(
+          p.bet + p.stack,
+          Math.max(
+            highest + minRaise,
+            Math.round(2 * (3 + b.size * 2) + limpers * 2)
+          )
+        ),
+        eq
+      };
+    }
+  } else {
+    const tight = .18 + street * .09 +
+      (owed > 0 ? .22 : 0) +
+      (owed > pot * .5 ? .15 : 0) +
+      (opps === 1 ? .08 : 0) +
+      (owed > pot ? .08 : 0);
+
+    eq = equity(
+      p.hole,
+      board,
+      opps,
+      250,
+      difficulty
+        ? clamp(tight + difficulty.tight, -.1, .95)
+        : clamp(tight, 0, .85)
+    );
+    if (difficulty) {
+      eq = clamp(eq + (Math.random() * 2 - 1) * difficulty.noise * .5, 0, 1);
+    }
+  }
+
+  let madeCat = 0;
+
+  if (street > 0 && board.length >= 3) {
+    madeCat = Math.floor(rank([...p.hole, ...board]) / 15 ** 5);
+  }
+
+  const thin = (
+    humanPresent &&
+    readsLevel >= 2 &&
+    reads.faced >= facedMinimum &&
+    reads.call / reads.faced > .55
+      ? .055
+      : 0
+  ) + (
+    humanPresent &&
+    bigCallRate !== null &&
+    bigCallRate > .55
+      ? .05
+      : 0
+  );
+
+  let valueThreshold = street === 0
+    ? .66
+    : clamp(.56 + opps * .025 - thin, .52, .80);
+
+  if (madeCat === 1 && street > 0) valueThreshold += .08;
+  if (b.id === 3) valueThreshold += .12;
+  if (b.id === 11) valueThreshold += .06;
+
+  const monster = eq > .78;
+  const trap = monster &&
+    p.trapStreet < 0 &&
+    street === 1 &&
+    Math.random() < b.trap;
+
+  if (trap) p.trapStreet = street;
+
+  const selective = b.id === 13 ? (!owed && opps <= 2 ? 1 : .22) : 1;
+  const wet = street > 0 ? boardWet(board) : 0;
+  const cbetBoost = p.rfp && street === 1 ? 1.3 - wet * .75 : 1;
+
+  let doBluff = eq < .34 &&
+    Math.random() < exploitProbability(
+      bluff * selective * cbetBoost / (1 + Math.max(0, opps - 1) * .28),
+      difficulty
+    );
+
+  if (street === 3 && (opps > 2 || Math.random() < .45)) doBluff = false;
+  if (madeCat >= 1) doBluff = false;
+
+  let strongMade = false;
+
+  if (street > 0 && board.length >= 3) {
+    const topB = Math.max(...board.map(c => c % 13 + 2));
+    const h1 = p.hole[0] % 13 + 2;
+    const h2 = p.hole[1] % 13 + 2;
+
+    strongMade = (h1 === h2 && h1 > topB) ||
+      (Math.max(h1, h2) === topB && Math.min(h1, h2) >= 13);
+  }
+
+  let value = eq > (strongMade ? valueThreshold - .05 : valueThreshold) &&
+    Math.random() < (
+      street > 0 && !strongMade && madeCat < 2
+        ? exploitProbability(ag, difficulty)
+        : (strongMade ? Math.max(ag, .62) : ag)
+    );
+
+  if (!value && madeCat >= 2 && Math.random() < (madeCat >= 3 ? .85 : .70)) {
+    value = true;
+  }
+
+  if (!value && strongMade && Math.random() < .6) value = true;
+  if (b.id === 11) doBluff = false;
+
+  if (
+    !owed &&
+    street >= 2 &&
+    !strongMade &&
+    madeCat < 2 &&
+    eq >= .34 &&
+    eq <= .58 &&
+    Math.random() < .5
+  ) {
+    return { type: "check", eq };
+  }
+
+  if (
+    mayRaise(p, ctx) &&
+    !trap &&
+    (value || doBluff) &&
+    !((p._srStreet === street ? p._sr || 0 : 0) >= 1 && madeCat < 3)
+  ) {
+    let fraction = b.size * (.8 + Math.random() * .4) * (1 + L.tilt * .18);
+
+    if (street > 0) fraction *= value ? 1 + wet * .25 : 1 - wet * .1;
+    if (street === 3 && doBluff && !value) fraction = Math.max(fraction, .7);
+
+    let target = highest + Math.max(minRaise, Math.round((pot + owed) * fraction));
+
+    if (street === 0) {
+      target = Math.max(highest + minRaise, Math.round(2 * (2 + b.size * 2)));
+    }
+
+    return { type: "raise", to: Math.min(p.bet + p.stack, target), eq };
+  }
+
+  if (!owed) return { type: "check", eq };
+
+  if (street === 0) {
+    const limit = .81 - vp * .66 +
+      (owed > 8 ? .10 : 0) +
+      (early ? .04 : late ? -.03 : 0);
+
+    const skill = (ag + (1 - vp)) / 2;
+
+    if (quality >= limit || (price <= 2 && Math.random() < vp)) {
+      if (
+        highest <= 2 &&
+        mayRaise(p, ctx) &&
+        skill > .45 &&
+        quality >= .5 &&
+        Math.random() < .45
+      ) {
+        return {
+          type: "raise",
+          to: Math.min(
+            p.bet + p.stack,
+            Math.max(highest + minRaise, Math.round(2 * (2 + b.size * 2)))
+          ),
+          eq
+        };
+      }
+
+      return { type: "call", eq };
+    }
+
+    return { type: "fold", eq };
+  }
+
+  if (street > 0 && madeCat < 3 && !trap) {
+    if (
+      (p._srStreet === street ? p._sr || 0 : 0) >= 1 &&
+      madeCat <= 1 &&
+      eq < .68
+    ) {
+      return { type: "fold", eq };
+    }
+
+    const streetCapBB = (madeCat === 2 ? 30 : strongMade ? 26 : 16) *
+      (b.call > .8 ? 1.4 : b.call < .2 ? .7 : 1);
+
+    if (owed > streetCapBB * 2 && eq < .62) return { type: "fold", eq };
+
+    if (street === 3 && madeCat <= 1 && owed > pot * .4 && eq < .58) {
+      return { type: "fold", eq };
+    }
+  }
+
+  let threshold = odds + .075 - b.call * .16 - L.tilt * .065;
+
+  if (b.id === 3) threshold = Math.max(odds + .16, .46);
+  if (b.id === 9) threshold = odds + .015;
+  if (b.id === 11) threshold = Math.max(odds + .06, .28);
+  if (b.id === 4 || b.id === 10) threshold += owed > pot * .45 ? .18 : -.035;
+  if (owed > pot * .8) threshold += .055 * (1 - b.call);
+
+  threshold = clamp(threshold, .035, .92);
+
+  return { type: eq >= threshold || trap ? "call" : "fold", eq };
+}
+
+function createBrain({ roster = ROSTER, reads = {}, difficulty } = {}) {
+  const normalizedDifficulty = difficulty === undefined
+    ? null
+    : Object.freeze({
+      tight: Number.isFinite(difficulty?.tight) ? difficulty.tight : 0,
+      readsLevel: Number.isFinite(difficulty?.readsLevel)
+        ? Math.max(0, Math.floor(difficulty.readsLevel))
+        : 2,
+      exploit: Number.isFinite(difficulty?.exploit)
+        ? Math.max(0, difficulty.exploit)
+        : 1,
+      noise: Number.isFinite(difficulty?.noise)
+        ? Math.max(0, difficulty.noise)
+        : 0
+    });
+
+  // 保留调用方 reads 对象身份，便于调用方持久化；只补齐缺失计数。
+  for (const [key, value] of Object.entries(READ_DEFAULTS)) {
+    if (reads[key] === undefined) reads[key] = value;
+  }
+
+  const bases = new Map(
+    roster.map((entry, index) => [entry.id, normalizeBase(entry, index)])
+  );
+
+  const states = new Map();
+  let humanSeat = 0;
+  let humanSeatConfigured = false;
+  let stats = { hands: 0, vpip: 0, pfr: 0 };
+  let handRaised = false;
+  let handVpip = false;
+  let handPfr = false;
+  let humanFolded = false;
+
+  let roundStreet = -1;
+  let roundHighest = 0;
+  let roundMinRaise = 2;
+  const acted = new Set();
+
+  function stateFor(seat) {
+    if (!states.has(seat)) states.set(seat, newState());
+    return states.get(seat);
+  }
+
+  function syncStats(value) {
+    if (!value) return;
+    stats = {
+      hands: value.hands,
+      vpip: value.vpip,
+      pfr: value.pfr
+    };
+  }
+
+  function enterStreet(street) {
+    if (roundStreet === street) return;
+    roundStreet = street;
+    roundHighest = street === 0 ? 2 : 0;
+    roundMinRaise = 2;
+    acted.clear();
+  }
+
+  function providerFor(seatCtx) {
+    const {
+      seat,
+      rosterId = seatCtx.base?.id,
+      humanSeat: requestedHumanSeat = 0
+    } = seatCtx;
+
+    if (humanSeatConfigured && humanSeat !== requestedHumanSeat) {
+      throw new Error("同一个 brain 的所有 provider 必须使用相同 humanSeat");
+    }
+
+    humanSeat = requestedHumanSeat;
+    humanSeatConfigured = true;
+
+    if (seatCtx.stats) syncStats(seatCtx.stats);
+
+    const base = bases.get(rosterId);
+    if (!base) throw new Error(`未知 rosterId：${String(rosterId)}`);
+
+    const old = states.get(seat);
+
+    if (!old || old.base?.code !== base.code) {
+      const state = newState(base);
+      // 已收到 handStart 后才绑定新机器人时，保留该座位的初始筹码。
+      if (old) state.initial = old.initial;
+      states.set(seat, state);
+    }
+
+    // 捕获当前绑定，防止座位换人后继续误用旧 provider。
+    const boundState = states.get(seat);
+
+    return function decisionProvider(player, view) {
+      if (player.seat !== seat) throw new Error("provider 与玩家 seat 不匹配");
+      if (states.get(seat) !== boundState) {
+        throw new Error("该座位已换人，请使用最新 provider");
+      }
+
+      if (view.stats) syncStats(view.stats);
+      enterStreet(view.street);
+
+      const snapshot = view.players.find(q => q.seat === seat);
+      if (!snapshot) throw new Error("view.players 缺少当前玩家");
+
+      const highest = view.highest ??
+        Math.max(0, ...view.players.map(q => q.bet));
+
+      const minRaise = view.minRaise ?? (view.minRaiseTo - highest);
+
+      if (!(minRaise > 0)) {
+        throw new Error("需要未封顶的 minRaiseTo 或正数 minRaise");
+      }
+
+      const button = view.button ?? view.position?.button;
+      const bb = view.bb ?? view.position?.bb;
+
+      if (!Number.isInteger(button) || !Number.isInteger(bb)) {
+        throw new Error("view 需要 button 和 bb 座位号");
+      }
+
+      roundHighest = highest;
+      roundMinRaise = minRaise;
+
+      // 只复制快照，并将策略私有状态合入局部对象；不修改 player/view。
+      const p = {
+        ...snapshot,
+        hole: view.hole,
+        base: boundState.base,
+        live: boundState.live,
+        rfp: boundState.rfp,
+        trapStreet: boundState.trapStreet,
+        _facedTurn: boundState._facedTurn,
+        _sr: boundState._sr,
+        _srStreet: boundState._srStreet
+      };
+
+      const ctx = {
+        board: view.board,
+        street: view.street,
+        pot: view.pot,
+        highest,
+        minRaise,
+        button,
+        bb,
+        players: view.players,
+        humanSeat,
+        stats,
+        acted,
+        raiseAllowed: view.mayRaise,
+        difficulty: normalizedDifficulty
+      };
+
+      const result = botDecision(p, ctx, reads);
+
+      boundState.trapStreet = p.trapStreet;
+      boundState._facedTurn = p._facedTurn;
+      boundState.pending = {
+        street: view.street,
+        eq: result.eq
+      };
+
+      // 原版没有下注时也返回 raise；保留此类型，amount 原样映射 to。
+      // engine 已约定同时接受 bet 和 raise。
+      if (result.type === "raise") {
+        return { type: "raise", amount: result.to };
+      }
+
+      return { type: result.type };
+    };
+  }
+
+  function observe(evt) {
+    if (evt.type === "handStart") {
+      if (evt.stats) syncStats(evt.stats);
+
+      handRaised = false;
+      handVpip = false;
+      handPfr = false;
+      humanFolded = false;
+
+      roundStreet = -1;
+      enterStreet(0);
+
+      for (const p of evt.players) {
+        const s = stateFor(p.seat);
+        s.initial = p.initial ?? p.stack;
+        s.bluffs = [];
+        s.rfp = false;
+        s.trapStreet = -1;
+        s._facedTurn = false;
+        s.pending = null;
+
+        // 与原版相同，_sr 不必逐手清零：由 _srStreet 区分街次。
+        // 每手仍会从翻牌前开始；真实首个加注会重新建立该街计数。
+        s.live.bluff = 1 + (s.live.bluff - 1) * .94;
+        s.live.tilt *= .79;
+        s.live.confidence *= .80;
+      }
+
+      return;
+    }
+
+    if (evt.type === "action") {
+      const { seat, street, owed } = evt;
+      const action = evt.action;
+      const type = action.type;
+      const isRaise = type === "raise" || type === "bet";
+
+      enterStreet(street);
+
+      const s = stateFor(seat);
+
+      if (seat === humanSeat && owed > 0) {
+        reads.faced++;
+        if (type === "fold") reads.fold++;
+        if (type === "call") reads.call++;
+
+        if (street > 0 && owed >= 24) {
+          reads.bigN++;
+          if (type === "call") reads.bigC++;
+        }
+      }
+
+      if (seat === humanSeat) {
+        if (type === "fold") humanFolded = true;
+
+        if (street === 0 && (isRaise || type === "call")) {
+          handVpip = true;
+        }
+
+        if (street === 0 && isRaise) handPfr = true;
+        if (isRaise) handRaised = true;
+      }
+
+      if (s.base?.kind === "pro" && street === 2 && owed > 0) {
+        s._facedTurn = true;
+      }
+
+      if (isRaise) {
+        const increase = action.amount - roundHighest;
+
+        if (increase >= roundMinRaise) {
+          roundMinRaise = increase;
+          acted.clear();
+        }
+
+        roundHighest = action.amount;
+
+        for (const [otherSeat, other] of states) {
+          if (otherSeat === seat) continue;
+
+          for (const bluff of other.bluffs) {
+            if (!bluff.penalized) {
+              other.live.bluff = clamp(other.live.bluff * .85, .4, 1.8);
+              bluff.penalized = true;
+            }
+          }
+        }
+
+        if (street === 0) s.rfp = true;
+
+        s._sr = s._srStreet === street ? (s._sr || 0) + 1 : 1;
+        s._srStreet = street;
+
+        if (
+          s.base &&
+          s.pending?.street === street &&
+          s.pending.eq < .34
+        ) {
+          s.bluffs.push({ street, penalized: false });
+        }
+      }
+
+      acted.add(seat);
+      s.pending = null;
+      return;
+    }
+
+    if (evt.type === "handEnd") {
+      const winners = new Set(evt.winners);
+      const human = evt.players.find(p => p.seat === humanSeat);
+
+      if (handRaised) {
+        if (human?.folded ?? humanFolded) reads.rfF++;
+        else reads.rfN++;
+      }
+
+      for (const p of evt.players) {
+        const s = states.get(p.seat);
+        if (!s?.base) continue;
+
+        const net = p.stack - s.initial;
+
+        if (net <= -50) {
+          s.live.tilt = clamp(
+            s.live.tilt + Math.min(1.7, -net / 100) * s.base.tiltGain,
+            0,
+            3
+          );
+        }
+
+        if (net >= 50) {
+          s.live.confidence = clamp(
+            s.live.confidence + (s.base.vpip > .4 ? .045 : -.025),
+            -.1,
+            .16
+          );
+        }
+
+        for (const bluff of s.bluffs) {
+          if (!evt.showdown && winners.has(p.seat)) {
+            s.live.bluff = clamp(s.live.bluff + .08, .4, 1.8);
+          } else if (!winners.has(p.seat) && !bluff.penalized) {
+            s.live.bluff = clamp(s.live.bluff * .79, .4, 1.8);
+          }
+        }
+
+        s.pending = null;
+      }
+
+      stats.hands++;
+      if (handVpip) stats.vpip++;
+      if (handPfr) stats.pfr++;
+    }
+  }
+
+  function dynFor(seat) {
+    const s = states.get(seat);
+    return s && s.base ? dyn({ base: s.base, live: s.live }) : "";
+  }
+
+  return { providerFor, observe, dynFor };
+}
+return { createBrain };
+})();
+// ===== 决策胶水：练习版引擎状态 <-> brain provider/observe（只做字段映射与事件投递，无决策逻辑） =====
+let brain=null,brainReadsRef=null,brainDiffKey=null,providers={};
+function currentDifficulty(){return DIFFICULTIES.find(d=>d.key===settings.difficultyKey)||DIFFICULTIES[2]}
+function ensureBrain(){
+if(brain&&brainReadsRef===reads&&brainDiffKey===settings.difficultyKey)return;
+brain=BrainModule.createBrain({roster:ROSTER46,reads,difficulty:currentDifficulty()});
+brainReadsRef=reads;brainDiffKey=settings.difficultyKey;providers={};
+}
+function refreshProviders(){
+for(let i=1;i<9;i++)providers[i]=brain.providerFor({seat:i,base:ROSTER46[players[i].base.id],humanSeat:0,stats:{hands:stats.hands,vpip:stats.vpip,pfr:stats.pfr}});
+}
+function decide(p){
+let view={hole:p.hole,board,street,pot:potTotal(),toCall:Math.max(0,highest-p.bet),highest,minRaise,minRaiseTo:highest+minRaise,mayRaise:mayRaise(p),players:players.map(q=>({seat:q.seat,stack:q.stack,bet:q.bet,total:q.total,folded:q.folded,allin:q.allin,inHand:q.inHand})),button,bb,stats:{hands:stats.hands,vpip:stats.vpip,pfr:stats.pfr}};
+let d=providers[p.seat](p,view);
+return {type:d.type,to:d.amount||0,eq:1};
+}
+function isFishBase(b){return b.kind!=="pro"&&(b.vpip>=.5||b.call>=.8)}
+function drawLineup(slots,seatedBases){
+let diff=currentDifficulty(),proTarget=settings.proCount!=null?settings.proCount:diff.proDefault,fishTarget=Math.min(8-proTarget,Math.round(8*diff.fishRatio));
+let used=new Set(seatedBases.map(b=>b.id)),pool=ENGBASES.filter(b=>!used.has(b.id));
+let pros=shuffle(pool.filter(b=>b.kind==="pro")),fish=shuffle(pool.filter(isFishBase)),reg=shuffle(pool.filter(b=>b.kind!=="pro"&&!isFishBase(b)));
+let proSeats=seatedBases.filter(b=>b.kind==="pro").length,fishSeats=seatedBases.filter(isFishBase).length,out=[];
+while(out.length<slots){
+let nxt=null;
+if(proSeats<proTarget&&pros.length){nxt=pros.pop();proSeats++}
+else if(fishSeats<fishTarget&&fish.length){nxt=fish.pop();fishSeats++}
+else if(reg.length)nxt=reg.pop();
+else if(pros.length){nxt=pros.pop();proSeats++}
+else if(fish.length){nxt=fish.pop();fishSeats++}
+if(!nxt)break;
+out.push(nxt);
+}
+return out;
+}
 let saved;try{saved=JSON.parse(localStorage.getItem(KEY)||"null")}catch{}
 let stats=saved?.stats||{hands:0,vpip:0,pfr:0,wins:0,buyins:1,bought:100};
 let history=Array.isArray(saved?.history)?saved.history.slice(-200):[];
@@ -159,12 +1504,12 @@ let pending=new Set(),acted=new Set(),running=false,reveal=false,instant=false,s
 let startStack=0,humanActions=[],handVpip=false,handPfr=false,handFaced=false,handCalled=false,handRaised=false,seated="",equityCache="",equityValue=null;
 const streetNames=["翻牌前","翻牌","转牌","河牌"];
 const categories=["高牌","一对","两对","三条","顺子","同花","葫芦","四条","同花顺"];
-const EMOJIS=["🦅","🐕","🐷","🗿","🐟","🎭","🕷️","⚖️","🦊","🤖","🐣","👨","🌋","❄️","🎯","♠️"];
+const EMOJIS=["🦅","🐕","🐷","🗿","🐟","🎭","🕷️","⚖️","🦊","🤖","🐣","👨","🌋","❄️","🎯","♠️","🐺","🦁","🐯","🦈","🐙","🦉","🐴","🦄","🐲","🦂","🐌","🦋","🐢","🦎","🐳","🦩","🦜","🐿️","🦔","🌵","🍀","🔥","💎","🎲","🃏","👑","⚡","🌊","🏔️","🌙"];
 function fmtBB(n){let v=n/2;return (Number.isInteger(v)?v:v.toFixed(1))+"BB"}
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function makePlayer(seat,base=null,stack=100){return {seat,base,name:base?"代号"+String(base.id+1).padStart(2,"0"):"你",stack,hole:[],bet:0,total:0,folded:false,inHand:false,allin:false,winner:false,last:"",live:{bluff:1,tilt:0,confidence:0},bluffs:[],won:0}}
-players=[makePlayer(0,null,humanStack),...shuffle([...roster]).slice(0,8).map((b,i)=>makePlayer(i+1,b))];
+function makePlayer(seat,base=null,stack=100){return {seat,base,name:base?base.code:"你",stack,hole:[],bet:0,total:0,folded:false,inHand:false,allin:false,winner:false,last:"",won:0,pace:.85+Math.random()*.4}}
+players=[makePlayer(0,null,humanStack),...drawLineup(8,[]).map((b,i)=>makePlayer(i+1,b))];
 function persist(){try{localStorage.setItem(KEY,JSON.stringify({stats,history,reads,stack:players[0].stack,replays}))}catch{}}
 function cardText(c){return "23456789TJQKA"[c%13]+["♠","♥","♦","♣"][Math.floor(c/13)]}
 function cardsText(a){return a.length?a.map(cardText).join(" "):"—"}
@@ -229,7 +1574,7 @@ function layers(){
 let levels=[...new Set(players.map(p=>p.total).filter(n=>n>0))].sort((a,b)=>a-b),prev=0,out=[];
 for(let l of levels){let contributors=players.filter(p=>p.total>=l);out.push({amount:(l-prev)*contributors.length,contributors,eligible:contributors.filter(p=>!p.folded&&p.inHand)});prev=l}return out
 }
-function dyn(p){if(!p.base)return "";if(p.live.tilt>.55)return "上头中";if(p.live.bluff<.78)return "收紧了";if(p.live.confidence>.1||p.live.bluff>1.25)return "手风正顺";return p.base.style}
+function dyn(p){if(!p.base||!brain)return "";return brain.dynFor(p.seat)}
 function draw(){
 const positions=[[50,68],[13,68],[10,48],[14,26],[35,12],[65,12],[86,26],[90,48],[87,68]];
 $("seats").innerHTML=players.map((p,i)=>`<div class="seat ${actor===i&&running?"actor":""} ${p.folded?"folded":""} ${p.winner?"winner":""}" style="left:${positions[i][0]}%;top:${positions[i][1]}%">
@@ -278,11 +1623,11 @@ function startHand(){
 if(running)return;
 if(players[0].stack<=0){players[0].stack=100;players[0].allin=false;stats.buyins++;stats.bought+=100;persist();log("筹码已用完，自动重新买入 50BB")}
 clearTimeout(timer);
-let used=new Set(players.slice(1).filter(p=>p.stack>0).map(p=>p.base.id));
-for(let i=1;i<9;i++)if(players[i].stack<=0){let b=shuffle(roster.filter(b=>!used.has(b.id)))[0];players[i]=makePlayer(i,b);used.add(b.id);log(b.name+" 入座，买入 50BB")}
+let seatedBases=players.slice(1).filter(p=>p.stack>0).map(p=>p.base);
+let bustedSeats=[];for(let i=1;i<9;i++)if(players[i].stack<=0)bustedSeats.push(i);
+if(bustedSeats.length){let drawn=drawLineup(bustedSeats.length,seatedBases);bustedSeats.forEach((seat,k)=>{players[seat]=makePlayer(seat,drawn[k]);log(drawn[k].code+" 入座，买入 50BB")})}
 for(let p of players){
-p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.bluffs=[];p.initial=p.stack;p.rfp=false;p.trapStreet=-1;p._facedTurn=false;
-p.live.bluff=1+(p.live.bluff-1)*.94;p.live.tilt*=.79;p.live.confidence*=.80;
+p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.initial=p.stack;
 }
 running=true;reveal=false;instant=false;skipRest=false;iteration=0;board=[];deck=shuffle(Array.from({length:52},(_,i)=>i));street=0;highest=2;minRaise=2;actor=-1;
 handNo=stats.hands+1;startStack=players[0].stack;humanActions=[];handVpip=false;handPfr=false;handFaced=false;handCalled=false;handRaised=false;
@@ -293,9 +1638,12 @@ pay(players[sb],1);pay(players[bb],2);
 pending=new Set(players.filter(canAct).map(p=>p.seat));acted=new Set();
 log("—— 第 "+handNo+" 手：庄家 "+players[button].name+"；"+players[sb].name+" 小盲 "+fmtBB(1)+"，"+players[bb].name+" 大盲 "+fmtBB(2)+" ——");
 handRecord={no:handNo,button,sb,bb,players:players.map(p=>({seat:p.seat,id:p.base?p.base.id:-1,name:p.name,hole:[...p.hole],start:p.stack+p.total})),actions:[],board:[],result:"",winners:[],nets:[]};
+ensureBrain();refreshProviders();
+brain.observe({type:"handStart",players:players.map(p=>({seat:p.seat,stack:p.initial,inHand:p.inHand})),stats:{hands:stats.hands,vpip:stats.vpip,pfr:stats.pfr}});
 advance(bb)
 }
-function schedule(){clearTimeout(timer);if(!running||actor<0||actor===0)return;timer=setTimeout(()=>{if(!running||actor<1)return;let p=players[actor];let d=botDecision(p);act(p,d.type,d.to,d.eq)},(instant||skipRest)?0:(players[0].folded||players[0].allin?60:550))}
+function botDelay(p){if(instant||skipRest)return 0;if(players[0].folded||players[0].allin)return 45+Math.random()*50;let owed=Math.max(0,highest-p.bet);return clamp(Math.round(540*(p.pace||1)*(.7+Math.random()*.65)*(owed>0?1.15:1)),230,1150)}
+function schedule(){clearTimeout(timer);if(!running||actor<0||actor===0)return;let p=players[actor];timer=setTimeout(()=>{if(!running||actor<1)return;let d=decide(p);act(p,d.type,d.to,d.eq)},botDelay(p))}
 function advance(from){
 if(!running)return;
 if(contenders().length===1){finish(false);return}
@@ -330,7 +1678,6 @@ if(p.seat===0)snap0={street,board:board.slice(),hole:p.hole.slice(),pot:potTotal
 if(type==="raise"&&!mayRaise(p))type=owed?"call":"check";
 if(type==="check"&&owed)type="call";
 if(type==="call"&&!owed)type="check";
-if(p.seat===0&&owed>0){reads.faced++;handFaced=true;if(type==="fold")reads.fold++;if(type==="call"){reads.call++;handCalled=true}if(street>0&&owed>=24){reads.bigN++;if(type==="call")reads.bigC++}}
 if(type==="fold"){p.folded=true;if(p.seat===0)skipRest=true;p.last="弃牌";log(p.name+" 弃牌")}
 else if(type==="check"){p.last="让牌";log(p.name+" 让牌")}
 else if(type==="call"){let n=pay(p,owed);p.last="跟注 "+fmtBB(n);log(p.name+" 跟注 "+fmtBB(n)+(p.allin?"，全下":""))}
@@ -340,14 +1687,11 @@ pay(p,to-p.bet);highest=p.bet;let increase=highest-oldHigh;wasRaise=true;
 if(increase>=minRaise){minRaise=increase;acted.clear();pending=new Set(players.filter(canAct).map(q=>q.seat))}
 else for(let q of players)if(canAct(q)&&q.bet<highest)pending.add(q.seat);
 p.last=(oldHigh?"加注到 ":"下注 ")+fmtBB(highest);log(p.name+" "+p.last+(p.allin?"，全下":""));
-for(let q of players)if(q!==p)for(let b of q.bluffs)if(!b.penalized){q.live.bluff=clamp(q.live.bluff*.85,.4,1.8);b.penalized=true}
-if(street===0)p.rfp=true;
-if(type==="raise"){p._sr=(p._srStreet===street?(p._sr||0)+1:1);p._srStreet=street}
-if(p.base&&eq<.34)p.bluffs.push({street,penalized:false});
 }
 if(p.seat===0){humanActions.push(streetNames[street]+":"+(type==="raise"?"加注到"+fmtBB(highest):type==="call"?"跟注"+fmtBB(Math.min(owed,p.bet)):type==="fold"?"弃牌":"让牌"));if(street===0&&(type==="raise"||type==="call"))handVpip=true;if(street===0&&wasRaise)handPfr=true;if(type==="raise")handRaised=true}
 if(p.seat===0&&snap0)renderGto(snap0,type);
 if(handRecord)handRecord.actions.push({seat:p.seat,street,type,bet:p.bet,total:p.total,folded:p.folded,allin:p.allin});
+if(brain)brain.observe({type:"action",seat:p.seat,street,action:{type,amount:p.bet},owed});
 acted.add(p.seat);pending.delete(p.seat);actor=-1;advance(p.seat)
 }
 let gtoLog=[];
@@ -403,145 +1747,6 @@ wet+=span*.35;
 if(ranks.length-uniq.length>0)wet+=.15;
 return clamp(wet,0,1);
 }
-function proDecision(p,ctx){
-let b=p.base,opps=contenders().filter(q=>q.seat!==p.seat).length;
-let pot=potTotal(),owed=Math.max(0,highest-p.bet),price=Math.min(owed,p.stack);
-let posIdx=((p.seat-button)%9+9)%9,early=posIdx===3||posIdx===4,late=posIdx===0||posIdx===7||posIdx===8;
-let rHi=Math.max(p.hole[0]%13+2,p.hole[1]%13+2),rLo=Math.min(p.hole[0]%13+2,p.hole[1]%13+2);
-let openTo=Math.max(highest+minRaise,Math.round(2*(2+b.size*2)));
-let betTo=f=>Math.min(p.bet+p.stack,highest+Math.max(minRaise,Math.round((pot+owed)*f)));
-if(street===0){
-let quality=preScore(p.hole),eq=clamp(.12+quality*.7-(opps-1)*.025,.04,.9);
-let openQ=(early?.60:late?.50:.55)+(b.id===14?.04:b.id===15?-.03:0),facing=highest>2;
-if(mayRaise(p)){
-if(quality>=.68)return {type:"raise",to:Math.min(p.bet+p.stack,facing?Math.max(highest+minRaise,Math.round(highest*2.5)):openTo),eq};
-if(!facing&&quality>=openQ)return {type:"raise",to:Math.min(p.bet+p.stack,openTo),eq};
-if(facing&&rHi===14&&quality>=.55&&Math.random()<.3)return {type:"raise",to:Math.min(p.bet+p.stack,Math.max(highest+minRaise,Math.round(highest*2.5))),eq};
-}
-if(!owed)return {type:"check",eq};
-if(quality>=(facing?.58:openQ-.05))return {type:"call",eq};
-if(price<=2&&quality>=.42)return {type:"call",eq};
-return {type:"fold",eq};
-}
-let tight=.26+street*.10+(owed>0?.20:0)+(owed>pot*.5?.10:0);
-if(street===2&&owed>0)p._facedTurn=true;
-let eq=equity(p.hole,board,opps,300,clamp(tight,0,.8));
-let wet=boardWet(board),odds=price/Math.max(1,pot+price);
-let topB=Math.max(...board.map(c=>c%13+2));
-let strongMade=(rHi===rLo&&rHi>topB)||(rHi===topB&&rLo>=13);
-let vt=.57+opps*.02-(strongMade?.04:0);
-if(ctx.humanPresent&&ctx.bigCallRate!==null&&ctx.bigCallRate>.55)vt-=.06;
-let bluffP=b.bluff*(wet>.55?.6:1)*(b.id===14?.8:b.id===15?1.15:1);
-if(ctx.humanPresent&&ctx.bigCallRate!==null&&ctx.bigCallRate>.55)bluffP*=.5;
-if(ctx.humanPresent&&ctx.rfRate!==null&&ctx.rfRate>.45)bluffP*=1.4;
-if(!owed){
-if(eq>.85&&street<3&&p.trapStreet<0&&Math.random()<.25){p.trapStreet=street;return {type:"check",eq};}
-if(eq>vt)return {type:"raise",to:betTo((street===3?.75:.55+wet*.2)*(b.id===14?1.1:1)),eq};
-if(p.rfp&&street===1&&(opps<=2||eq>=.25)&&Math.random()<.62-wet*.3)return {type:"raise",to:betTo(.45),eq};
-if(street===3&&eq<.3&&opps===1&&!p._facedTurn&&Math.random()<bluffP*.6)return {type:"raise",to:betTo(.75),eq};
-if(street<3&&eq>=.2&&eq<.45&&Math.random()<bluffP)return {type:"raise",to:betTo(.5),eq};
-return {type:"check",eq};
-}
-if(eq>.85&&street<3&&p.trapStreet<0&&Math.random()<.2){p.trapStreet=street;return {type:"call",eq};}
-if(eq>vt+.12&&mayRaise(p))return {type:"raise",to:betTo(.7),eq};
-if(eq>=odds+.03)return {type:"call",eq};
-if(eq<.22&&street<3&&mayRaise(p)&&Math.random()<bluffP*.7)return {type:"raise",to:betTo(.65),eq};
-return {type:"fold",eq};
-}
-function botDecision(p){
-let b=p.base,L=p.live,opps=contenders().length-1,owed=Math.max(0,highest-p.bet),price=Math.min(owed,p.stack),pot=potTotal(),odds=price/(pot+price||1);
-let vp=clamp(b.vpip+L.tilt*.13+L.confidence,.07,.96),ag=clamp(b.aggression+L.tilt*.18,.03,.98);
-let humanPresent=players[0].inHand&&!players[0].folded;
-let read=reads.faced>=20?clamp(1+(reads.fold/reads.faced-.45)*1.3-(reads.call/reads.faced-.35)*.8,.5,1.5):1;
-let bluff=b.bluff*L.bluff*(1+L.tilt*.55)*(humanPresent?read:1);
-let rfSample=reads.rfF+reads.rfN,rfRate=rfSample>=8?reads.rfF/rfSample:null;
-let bigCallRate=reads.bigN>=6?reads.bigC/reads.bigN:null;
-if(humanPresent&&rfRate!==null&&rfRate>.45)bluff*=1.35;
-if(humanPresent&&bigCallRate!==null&&bigCallRate>.55)bluff*=.55;
-if(PROS.has(b.id))return proDecision(p,{humanPresent,rfRate,bigCallRate});
-let eq,quality;
-let posIdx=((p.seat-button)%9+9)%9,early=posIdx===3||posIdx===4,late=posIdx===0||posIdx===7||posIdx===8;
-if(street===0){
-quality=preScore(p.hole);eq=clamp(.12+quality*.7-(opps-1)*.025,.04,.9);
-let cutoff=.80-vp*.67+(early?.055:late?-.035:0);
-let costly=owed>6?Math.min(.23,Math.log2(owed/2)*.045):0;
-if(owed&&quality<cutoff+costly&&Math.random()>vp*.12)return {type:"fold",eq};
-let rHi=Math.max(p.hole[0]%13+2,p.hole[1]%13+2),rLo=Math.min(p.hole[0]%13+2,p.hole[1]%13+2),isPair=p.hole[0]%13===p.hole[1]%13;
-let pS=isPair&&rHi>=13,pA=(isPair&&rHi===12)||(rHi===14&&rLo===13),pB=(isPair&&rHi===11)||(rHi===14&&rLo===12);
-let goRaise=pS||(pA&&(highest<=12||Math.random()<.55))||(pB&&highest<=12&&Math.random()<.9);
-if(goRaise&&mayRaise(p)){
-let target;
-if(highest<=2)target=Math.max(highest+minRaise,Math.round(2*(2+b.size*2)));
-else if(highest<=12)target=Math.max(highest+minRaise*2,Math.round(highest*2.4));
-else target=Math.max(highest+minRaise,Math.round(highest*2.1));
-return {type:"raise",to:Math.min(p.bet+p.stack,target),eq};
-}
-let limpers=players.filter(q=>q!==p&&q.inHand&&!q.folded&&q.bet>=2).length-(players[bb]&&players[bb].inHand?1:0);
-if(highest<=2&&limpers>=1&&mayRaise(p)&&quality>=.52-ag*.12&&Math.random()<clamp(.25+ag*.65,0,.9)*(stats.hands>=25&&(stats.vpip-stats.pfr)/stats.hands>.25?1.3:1)){
-return {type:"raise",to:Math.min(p.bet+p.stack,Math.max(highest+minRaise,Math.round(2*(3+b.size*2)+limpers*2))),eq};
-}
-}else{
-let tight=.18+street*.09+(owed>0?.22:0)+(owed>pot*.5?.15:0)+(opps===1?.08:0)+(owed>pot?.08:0);
-eq=equity(p.hole,board,opps,250,clamp(tight,0,.85));
-}
-let madeCat=0;
-if(street>0&&board.length>=3)madeCat=Math.floor(rank([...p.hole,...board])/15**5);
-let thin=(humanPresent&&reads.faced>=20&&reads.call/reads.faced>.55?.055:0)+(humanPresent&&bigCallRate!==null&&bigCallRate>.55?.05:0);
-let valueThreshold=street===0?.66:clamp(.56+opps*.025-thin,.52,.80);
-if(madeCat===1&&street>0)valueThreshold+=.08;
-if(b.id===3)valueThreshold+=.12;
-if(b.id===11)valueThreshold+=.06;
-let monster=eq>.78,trap=monster&&p.trapStreet<0&&street===1&&Math.random()<b.trap;
-if(trap)p.trapStreet=street;
-let selective=b.id===13?(!owed&&opps<=2?1:.22):1;
-let wet=street>0?boardWet(board):0;
-let cbetBoost=p.rfp&&street===1?(1.3-wet*.75):1;
-let doBluff=eq<.34&&Math.random()<bluff*selective*cbetBoost/(1+Math.max(0,opps-1)*.28);
-if(street===3&&(opps>2||Math.random()<.45))doBluff=false;
-if(madeCat>=1)doBluff=false;
-let strongMade=false;
-if(street>0&&board.length>=3){
-let topB=Math.max(...board.map(c=>c%13+2)),h1=p.hole[0]%13+2,h2=p.hole[1]%13+2;
-strongMade=(h1===h2&&h1>topB)||(Math.max(h1,h2)===topB&&Math.min(h1,h2)>=13);
-}
-let value=eq>(strongMade?valueThreshold-.05:valueThreshold)&&Math.random()<(strongMade?Math.max(ag,.62):ag);
-if(!value&&madeCat>=2&&Math.random()<(madeCat>=3?.85:.70))value=true;
-if(!value&&strongMade&&Math.random()<.6)value=true;
-if(b.id===11)doBluff=false;
-if(!owed&&street>=2&&!strongMade&&madeCat<2&&eq>=.34&&eq<=.58&&Math.random()<.5)return {type:"check",eq};
-if(mayRaise(p)&&!trap&&(value||doBluff)&&!((p._srStreet===street?(p._sr||0):0)>=1&&madeCat<3)){
-let fraction=b.size*(.8+Math.random()*.4)*(1+L.tilt*.18);
-if(street>0)fraction*=value?(1+wet*.25):(1-wet*.1);
-if(street===3&&doBluff&&!value)fraction=Math.max(fraction,.7);
-let target=highest+Math.max(minRaise,Math.round((pot+owed)*fraction));
-if(street===0)target=Math.max(highest+minRaise,Math.round(2*(2+b.size*2)));
-return {type:"raise",to:Math.min(p.bet+p.stack,target),eq}
-}
-if(!owed)return {type:"check",eq};
-if(street===0){
-let limit=.81-vp*.66+(owed>8?.10:0)+(early?.04:late?-.03:0);
-let skill=(ag+(1-vp))/2;
-if(quality>=limit||price<=2&&Math.random()<vp){
-if(highest<=2&&mayRaise(p)&&skill>.45&&quality>=.5&&Math.random()<.45)return {type:"raise",to:Math.min(p.bet+p.stack,Math.max(highest+minRaise,Math.round(2*(2+b.size*2)))),eq};
-return {type:"call",eq};
-}
-return {type:"fold",eq};
-}
-if(street>0&&madeCat<3&&!trap){
-if((p._srStreet===street?(p._sr||0):0)>=1&&madeCat<=1&&eq<.68)return {type:"fold",eq};
-let streetCapBB=(madeCat===2?30:(strongMade?26:16))*(b.call>.8?1.4:b.call<.2?.7:1);
-if(owed>streetCapBB*2&&eq<.62)return {type:"fold",eq};
-if(street===3&&madeCat<=1&&owed>pot*.4&&eq<.58)return {type:"fold",eq};
-}
-let threshold=odds+.075-b.call*.16-L.tilt*.065;
-if(b.id===3)threshold=Math.max(odds+.16,.46);
-if(b.id===9)threshold=odds+.015;
-if(b.id===11)threshold=Math.max(odds+.06,.28);
-if(b.id===4||b.id===10){threshold+=owed>pot*.45?.18:-.035}
-if(owed>pot*.8)threshold+=.055*(1-b.call);
-threshold=clamp(threshold,.035,.92);
-return {type:eq>=threshold||trap?"call":"fold",eq}
-}
 function seatOrder(a,b){return ((a.seat-button+8)%9)-((b.seat-button+8)%9)}
 function finish(showdown){
 clearTimeout(timer);actor=-1;reveal=showdown;
@@ -560,17 +1765,8 @@ descriptions.push(label+" "+fmtBB(part.amount)+"："+win.map(p=>p.name).join("�
 }
 for(let s of refunds)log(s);
 for(let s of descriptions)log(s);
-for(let p of players.slice(1)){
-let net=p.stack-p.initial;
-if(net<=-50)p.live.tilt=clamp(p.live.tilt+Math.min(1.7,-net/100)*p.base.tiltGain,0,3);
-if(net>=50)p.live.confidence=clamp(p.live.confidence+(p.base.vpip>.4?.045:-.025),-.1,.16);
-for(let bl of p.bluffs){
-if(!showdown&&winners.has(p))p.live.bluff=clamp(p.live.bluff+.08,.4,1.8);
-else if(!winners.has(p)&&!bl.penalized)p.live.bluff=clamp(p.live.bluff*.79,.4,1.8)
-}
-}
+if(brain)brain.observe({type:"handEnd",showdown,players:players.map(p=>({seat:p.seat,stack:p.stack,folded:p.folded,won:p.won})),winners:[...winners].map(p=>p.seat)});
 let net=players[0].stack-startStack;
-if(handRaised){if(players[0].folded)reads.rfF++;else reads.rfN++}
 stats.hands++;if(handVpip)stats.vpip++;if(handPfr)stats.pfr++;if(players[0].won>0)stats.wins++;
 let pos=positionName(0);
 let result=descriptions.join("；");
@@ -600,9 +1796,10 @@ $("call").onclick=()=>act(players[0],"call");
 $("raise").onclick=()=>act(players[0],"raise",Math.round(Number($("raiseNumber").value)*2));
 $("raiseSlider").oninput=e=>{$("raiseNumber").value=e.target.value};
 $("raiseNumber").onchange=e=>setRaise(Number(e.target.value)*2);
-const SETTINGS_KEY="holdem-settings-v1";
-let settings={preBB:[2.5,3,4,5],postPct:[33,50,66,100]};
-try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s&&Array.isArray(s.preBB)&&s.preBB.length&&Array.isArray(s.postPct)&&s.postPct.length)settings=s}catch(e){}
+// settings 本体在文件前部（难度/名单定义之后）提前加载，这里只做难度与职业人数的界面接线。
+function syncDifficultyInputs(){let d=$("setDifficulty"),pc=$("setPros");if(d)d.value=settings.difficultyKey;if(pc)pc.value=settings.proCount==null?"default":String(settings.proCount);let hint=$("diffHint");if(hint){let df=currentDifficulty();hint.textContent="当前难度："+df.name+"（强度指数 "+df.index+"）· 默认职业 "+df.proDefault+" 人 · 切换下一手起生效"}}
+if($("setDifficulty"))$("setDifficulty").onchange=e=>{settings.difficultyKey=e.target.value;saveSettings();syncDifficultyInputs();log("难度切换为「"+currentDifficulty().name+"」，下一手起生效")};
+if($("setPros"))$("setPros").onchange=e=>{settings.proCount=e.target.value==="default"?null:Math.min(8,Math.max(0,Number(e.target.value)||0));saveSettings();log("本桌职业人数已调整，下一手起生效")};
 function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch(e){}}
 function renderQuick(){
 let qp=$("quickPre");qp.replaceChildren();
@@ -610,7 +1807,7 @@ settings.preBB.forEach(bb=>{let b=document.createElement("button");b.className="
 let qf=$("quickPost");qf.replaceChildren();
 settings.postPct.forEach(pc=>{let b=document.createElement("button");b.className="qbtn";b.textContent=pc+"% 池";b.onclick=()=>quickRaise(highest+Math.round((potTotal()+Math.max(0,highest-players[0].bet))*pc/100));qf.append(b)});
 }
-function fillSettingsInputs(){[1,2,3,4].forEach(i=>{let a=$("setPre"+i),b=$("setPost"+i);if(a)a.value=settings.preBB[i-1]??"";if(b)b.value=settings.postPct[i-1]??""})}
+function fillSettingsInputs(){[1,2,3,4].forEach(i=>{let a=$("setPre"+i),b=$("setPost"+i);if(a)a.value=settings.preBB[i-1]??"";if(b)b.value=settings.postPct[i-1]??""});syncDifficultyInputs()}
 renderQuick();fillSettingsInputs();
 $("saveSettings").onclick=()=>{
 let pre=[1,2,3,4].map(i=>Number($("setPre"+i).value)).filter(v=>v>0&&v<=200);
@@ -625,7 +1822,7 @@ if(!running||!(players[0].folded||players[0].allin))return;
 instant=true;clearTimeout(timer);
 let guard=0;
 while(running&&actor>0&&guard++<600){
-let p=players[actor],d=guard>500?{type:highest>p.bet?"fold":"check",eq:1}:botDecision(p);
+let p=players[actor],d=guard>500?{type:highest>p.bet?"fold":"check",eq:1}:decide(p);
 act(p,d.type,d.to,d.eq);clearTimeout(timer)
 }
 if(running)schedule()
@@ -635,7 +1832,7 @@ $("showEquity").onchange=updateEquity;
 $("reset").onclick=()=>{
 if(!confirm("重置全部筹码、战绩与买入记录？"))return;
 clearTimeout(timer);running=false;stats={hands:0,vpip:0,pfr:0,wins:0,buyins:1,bought:100};history=[];reads={faced:0,fold:0,call:0,bigN:0,bigC:0,rfF:0,rfN:0};replays=[];
-players=[makePlayer(0),...shuffle([...roster]).slice(0,8).map((b,i)=>makePlayer(i+1,b))];
+players=[makePlayer(0),...drawLineup(8,[]).map((b,i)=>makePlayer(i+1,b))];brain=null;providers={};
 button=-1;actor=-1;board=[];street=0;handNo=0;reveal=false;equityCache="";$("log").replaceChildren();$("result").textContent="";$("next").textContent="开始第一手";$("exportText").hidden=true;$("copy").hidden=true;persist();renderHistory();draw()
 };
 function buildExportText(){
@@ -666,7 +1863,7 @@ if(Array.isArray(d.history))history=d.history.slice(-200);
 if(d.reads)reads=Object.assign({faced:0,fold:0,call:0,bigN:0,bigC:0,rfF:0,rfN:0},d.reads);
 if(Array.isArray(d.replays))replays=d.replays.slice(-60);
 players[0].stack=Number.isInteger(d.stats.stack)&&d.stats.stack>=0?d.stats.stack:100;
-handNo=stats.hands;persist();renderHistory();draw();
+handNo=stats.hands;brain=null;providers={};persist();renderHistory();draw();
 log("进度已恢复：共 "+stats.hands+" 手，当前 "+fmtBB(players[0].stack)+"，可回放 "+replays.length+" 手");
 }
 $("importFile").onchange=e=>{let f=e.target.files&&e.target.files[0];if(!f)return;let rd=new FileReader();rd.onload=()=>{try{restoreData(JSON.parse(rd.result))}catch{log("进度文件解析失败")}};rd.readAsText(f);e.target.value=""};
@@ -689,7 +1886,142 @@ else if(k==="enter"&&actor===0&&!$("raise").disabled)act(players[0],"raise",Math
 else if(k==="n"&&!running)$("next").click();
 });
 renderHistory();draw();log("欢迎入座。盲注 0.5/1BB，每次买入 50BB。点击开始发牌。");
+const ReplayView = (() => {
 
+const EMOJIS = ["🦅","🐕","🐷","🗿","🐟","🎭","🕷️","⚖️","🦊","🤖","🐣","👨","🌋","❄️","🎯","♠️","🐺","🦁","🐯","🦈","🐙","🦉","🐴","🦄","🐲","🦂","🐌","🦋","🐢","🦎","🐳","🦩","🦜","🐿️","🦔","🌵","🍀","🔥","💎","🎲","🃏","👑","⚡","🌊","🏔️","🌙"];
+const POS = [[50,68],[13,68],[10,48],[14,26],[35,12],[65,12],[86,26],[90,48],[87,68]];
+const SN = ["翻牌前","翻牌","转牌","河牌"];
+const RANKS = "23456789TJQKA", SUITS = ["♠","♥","♦","♣"];
+function $(id){ return document.getElementById("rp" + id);}
+function fmtBB(n){ const v = n/2; return (Number.isInteger(v)? v: v.toFixed(1)) + "BB";}
+function signedBB(n){ return (n >= 0? "+": "") + fmtBB(n);}
+function cardText(c){ return RANKS[c % 13] + SUITS[Math.floor(c / 13)];}
+function cardHTML(c, back){
+if (back) return '<span class="card back">◆</span>';
+const red = Math.floor(c / 13) === 1 || Math.floor(c / 13) === 2;
+return '<span class="card' + (red? " red": "") + '">' + cardText(c) + '</span>';
+}
+let DATA = null, handIdx = 0, step = 0, playTimer = null;
+function rec(){ return DATA.replays[handIdx];}
+function maxStep(r){ return r.actions.length + 1;}
+function streetOfBoard(len){ return len >= 5? 3: len === 4? 2: len === 3? 1: 0;}
+function stateAt(r, target){
+const ps = r.players.map(p => ({ total: 0, bet: 0, folded: false, stack: p.start}));
+ps[r.sb].total = 1; ps[r.sb].bet = 1; ps[r.bb].total = 2; ps[r.bb].bet = 2;
+let street = 0, last = null;
+for (let s = 1; s <= target; s++){
+if (s === r.actions.length + 1){
+ps.forEach((q, i) => { q.stack = r.players[i].start + r.nets[i]; q.bet = 0;});
+street = streetOfBoard(r.board.length);
+last = { final: true};
+break;
+}
+const a = r.actions[s - 1];
+if (a.street > street){ ps.forEach(q => { q.bet = 0;}); street = a.street;}
+const q = ps[a.seat];
+q.total = a.total; q.bet = a.bet; if (a.folded) q.folded = true;
+q.stack = r.players[a.seat].start - a.total;
+last = a;
+}
+return { ps, street, last};
+}
+function describeAction(r, a, prevTotals){
+const name = r.players[a.seat].name;
+const paid = a.total - (prevTotals[a.seat] || 0);
+let verb = "";
+if (a.type === "fold") verb = "弃牌";
+else if (a.type === "check") verb = "让牌";
+else if (a.type === "call") verb = "跟注 " + fmtBB(paid);
+else if (a.type === "raise") verb = (paid > 0 && a.bet > 0? "加注到 ": "下注 ") + fmtBB(a.bet);
+return SN[a.street] + " · " + name + " " + verb + (a.allin? "（全下）": "");
+}
+function render(){
+const r = rec();
+const st = stateAt(r, step);
+const fin = step === maxStep(r);
+$("seats").innerHTML = r.players.map((p, i) => {
+const q = st.ps[i];
+const reveal = fin &&!q.folded;
+const cards = p.hole.length? p.hole.map(c => cardHTML(c,!(i === 0 || reveal))).join(""): "";
+const actorCls = st.last &&!st.last.final && st.last.seat === i? " actor": "";
+const winCls = fin && r.winners.includes(i)? " winner": "";
+return '<div class="seat' + actorCls + winCls + (q.folded? " folded": "") + '" style="left:' + POS[i][0] + '%;top:' + POS[i][1] + '%">' +
+'<div class="avatar">' + (p.id >= 0? EMOJIS[p.id]: "😎") + (r.button === i? '<span class="dealer">D</span>': "") + '</div>' +
+(p.id >= 0? '<div class="code">' + p.name + '</div>': "") +
+'<div class="cards">' + cards + '</div>' +
+'<div class="pill">' + fmtBB(q.stack) + '</div></div>';
+}).join("");
+const betPos = POS.map(([x, y]) => [x + (50 - x) *.34, y + (44 - y) *.34]);
+$("bets").innerHTML = r.players.map((p, i) => st.ps[i].bet > 0? '<div class="bet-chip" style="left:' + betPos[i][0] + '%;top:' + betPos[i][1] + '%">' + fmtBB(st.ps[i].bet) + '</div>': "").join("");
+const shown = st.street === 0? 0: [0, 3, 4, 5][st.street];
+$("board").innerHTML = r.board.slice(0, shown).map(c => cardHTML(c)).join("");
+$("pot").textContent = "底池 " + fmtBB(st.ps.reduce((n, q) => n + q.total, 0));
+$("street").textContent = "第 " + r.no + " 手 · " + SN[st.street] + (fin? " · 已结算": "");
+$("status").textContent = "你的手牌 " + r.players[0].hole.map(cardText).join(" ") + " · 本手净额 " + signedBB(r.nets[0]);
+let cap = "";
+if (step === 0) cap = "发牌完毕，盲注已下：小盲 0.5BB / 大盲 1BB。点「下一步」或「播放」开始回放。";
+else if (fin) cap = "结算：" + r.result;
+else {
+const prevTotals = {};
+stateAt(r, step - 1).ps.forEach((q, i) => { prevTotals[i] = q.total;});
+cap = describeAction(r, st.last, prevTotals);
+}
+$("caption").textContent = cap;
+$("progress").textContent = "第 " + step + " / " + maxStep(r) + " 步";
+$("prevStep").disabled = step <= 0; $("nextStep").disabled = step >= maxStep(r);
+const notes = r.notes || {};
+let nh = "";
+if (notes.hand) nh += notes.hand;
+const snote = notes.steps && step >= 1 && step <= r.actions.length? notes.steps[String(step - 1)]: null;
+if (snote) nh += (nh? "\n": "") + "" + snote;
+$("note").textContent = nh || "（这一手暂无注释）";
+$("handSel").value = String(handIdx);
+}
+function stopPlay(){ if (playTimer){ clearInterval(playTimer); playTimer = null; $("playBtn").textContent = "▶ 播放";}}
+function setStep(s){ const r = rec(); step = Math.max(0, Math.min(maxStep(r), s)); render();}
+function setHand(i){ stopPlay(); handIdx = Math.max(0, Math.min(DATA.replays.length - 1, i)); step = 0; render();}
+function buildHands(){
+$("handSel").innerHTML = DATA.replays.map((r, i) => '<option value="' + i + '">第 ' + r.no + ' 手 · ' + r.players[0].hole.map(cardText).join(" ") + ' · ' + signedBB(r.nets[0]) + '</option>').join("");
+const s = DATA.stats;
+if (s) $("sessionInfo").textContent = "共 " + DATA.replays.length + " 手可回放 · VPIP " + (s.hands? (100 * s.vpip / s.hands).toFixed(1): "0") + "% · 买入 " + s.buyins + " 次";
+}
+function loadData(d){
+if (!d ||!Array.isArray(d.replays) ||!d.replays.length){ $("loadMsg").textContent = "没读到有效的回放数据。"; return;}
+DATA = d; $("loader").style.display = "none"; $("app").style.display = "";
+buildHands(); setHand(0);
+}
+$("prevStep").onclick = () => { stopPlay(); setStep(step - 1);};
+$("nextStep").onclick = () => { stopPlay(); setStep(step + 1);};
+$("prevHand").onclick = () => setHand(handIdx - 1);
+$("nextHand").onclick = () => setHand(handIdx + 1);
+$("handSel").onchange = e => setHand(Number(e.target.value));
+$("playBtn").onclick = () => {
+if (playTimer){ stopPlay(); return;}
+if (step >= maxStep(rec())) step = 0;
+$("playBtn").textContent = "⏸ 暂停";
+playTimer = setInterval(() => { if (step >= maxStep(rec())){ stopPlay(); return;} step++; render();}, 1000);
+};
+$("fileInput").onchange = e => {
+const f = e.target.files && e.target.files[0]; if (!f) return;
+const rd = new FileReader();
+rd.onload = () => { try { loadData(JSON.parse(rd.result));} catch { $("loadMsg").textContent = "这个文件不是有效的复盘数据。";}};
+rd.readAsText(f);
+};
+$("loadPaste").onclick = () => { try { loadData(JSON.parse($("pasteBox").value));} catch { $("loadMsg").textContent = "粘贴的内容不是有效的 JSON 数据。";}};
+document.onkeydown = e => {
+if (!DATA) return;
+if (e.key === "ArrowRight"){ stopPlay(); setStep(step + 1);}
+if (e.key === "ArrowLeft"){ stopPlay(); setStep(step - 1);}
+};
+
+function loadGameData(){
+const d = window.__getReplayData ? window.__getReplayData() : null;
+if (d && Array.isArray(d.replays) && d.replays.length) loadData(d);
+else { $("loader").style.display = ""; $("app").style.display = "none"; $("loadMsg").textContent = "本桌还没有可回放的牌局，先打几手再来；也可以在下面载入导出文件。"; }
+}
+$("useGame").onclick = () => loadGameData();
+return { loadGameData, stop: stopPlay };
+})();
 </script>
 </body>
 </html>
