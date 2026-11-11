@@ -274,6 +274,31 @@ body.replay-open #replayView{display:flex;flex-direction:column;height:100%;min-
 #replayView .board .card{width:40px;height:56px;font-size:18px}
 @media(max-width:520px){#replayView .board .card{width:34px;height:48px;font-size:15px}}
 </style>
+<style>
+/* layout v8: horizontal-overflow fix. Root cause (measured in real Chromium,
+   pre-fix main was 481.7px wide at BOTH 440 and 390 viewport widths): the base
+   desktop rule `header,main{max-width:1200px;margin:auto}` gives main auto side
+   margins; since v7 made body a flex column, an auto-margined flex item loses
+   stretch sizing and takes fit-content width — so main (and everything inside:
+   table, seats, controls, below-bar) was sized by content max-content instead
+   of the viewport and clipped on the right. Fix = definite width:100% on main
+   (max-width:1200 + auto margins still center it on desktop, unchanged), plus
+   min-width:0 guards on the shell chain, GTO text wraps instead of running
+   off-screen, stats spans and the raise row compressed to fit at 390px.
+   View layer only: no scripts, ids, positions or storage touched. */
+main{width:100%;min-width:0}
+header{width:100%}
+.tabpage{min-width:0}
+#tab-table .stats{min-width:0}
+#tab-table .below-bar{min-width:0;align-items:flex-start}
+#tab-table .below-bar #gtoPanel{flex:1 1 auto;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.5}
+#tab-table .controls{min-width:0}
+@media(max-width:520px){
+#tab-table .stats span{font-size:11px;padding:1px 6px}
+#tab-table .controls input[type=number]{width:72px}
+#tab-table .controls input[type=range]{min-width:70px}
+}
+</style>
 </head>
 <body>
 <header><h1>♠ 九人无限注德州扑克</h1><div class="small">现金桌 · 小盲 1 / 大盲 2 · 买入 100 · 永不升盲</div></header>
