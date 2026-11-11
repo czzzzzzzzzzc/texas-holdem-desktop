@@ -13,7 +13,7 @@
 <title>九人德州 · 桌面版</title>
 <style>
 :root{color-scheme:dark;--gold:#f4c76b;--muted:#94a8b4}
-*{box-sizing:border-box}body{margin:0;background:#0b1119;color:#e5edf3;font:14px system-ui,sans-serif}button,input,textarea{font:inherit}button{border:1px solid #415164;background:#233549;color:white;border-radius:8px;padding:9px 12px;cursor:pointer}button:hover:enabled{background:#34516c}button:disabled{opacity:.35;cursor:default}.gold{background:#745421;color:#ffe8ac}header,main{max-width:1200px;margin:auto;padding:12px}header{display:flex;justify-content:space-between;align-items:center;gap:10px}h1{font-size:20px;margin:0}.stats{display:flex;flex-wrap:wrap;gap:8px;background:#141f2b;padding:12px;border-radius:12px}.stats span{padding:3px 9px;border-right:1px solid #34404b}.table-wrap{position:relative;height:610px;margin:16px 0}.felt{position:absolute;inset:90px 80px 95px;border:12px solid #44382c;border-radius:48%;background:radial-gradient(ellipse,#145e50,#083d35);box-shadow:0 12px 35px #0008,inset 0 0 30px #0007}.seat{position:absolute;width:155px;min-height:105px;padding:8px;background:#142131ed;border:2px solid #3b4c5c;border-radius:12px;text-align:center;transform:translate(-50%,-50%);transition:border-color .15s;z-index:2}.seat.actor{border-color:var(--gold);box-shadow:0 0 16px #e6bc4855}.seat.winner{border-color:#61f2a0;box-shadow:0 0 18px #4ce39b66}.seat.folded{opacity:.55}.seat .name{font-weight:700}.style{font-size:10px;color:#9ab0bf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.state{color:#f0c778;font-size:11px}.stack{color:#b6edca;margin:3px}.bet{font-size:11px;color:#ffdf85;min-height:15px}.dealer{display:inline-block;background:white;color:#192632;border-radius:50%;font-size:10px;padding:2px 5px;margin-left:4px}.cards{display:flex;justify-content:center;gap:4px;min-height:38px}.card{display:inline-flex;align-items:center;justify-content:center;width:29px;height:38px;border-radius:5px;background:#f3f2ed;color:#151b26;font-weight:800;box-shadow:0 2px 3px #0005}.card.red{color:#c63341}.card.back{color:#9bb3d4;background:repeating-linear-gradient(45deg,#1d3b64,#1d3b64 3px,#294b77 3px,#294b77 6px);border:1px solid #7189aa}.center{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:65%;text-align:center;z-index:1}.board .card{width:39px;height:52px;font-size:17px}.pot{font-size:22px;font-weight:bold;color:#ffe0a0;margin:12px 0 5px}.small{font-size:12px;color:var(--muted)}#sidepots{min-height:30px;font-size:11px;color:#b2cfc5}#status{color:#d4eadf;margin:10px 0}.controls,.panel{padding:14px;background:#141f2b;border:1px solid #29394a;border-radius:12px;margin:10px 0}.action-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.raise-row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}input[type=range]{flex:1;min-width:110px}input[type=number]{width:90px;background:#0c1722;border:1px solid #415164;border-radius:6px;padding:7px;color:white}#result{line-height:1.8;color:#ffe1a5}#log{height:190px;overflow:auto;font-size:12px;line-height:1.8;color:#bdcad5}.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.history{max-height:270px;overflow:auto}.history article{padding:10px 0;border-bottom:1px solid #2b3945;line-height:1.7;font-size:12px}textarea{width:100%;height:220px;background:#0a121c;color:#bcd1df;border:1px solid #40556b;padding:10px;margin-top:10px}details>summary{cursor:pointer;color:#c7d6e1}label{cursor:pointer}#equity{color:#a6e7ce}#lineup{line-height:1.8}footer{padding:12px;text-align:center;color:#738697;font-size:11px}
+*{box-sizing:border-box}body{margin:0;background:#0b1119;color:#e5edf3;font:14px system-ui,sans-serif}button,input,textarea{font:inherit}button{border:1px solid #415164;background:#233549;color:white;border-radius:8px;padding:9px 12px;cursor:pointer}button:hover:enabled{background:#34516c}button:disabled{opacity:.35;cursor:default}.gold{background:#745421;color:#ffe8ac}header,main{max-width:1200px;margin:auto;padding:12px}header{display:flex;justify-content:space-between;align-items:center;gap:10px}h1{font-size:20px;margin:0}.stats{display:flex;flex-wrap:wrap;gap:8px;background:#141f2b;padding:12px;border-radius:12px}.stats span{padding:3px 9px;border-right:1px solid #34404b}.table-wrap{position:relative;height:610px;margin:16px 0}.felt{position:absolute;inset:90px 80px 95px;border:12px solid #44382c;border-radius:48%;background:radial-gradient(ellipse,#145e50,#083d35);box-shadow:0 12px 35px #0008,inset 0 0 30px #0007}.seat{position:absolute;width:155px;min-height:105px;padding:8px;background:#142131ed;border:2px solid #3b4c5c;border-radius:12px;text-align:center;transform:translate(-50%,-50%);transition:border-color .15s;z-index:2}.seat.actor{border-color:var(--gold);box-shadow:0 0 16px #e6bc4855}.seat.winner{border-color:#61f2a0;box-shadow:0 0 18px #4ce39b66}.seat.folded{opacity:.55}.seat .name{font-weight:700}.style{font-size:10px;color:#9ab0bf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.state{color:#f0c778;font-size:11px}.stack{color:#b6edca;margin:3px}.bet{font-size:11px;color:#ffdf85;min-height:15px}.dealer{display:inline-block;background:white;color:#192632;border-radius:50%;font-size:10px;padding:2px 5px;margin-left:4px}.cards{display:flex;justify-content:center;gap:4px;min-height:38px}.card{display:inline-flex;align-items:center;justify-content:center;width:29px;height:38px;border-radius:5px;background:#f3f2ed;color:#151b26;font-weight:800;box-shadow:0 2px 3px #0005}.card.red{color:#c63341}.card.back{color:#9bb3d4;background:repeating-linear-gradient(45deg,#1d3b64,#1d3b64 3px,#294b77 3px,#294b77 6px);border:1px solid #7189aa}.center{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:65%;text-align:center;z-index:1}.board .card{width:39px;height:52px;font-size:17px}.pot{font-size:15px;font-weight:bold;color:#ffe0a0;margin:12px 0 5px}.small{font-size:12px;color:var(--muted)}#sidepots{min-height:30px;font-size:11px;color:#b2cfc5}#status{color:#d4eadf;margin:10px 0}.controls,.panel{padding:14px;background:#141f2b;border:1px solid #29394a;border-radius:12px;margin:10px 0}.action-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.raise-row{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}input[type=range]{flex:1;min-width:110px}input[type=number]{width:90px;background:#0c1722;border:1px solid #415164;border-radius:6px;padding:7px;color:white}#result{line-height:1.8;color:#ffe1a5}#log{height:190px;overflow:auto;font-size:12px;line-height:1.8;color:#bdcad5}.columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.history{max-height:270px;overflow:auto}.history article{padding:10px 0;border-bottom:1px solid #2b3945;line-height:1.7;font-size:12px}textarea{width:100%;height:220px;background:#0a121c;color:#bcd1df;border:1px solid #40556b;padding:10px;margin-top:10px}details>summary{cursor:pointer;color:#c7d6e1}label{cursor:pointer}#equity{color:#a6e7ce}#lineup{line-height:1.8}footer{padding:12px;text-align:center;color:#738697;font-size:11px}
 
 /* size tuning v2: bigger cards, compact bot seats */
 .board .card{width:52px;height:70px;font-size:22px}
@@ -24,7 +24,7 @@
 .seat:first-child .cards{min-height:54px}
 .seat:not(:first-child){width:130px;min-height:96px;padding:6px}
 .seat:not(:first-child) .card{width:30px;height:41px}
-@media(max-width:700px){header{flex-wrap:wrap}h1{font-size:17px}.table-wrap{height:590px;margin:5px -9px}.felt{inset:75px 30px 100px;border-width:7px;border-radius:45%}.seat{width:105px;padding:5px 3px;min-height:99px;font-size:11px}.style{font-size:8px}.seat .card{width:23px;height:31px}.seat .cards{min-height:31px}.stack{margin:2px}.center{width:62%;top:48%}.board{gap:3px}.board .card{width:27px;height:39px;font-size:13px}.pot{font-size:17px}.columns{grid-template-columns:1fr}.stats{font-size:11px;gap:3px;padding:8px}.stats span{padding:3px 5px}.seat:not(:first-child){width:94px;min-height:88px;padding:4px 2px}
+@media(max-width:700px){header{flex-wrap:wrap}h1{font-size:17px}.table-wrap{height:590px;margin:5px -9px}.felt{inset:75px 30px 100px;border-width:7px;border-radius:45%}.seat{width:105px;padding:5px 3px;min-height:99px;font-size:11px}.style{font-size:8px}.seat .card{width:23px;height:31px}.seat .cards{min-height:31px}.stack{margin:2px}.center{width:62%;top:48%}.board{gap:3px}.board .card{width:27px;height:39px;font-size:13px}.pot{font-size:12px}.columns{grid-template-columns:1fr}.stats{font-size:11px;gap:3px;padding:8px}.stats span{padding:3px 5px}.seat:not(:first-child){width:94px;min-height:88px;padding:4px 2px}
 .seat:not(:first-child) .card{width:26px;height:35px;font-size:12px}
 .seat:first-child{width:126px}
 .seat:first-child .card{width:34px;height:46px;font-size:15px}
@@ -102,7 +102,7 @@ input[type=number]{min-height:44px}
 .panel{padding:11px}
 details>summary{padding:10px 0}
 #log{height:150px}
-.pot{font-size:19px}
+.pot{font-size:13px}
 }
 
 /* design v6: real felt photo + classic serif cards + chip quick-bets + leather nameplates + ledger panels (CSS only) */
@@ -150,7 +150,7 @@ button:active:enabled{transform:translateY(1px);box-shadow:0 1px 0 #090c10,0 2px
 .history article{border-bottom:1px solid #232a32;font-variant-numeric:tabular-nums}
 #lineup,#reads,#sidepots,#result{font-variant-numeric:tabular-nums}
 .controls{background:#0d1117f5;border:1px solid #272e37;box-shadow:0 8px 26px #000b}
-.pot{font-size:27px;color:#f6e19c;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.pot{font-size:19px;color:#f6e19c;letter-spacing:.05em;font-variant-numeric:tabular-nums}
 .pot::after{content:"";display:block;width:138px;height:1px;margin:8px auto 0;background:linear-gradient(90deg,transparent,#c9a24d80,transparent)}
 #street{letter-spacing:.22em;color:#a9b8ab}
 .bet-chip{border-color:#c9a24d}
@@ -159,7 +159,7 @@ footer{color:#5f6d76}
 @media(max-width:520px){
 .controls .qbtn{width:52px;height:52px;min-height:52px;padding:4px 5px}
 .qbtn{font-size:11px}
-.pot{font-size:21px}
+.pot{font-size:15px}
 .seat .avatar{width:36px;height:36px;font-size:19px}
 .seat:first-child .avatar{width:44px;height:44px;font-size:24px}
 }
@@ -202,7 +202,7 @@ body:has(#tab-table:not([hidden])) footer,body.replay-open footer{display:none}
 #tab-table .table-wrap{flex:1;min-height:0;height:auto;margin:4px 0}
 #tab-table .felt{inset:30px 10px 26px;border-width:10px}
 #tab-table .center{top:42%;width:74%}
-#tab-table .board .card{width:44px;height:60px;font-size:19px}
+#tab-table .board .card{width:52px;height:73px;font-size:23px}
 #tab-table .controls{position:static;transform:none;left:auto;bottom:auto;z-index:auto;flex:none;align-self:center;width:min(100%,680px);margin:2px 0;padding:8px 10px}
 #tab-table .below-bar{flex:none;flex-wrap:nowrap;margin:2px;gap:8px}
 #tab-table .below-bar label{flex:none}
@@ -215,8 +215,8 @@ body:has(#tab-table:not([hidden])) footer,body.replay-open footer{display:none}
 #tab-table .seat .cards{min-height:30px;margin-top:2px}
 #tab-table .seat .card{width:22px;height:30px;font-size:11px}
 #tab-table .seat:first-child{width:116px}
-#tab-table .seat:first-child .cards{min-height:48px}
-#tab-table .seat:first-child .card{width:35px;height:48px;font-size:16px}
+#tab-table .seat:first-child .cards{min-height:57px}
+#tab-table .seat:first-child .card{width:41px;height:57px;font-size:18px}
 #tab-table .seat .pill{font-size:11px;min-width:54px;padding:1px 7px;margin-top:2px}
 #tab-table .seat .bet{font-size:10px;min-height:11px}
 #tab-table .seat .state-mini{font-size:9px;min-height:0}
@@ -230,7 +230,7 @@ body:has(#tab-table:not([hidden])) footer,body.replay-open footer{display:none}
 #tab-table .seat{width:76px}
 #tab-table .seat:first-child{width:106px}
 #tab-table .felt{inset:24px 2px 20px;border-width:8px}
-#tab-table .board .card{width:34px;height:48px;font-size:15px}
+#tab-table .board .card{width:40px;height:56px;font-size:18px}
 #tab-table .center{width:76%}
 header .small{display:none}
 }
@@ -243,8 +243,8 @@ header h1{font-size:15px}
 #tab-table .seat .avatar{width:25px;height:25px;font-size:13px}
 #tab-table .seat .cards{min-height:27px}
 #tab-table .seat .card{width:20px;height:27px;font-size:10px}
-#tab-table .seat:first-child .cards{min-height:42px}
-#tab-table .seat:first-child .card{width:31px;height:42px;font-size:14px}
+#tab-table .seat:first-child .cards{min-height:52px}
+#tab-table .seat:first-child .card{width:37px;height:52px;font-size:17px}
 #tab-table .seat .bet{min-height:0}
 #tab-table .controls{padding:6px 8px}
 #tab-table .controls .qbtn{width:46px;height:46px;min-height:46px}
@@ -319,27 +319,6 @@ header{width:100%}
 #tab-table .stats span{color:#f5f9fc;font-size:13px;font-weight:600;padding:2px 2px;border-right-color:#39485c}
 </style>
 <style>
-/* v11: 牌面质感重做：纸纹 + 双角标 + 标准点位阵列 + 镜像几何花牌 + 精细牌背 */
-.card{position:relative;display:inline-block;overflow:hidden;vertical-align:top;background:linear-gradient(168deg,#ffffff 0%,#f7f5ee 58%,#ebe8da 100%);border:1px solid #c8c2ae;border-radius:.17em;color:#1d2733;box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
-.card::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
-.card.red{color:#b02e3e}
-.card .cnr{position:absolute;top:3%;left:6%;z-index:2;display:flex;flex-direction:column;align-items:center;font-style:normal;line-height:.94}
-.card .cnr b{font-size:.64em;font-weight:700;letter-spacing:-.02em}
-.card .cnr s{font-size:.5em;text-decoration:none;line-height:1.05}
-.card .cnr.dn{top:auto;left:auto;bottom:3%;right:6%;transform:rotate(180deg)}
-.card .fld{position:absolute;inset:4% 16%;z-index:1}
-.card .fld.ct{inset:5.5% 11%}
-.card .fld svg{width:100%;height:100%;display:block}
-.card .pip{position:absolute;z-index:1;transform:translate(-50%,-50%);font-size:.62em;line-height:1}
-.card .pip.iv{transform:translate(-50%,-50%) rotate(180deg)}
-.card .ace{position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);font-size:1.8em;line-height:1}
-.card.back{background:radial-gradient(circle at 50% 46%,#38639c 0%,rgba(56,99,156,0) 58%),repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),linear-gradient(160deg,#2b4e7d,#132740);border:1px solid #7189aa;box-shadow:inset 0 0 0 2px #e9e5d6,inset 0 0 0 3.5px #1e3c63,inset 0 0 0 5px rgba(233,229,214,.45),0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
-.card.back::after{content:"";position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;transform:translate(-50%,-50%) rotate(45deg);border:1.5px solid rgba(219,201,148,.8);background:rgba(219,201,148,.08);box-shadow:inset 0 0 0 3px #1a324f,inset 0 0 0 4.5px rgba(219,201,148,.45);z-index:2}
-#replayView .card{position:relative;display:inline-block;overflow:hidden;vertical-align:top;background:linear-gradient(168deg,#ffffff 0%,#f7f5ee 58%,#ebe8da 100%);border:1px solid #c8c2ae;border-radius:.17em;color:#1d2733;box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
-#replayView .card.red{color:#b02e3e}
-#replayView .card.back{background:radial-gradient(circle at 50% 46%,#38639c 0%,rgba(56,99,156,0) 58%),repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),linear-gradient(160deg,#2b4e7d,#132740);border:1px solid #7189aa;box-shadow:inset 0 0 0 2px #e9e5d6,inset 0 0 0 3.5px #1e3c63,inset 0 0 0 5px rgba(233,229,214,.45),0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
-</style>
-<style>
 /* layout v12: side hidden navigation + safe-area shell (user call, 2026-11-11).
    The bottom tab bar is gone: two fixed rails hug the left/right screen edges,
    translated off-canvas except a ~15px translucent grip strip. The left rail
@@ -376,31 +355,6 @@ body.replay-open .sidenav{display:none!important}
 .hfilters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
 .hfilters .hf{min-height:36px;padding:6px 14px;border-radius:999px}
 .hfilters .hf.on{color:#f4c76b;border-color:#c9a24d;background:#c9a24d14}
-/* fix v13c: card-face positioning layer, re-declared LAST at top priority.
-   On-device (iPhone) the v11 block's .cnr/.fld/.pip positioning was not in
-   effect: pips fell back to in-flow layout — the 3 formed a diagonal
-   staircase, the 6 had staggered rows and a pip sat on the corner index.
-   (In Chromium the v11 rules apply and every pip centre measures within 3%
-   of nominal — see tests/checks_pips_chromium.js — so the deployed/cached
-   copy on the phone must have lost that layer.) This block pins the whole
-   positioning layer again at the end of the cascade, with the replay scope
-   repeated at ID specificity, so no partial override can drop it. */
-.card{position:relative}
-.card .cnr{position:absolute;z-index:2}
-.card .cnr.dn{position:absolute}
-.card .fld{position:absolute;inset:4% 16%;z-index:1}
-.card .fld.ct{inset:5.5% 11%}
-.card .pip{position:absolute;z-index:1;transform:translate(-50%,-50%);line-height:1}
-.card .pip.iv{transform:translate(-50%,-50%) rotate(180deg)}
-.card .ace{position:absolute}
-#replayView .card{position:relative}
-#replayView .card .cnr{position:absolute;z-index:2}
-#replayView .card .cnr.dn{position:absolute}
-#replayView .card .fld{position:absolute;inset:4% 16%;z-index:1}
-#replayView .card .fld.ct{inset:5.5% 11%}
-#replayView .card .pip{position:absolute;z-index:1;transform:translate(-50%,-50%);line-height:1}
-#replayView .card .pip.iv{transform:translate(-50%,-50%) rotate(180deg)}
-#replayView .card .ace{position:absolute}
 /* features v13d: replay takes over the full viewport shell, same pattern as
    the table tab: fixed 100dvh column — info bar / felt flexes / step
    controls pinned to the bottom edge. Before this the view sat in the
@@ -427,6 +381,57 @@ body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;mar
 #rpapp .bar select{flex:1 1 auto;min-width:0}
 #rpapp .bar button{flex:none}
 }
+</style>
+<style>
+/* v14: card remodel — GG-style single corner index + one big centre suit
+   (spec: research_notes/poker-card-modeling-20261111/spec.md). Suits are
+   inline SVG paths, never font glyphs, so iOS cannot emoji-render them;
+   colour comes from currentColor (.card = black suits #23272E, .red =
+   #C0272D — recolouring those two values is the only step to a 4-colour
+   deck later). Metrics are em-based on the tier font-size (≈0.45 x card
+   width): rank cap-height ≈36% of width, corner suit 27%, centre suit 56%
+   (ace 62%), court letter cap ≈44% + suit 40% in a 35%-opacity frame.
+   Card body: 5:7, radius 10% of width, #FAFAF7→#F1EFE9, 1px #C9C4B8,
+   the shared double shadow; no paper texture. */
+.card{position:relative;display:inline-block;overflow:hidden;vertical-align:top;background:linear-gradient(180deg,#FAFAF7,#F1EFE9);border:1px solid #C9C4B8;border-radius:10%/7.2%;color:#23272E;box-shadow:0 1px 2px rgba(0,0,0,.35),0 4px 10px rgba(0,0,0,.18)}
+.card.red{color:#C0272D}
+.card .cnr{position:absolute;left:7%;top:4.5%;z-index:2;display:flex;flex-direction:column;align-items:center;font-style:normal;line-height:1}
+.card .cnr b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.16em;line-height:.8;letter-spacing:-.04em}
+.card .cnr .su{width:.55em;height:auto;display:block;margin-top:-.04em}
+.card .su path,.card .su circle{fill:currentColor}
+.card .big{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);z-index:1;line-height:0}
+.card .big .su{width:1.24em;height:auto;display:block}
+.card .big.ace .su{width:1.38em}
+.card .court{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.card .court::before{content:"";position:absolute;inset:4.2% 3%;border:1px solid currentColor;opacity:.35;border-radius:7%/5%}
+.card .court b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.42em;line-height:1}
+.card .court .su{width:.89em;height:auto;display:block;margin-top:.1em}
+/* back: navy gradient + 45° crosshatch (SVG tile, 1px lines / 5px pitch,
+   white 7%) + cream double frame at 6% inset + gold diamond emblem (30%)
+   with a small spade inside. No text on the back. */
+.card.back{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 7L7 0M0 0l7 7' stroke='rgba(255,255,255,0.07)' stroke-width='1' fill='none'/%3E%3C/svg%3E"),linear-gradient(180deg,#1E2A44,#16203A);border:1px solid #5F7694;color:transparent}
+.card.back::before{content:"";position:absolute;inset:6%;z-index:1;border:1.5px solid rgba(232,226,208,.85);border-radius:8%/5.7%;box-shadow:inset 0 0 0 1.5px #16203A,inset 0 0 0 2.5px rgba(232,226,208,.85)}
+.card.back::after{content:"";position:absolute;left:50%;top:50%;width:30%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:2;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 96 50 50 96 4 50Z' fill='none' stroke='%23B08D3E' stroke-width='5'/%3E%3Cg transform='translate(29 29) scale(0.42)'%3E%3Cpath d='M50 6C40 24 12 42 12 62a17 17 0 0 0 28 11c4-1 7-4 8-8 0 10-3 20-8 27h20c-5-7-8-17-8-27 1 4 4 7 8 8a17 17 0 0 0 28-11C88 42 60 24 50 6Z' fill='%23B08D3E'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+/* small seat backs: single frame line, emblem 26%, single shadow */
+.seat .card.back{box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.seat .card.back::before{box-shadow:none}
+.seat .card.back::after{width:26%}
+/* revealed bot cards (showdown / all-in runout) take the board tier */
+#tab-table .seat .cards.rev{min-height:73px}
+#tab-table .seat .cards.rev .card{width:52px;height:73px;font-size:23px;flex:none}
+@media(max-width:520px){
+#tab-table .seat .cards.rev{min-height:56px}
+#tab-table .seat .cards.rev .card{width:40px;height:56px;font-size:18px;flex:none}
+}
+/* replay scope: same design re-declared at ID specificity (replay sizes
+   stay exactly as the existing replay rules set them) */
+#replayView .card{background:linear-gradient(180deg,#FAFAF7,#F1EFE9);border:1px solid #C9C4B8;border-radius:10%/7.2%;color:#23272E;box-shadow:0 1px 2px rgba(0,0,0,.35),0 4px 10px rgba(0,0,0,.18)}
+#replayView .card.red{color:#C0272D}
+#replayView .card.back{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 7L7 0M0 0l7 7' stroke='rgba(255,255,255,0.07)' stroke-width='1' fill='none'/%3E%3C/svg%3E"),linear-gradient(180deg,#1E2A44,#16203A);border:1px solid #5F7694;color:transparent}
+/* replay seat faces are small (22px): centre suit 50%, court frame dropped;
+   the corner index already lands at ≈40% via that tier's font-size ratio */
+#replayView .seat .card .big .su{width:1em}
+#replayView .seat .card .court::before{display:none}
 </style>
 </head>
 <body>
@@ -1863,22 +1868,22 @@ players=[makePlayer(0,null,humanStack),...drawLineup(8,[]).map((b,i)=>makePlayer
 function persist(){try{localStorage.setItem(KEY,JSON.stringify({stats,history,stack:players[0].stack,replays}))}catch{}}
 function cardText(c){return "23456789TJQKA"[c%13]+["♠","♥","♦","♣"][Math.floor(c/13)]}
 function cardsText(a){return a.length?a.map(cardText).join(" "):"—"}
-const PIPS={2:[[50,8],[50,92,1]],3:[[50,8],[50,50],[50,92,1]],4:[[12,8],[88,8],[12,92,1],[88,92,1]],5:[[12,8],[88,8],[50,50],[12,92,1],[88,92,1]],6:[[12,8],[88,8],[12,50],[88,50],[12,92,1],[88,92,1]],7:[[12,8],[88,8],[50,29],[12,50],[88,50],[12,92,1],[88,92,1]],8:[[12,8],[88,8],[50,29],[12,50],[88,50],[50,71,1],[12,92,1],[88,92,1]],9:[[12,8],[88,8],[12,36],[88,36],[50,50],[12,64,1],[88,64,1],[12,92,1],[88,92,1]],10:[[12,8],[88,8],[50,22],[12,36],[88,36],[12,64,1],[88,64,1],[50,78,1],[12,92,1],[88,92,1]]};
-function courtSVG(rk,su,red){
-const G="#b08d3e",K="#2a3441",BG=red?"#f6e9e2":"#e9edf3";
-const T=rk==="K"?'<path d="M21.5 21.5 24 10.5 28.5 17.2 31 9 33.5 17.2 38 10.5 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':rk==="Q"?'<circle cx="24.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="31" cy="8.4" r="2.3" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="37.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><path d="M21.5 21.5 24.5 12.8 31 18.2 37.5 12.8 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':'<path d="M21.5 22.5C23 12.5 39 12.5 40.5 22.5L40.5 25 21.5 25Z" fill="currentColor" stroke="'+K+'" stroke-width=".9"/><path d="M38.5 14C40.5 8.8 44 6.8 47 7.2 45.8 11.4 42.8 14.4 39.8 15.6Z" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/>';
-const F='<path d="M18 50 L23.5 37.8 Q31 34.4 38.5 37.8 L44 50Z" fill="currentColor"/><path d="M27.5 36.8 L31 41.5 34.5 36.8 31 39Z" fill="#f7f2df" opacity=".9"/><circle cx="31" cy="28.5" r="6.4" fill="#f2ddba" stroke="'+K+'" stroke-width="1"/><circle cx="31" cy="44.6" r="3.3" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/><text x="31" y="47.3" font-size="7.6" text-anchor="middle" fill="'+K+'" font-family="Georgia,serif">'+su+'</text>'+T;
-return '<svg viewBox="0 0 62 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="2.5" y="2.5" width="57" height="95" rx="5" fill="'+BG+'" stroke="'+G+'" stroke-width="1.6"/><rect x="6" y="6" width="50" height="88" rx="3" fill="none" stroke="'+G+'" stroke-width=".7" opacity=".6"/><g>'+F+'</g><g transform="rotate(180 31 50)">'+F+'</g><path d="M31 45.5 35.5 50 31 54.5 26.5 50Z" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/></svg>';
-}
+const SUIT_INNER=[
+'<path d="M50 6C40 24 12 42 12 62a17 17 0 0 0 28 11c4-1 7-4 8-8 0 10-3 20-8 27h20c-5-7-8-17-8-27 1 4 4 7 8 8a17 17 0 0 0 28-11C88 42 60 24 50 6Z"/>',
+'<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
+'<path d="M50 4 86 50 50 96 14 50Z"/>',
+'<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
+function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
+function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'</span>'}
 function cardHTML(c,back=false){
 if(back)return '<span class="card back"></span>';
-const s=Math.floor(c/13),r=c%13,su="♠♥♦♣"[s],red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
-const cnr='<i class="cnr"><b>'+rk+'</b><s>'+su+'</s></i><i class="cnr dn"><b>'+rk+'</b><s>'+su+'</s></i>';
-let fld;
-if(r===12)fld='<span class="fld"><span class="ace">'+su+'</span></span>';
-else if(r>=9)fld='<span class="fld ct">'+courtSVG(rk,su,red)+'</span>';
-else fld='<span class="fld">'+PIPS[r+2].map(function(p){return '<span class="pip'+(p[2]?" iv":"")+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+su+'</span>';}).join("")+'</span>';
-return '<span class="card'+(red?" red":"")+'">'+cnr+fld+'</span>';
+const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+const cnr='<i class="cnr"><b>'+rk+'</b>'+suitSVG(s)+'</i>';
+let mid;
+if(r===12)mid='<span class="big ace">'+suitSVG(s)+'</span>';
+else if(r>=9)mid=courtHTML(rk,s);
+else mid='<span class="big">'+suitSVG(s)+'</span>';
+return '<span class="card'+(red?" red":"")+'">'+cnr+mid+'</span>';
 }
 function log(s){let d=document.createElement("div");d.textContent=s;$("log").append(d);if($("log").children.length>400)$("log").firstChild.remove();$("log").scrollTop=$("log").scrollHeight}
 function rank(cards){
@@ -1945,7 +1950,7 @@ function draw(){
 const positions=[[50,86],[18,77],[12,48],[19,22],[38,11],[62,11],[81,22],[88,48],[82,77]];
 $("seats").innerHTML=players.map((p,i)=>`<div class="seat ${actor===i&&running?"actor":""} ${p.folded?"folded":""} ${p.winner?"winner":""}" style="left:${positions[i][0]}%;top:${positions[i][1]}%">
 ${p.base?`<div class="avatar">${EMOJIS[p.base.id]}${button===i?'<span class="dealer">D</span>':""}</div><div class="code">${p.name}</div>`:""}
-<div class="cards">${p.hole.map(c=>cardHTML(c,i!==0&&!reveal)).join("")}</div>
+<div class="cards${i!==0&&reveal?" rev":""}">${p.hole.map(c=>cardHTML(c,i!==0&&!reveal)).join("")}</div>
 <div class="pill">${p.base?fmtBB(p.stack):`<span class="you">你</span> ${fmtBB(p.stack)}${button===i?'<span class="dealer-inline">D</span>':""}`}</div>
 <div class="bet">${p.folded?"已弃牌":p.allin?"全下":p.last||""}</div>
 <div class="state-mini">${p.base&&dyn(p)!==p.base.style?dyn(p):""}</div></div>`).join("");
@@ -2294,22 +2299,22 @@ function $(id){ return document.getElementById("rp" + id);}
 function fmtBB(n){ const v = n/2; return (Number.isInteger(v)? v: v.toFixed(1)) + "BB";}
 function signedBB(n){ return (n >= 0? "+": "") + fmtBB(n);}
 function cardText(c){ return RANKS[c % 13] + SUITS[Math.floor(c / 13)];}
-const PIPS={2:[[50,8],[50,92,1]],3:[[50,8],[50,50],[50,92,1]],4:[[12,8],[88,8],[12,92,1],[88,92,1]],5:[[12,8],[88,8],[50,50],[12,92,1],[88,92,1]],6:[[12,8],[88,8],[12,50],[88,50],[12,92,1],[88,92,1]],7:[[12,8],[88,8],[50,29],[12,50],[88,50],[12,92,1],[88,92,1]],8:[[12,8],[88,8],[50,29],[12,50],[88,50],[50,71,1],[12,92,1],[88,92,1]],9:[[12,8],[88,8],[12,36],[88,36],[50,50],[12,64,1],[88,64,1],[12,92,1],[88,92,1]],10:[[12,8],[88,8],[50,22],[12,36],[88,36],[12,64,1],[88,64,1],[50,78,1],[12,92,1],[88,92,1]]};
-function courtSVG(rk,su,red){
-const G="#b08d3e",K="#2a3441",BG=red?"#f6e9e2":"#e9edf3";
-const T=rk==="K"?'<path d="M21.5 21.5 24 10.5 28.5 17.2 31 9 33.5 17.2 38 10.5 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':rk==="Q"?'<circle cx="24.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="31" cy="8.4" r="2.3" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="37.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><path d="M21.5 21.5 24.5 12.8 31 18.2 37.5 12.8 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':'<path d="M21.5 22.5C23 12.5 39 12.5 40.5 22.5L40.5 25 21.5 25Z" fill="currentColor" stroke="'+K+'" stroke-width=".9"/><path d="M38.5 14C40.5 8.8 44 6.8 47 7.2 45.8 11.4 42.8 14.4 39.8 15.6Z" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/>';
-const F='<path d="M18 50 L23.5 37.8 Q31 34.4 38.5 37.8 L44 50Z" fill="currentColor"/><path d="M27.5 36.8 L31 41.5 34.5 36.8 31 39Z" fill="#f7f2df" opacity=".9"/><circle cx="31" cy="28.5" r="6.4" fill="#f2ddba" stroke="'+K+'" stroke-width="1"/><circle cx="31" cy="44.6" r="3.3" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/><text x="31" y="47.3" font-size="7.6" text-anchor="middle" fill="'+K+'" font-family="Georgia,serif">'+su+'</text>'+T;
-return '<svg viewBox="0 0 62 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="2.5" y="2.5" width="57" height="95" rx="5" fill="'+BG+'" stroke="'+G+'" stroke-width="1.6"/><rect x="6" y="6" width="50" height="88" rx="3" fill="none" stroke="'+G+'" stroke-width=".7" opacity=".6"/><g>'+F+'</g><g transform="rotate(180 31 50)">'+F+'</g><path d="M31 45.5 35.5 50 31 54.5 26.5 50Z" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/></svg>';
-}
+const SUIT_INNER=[
+'<path d="M50 6C40 24 12 42 12 62a17 17 0 0 0 28 11c4-1 7-4 8-8 0 10-3 20-8 27h20c-5-7-8-17-8-27 1 4 4 7 8 8a17 17 0 0 0 28-11C88 42 60 24 50 6Z"/>',
+'<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
+'<path d="M50 4 86 50 50 96 14 50Z"/>',
+'<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
+function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
+function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'</span>'}
 function cardHTML(c,back){
 if(back)return '<span class="card back"></span>';
-const s=Math.floor(c/13),r=c%13,su="♠♥♦♣"[s],red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
-const cnr='<i class="cnr"><b>'+rk+'</b><s>'+su+'</s></i><i class="cnr dn"><b>'+rk+'</b><s>'+su+'</s></i>';
-let fld;
-if(r===12)fld='<span class="fld"><span class="ace">'+su+'</span></span>';
-else if(r>=9)fld='<span class="fld ct">'+courtSVG(rk,su,red)+'</span>';
-else fld='<span class="fld">'+PIPS[r+2].map(function(p){return '<span class="pip'+(p[2]?" iv":"")+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+su+'</span>';}).join("")+'</span>';
-return '<span class="card'+(red?" red":"")+'">'+cnr+fld+'</span>';
+const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+const cnr='<i class="cnr"><b>'+rk+'</b>'+suitSVG(s)+'</i>';
+let mid;
+if(r===12)mid='<span class="big ace">'+suitSVG(s)+'</span>';
+else if(r>=9)mid=courtHTML(rk,s);
+else mid='<span class="big">'+suitSVG(s)+'</span>';
+return '<span class="card'+(red?" red":"")+'">'+cnr+mid+'</span>';
 }
 let DATA = null, handIdx = 0, step = 0, playTimer = null;
 function rec(){ return DATA.replays[handIdx];}
