@@ -369,6 +369,65 @@ body{padding-top:calc(env(safe-area-inset-top, 0px) + 6px)}
 .sidenav button[data-tab].on{color:#f4c76b;border-color:#c9a24d;background:#c9a24d14}
 body.replay-open .sidenav{display:none!important}
 </style>
+<style>
+/* features v13a: pot-ratio quick bets (steel tint, distinct from pre green / post gold) */
+#quickPot .qbtn{background:radial-gradient(circle at 35% 28%,#4a6076,#26374a 78%);border-color:#7e97ad}
+/* features v13b: history filter chips */
+.hfilters{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}
+.hfilters .hf{min-height:36px;padding:6px 14px;border-radius:999px}
+.hfilters .hf.on{color:#f4c76b;border-color:#c9a24d;background:#c9a24d14}
+/* fix v13c: card-face positioning layer, re-declared LAST at top priority.
+   On-device (iPhone) the v11 block's .cnr/.fld/.pip positioning was not in
+   effect: pips fell back to in-flow layout — the 3 formed a diagonal
+   staircase, the 6 had staggered rows and a pip sat on the corner index.
+   (In Chromium the v11 rules apply and every pip centre measures within 3%
+   of nominal — see tests/checks_pips_chromium.js — so the deployed/cached
+   copy on the phone must have lost that layer.) This block pins the whole
+   positioning layer again at the end of the cascade, with the replay scope
+   repeated at ID specificity, so no partial override can drop it. */
+.card{position:relative}
+.card .cnr{position:absolute;z-index:2}
+.card .cnr.dn{position:absolute}
+.card .fld{position:absolute;inset:4% 16%;z-index:1}
+.card .fld.ct{inset:5.5% 11%}
+.card .pip{position:absolute;z-index:1;transform:translate(-50%,-50%);line-height:1}
+.card .pip.iv{transform:translate(-50%,-50%) rotate(180deg)}
+.card .ace{position:absolute}
+#replayView .card{position:relative}
+#replayView .card .cnr{position:absolute;z-index:2}
+#replayView .card .cnr.dn{position:absolute}
+#replayView .card .fld{position:absolute;inset:4% 16%;z-index:1}
+#replayView .card .fld.ct{inset:5.5% 11%}
+#replayView .card .pip{position:absolute;z-index:1;transform:translate(-50%,-50%);line-height:1}
+#replayView .card .pip.iv{transform:translate(-50%,-50%) rotate(180deg)}
+#replayView .card .ace{position:absolute}
+/* features v13d: replay takes over the full viewport shell, same pattern as
+   the table tab: fixed 100dvh column — info bar / felt flexes / step
+   controls pinned to the bottom edge. Before this the view sat in the
+   scrolling main flow below the tab pages at height:100% of main, so on
+   short screens the step bar and close button could slide out of reach. */
+body.replay-open{overflow:hidden}
+body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;margin:0;border:none;border-radius:0;background:#0b1119;display:flex;flex-direction:column;padding:calc(8px + env(safe-area-inset-top,0px)) 10px calc(8px + env(safe-area-inset-bottom,0px));overflow:hidden}
+#replayView .bar{flex:none}
+#rploader{flex:none;max-height:46%;overflow-y:auto}
+#rpapp{flex:1;min-height:0}
+#replayView #rpapp>.panel{flex:none}
+#replayView .table-wrap{flex:1;min-height:0;height:auto}
+#replayView #rpnotePanel{flex:none;max-height:20%;overflow-y:auto}
+@media(max-height:740px){
+#replayView #rpnotePanel{max-height:14%}
+#replayView .seat .cards{min-height:26px;margin-top:1px}
+#replayView .seat:first-child .cards{min-height:38px}
+#replayView .seat:first-child .card{width:29px;height:38px;font-size:13px}
+#replayView .board .card{width:29px;height:40px;font-size:14px}
+#replayView .pot{font-size:17px;margin:4px 0 2px}
+}
+@media(max-width:520px){
+#rpapp .bar{flex-wrap:nowrap}
+#rpapp .bar select{flex:1 1 auto;min-width:0}
+#rpapp .bar button{flex:none}
+}
+</style>
 </head>
 <body>
 <header><h1>♠ 九人无限注德州扑克</h1></header>
@@ -382,9 +441,9 @@ body.replay-open .sidenav{display:none!important}
 <div class="action-row">
 <button id="fold">弃牌</button><button id="check">让牌</button><button id="call">跟注</button>
 <button id="skip" hidden>⏩ 跳过到本手结束</button>
-<button id="next" class="gold">开始第一手</button><button id="rebuy" hidden>重新买入 50BB</button>
+<button id="next" class="gold">开始第一手</button><button id="rebuy" hidden>重新买入 50BB</button><button id="changeTable">换桌</button>
 </div>
-<div class="raise-row" id="quickPre"></div><div class="raise-row" id="quickPost" style="display:none"></div><div class="raise-row" id="raiseControls"><input type="range" id="raiseSlider" step="0.5"><input type="number" id="raiseNumber" step="0.5"><span class="small">BB</span><button id="allin">全下</button><button id="raise" class="gold">确认加注</button></div>
+<div class="raise-row" id="quickPre"></div><div class="raise-row" id="quickPost" style="display:none"></div><div class="raise-row" id="quickPot" style="display:none"></div><div class="raise-row" id="raiseControls"><input type="range" id="raiseSlider" step="0.5"><input type="number" id="raiseNumber" step="0.5"><span class="small">BB</span><button id="allin">全下</button><button id="raise" class="gold">确认加注</button></div>
 </div>
 <div class="below-bar"><label class="small"><input type="checkbox" id="showEquity"> 显示我的胜率</label> <span class="small" id="gtoPanel">GTO 参考：行动后标注对错</span></div>
 <div id="result"></div>
@@ -396,7 +455,7 @@ body.replay-open .sidenav{display:none!important}
 </div>
 </div>
 <div class="tabpage" id="tab-review" hidden>
-<section class="panel"><details><summary>复盘记录（最近 200 手）</summary><div id="history" class="history"></div></details><p><button id="openReplay">⏪ 牌局回放</button> <button id="share" class="gold">分享数据</button> <button id="export">导出复盘数据</button> <button id="copy" hidden>复制数据</button></p><p class="small">恢复进度：<input type="file" id="importFile" accept=".json,application/json"> <button id="importText">从文本框恢复</button></p><textarea id="exportText" hidden readonly></textarea><span id="copyStatus" class="small"></span></section>
+<section class="panel"><details><summary>复盘记录（最近 200 手）</summary><div class="hfilters"><button id="hfAll" class="hf on">全部</button><button id="hfWin" class="hf">大赢</button><button id="hfLoss" class="hf">大输</button><button id="hfReview" class="hf">建议复查</button></div><div id="history" class="history"></div></details><p><button id="openReplay">⏪ 牌局回放</button> <button id="share" class="gold">分享数据</button> <button id="export">导出复盘数据</button> <button id="copy" hidden>复制数据</button></p><p class="small">恢复进度：<input type="file" id="importFile" accept=".json,application/json"> <button id="importText">从文本框恢复</button></p><textarea id="exportText" hidden readonly></textarea><span id="copyStatus" class="small"></span></section>
 </div>
 <div class="tabpage" id="tab-settings" hidden>
 <section class="panel"><details open><summary>对局设置（难度与职业人数）</summary>
@@ -407,6 +466,7 @@ body.replay-open .sidenav{display:none!important}
 <option value="default">按难度默认</option><option value="0">0 人</option><option value="1">1 人</option><option value="2">2 人</option><option value="3">3 人</option><option value="4">4 人</option><option value="5">5 人</option><option value="6">6 人</option><option value="7">7 人</option><option value="8">8 人</option>
 </select></label></p>
 <p class="small" id="diffHint"></p>
+<p><label class="small"><input type="checkbox" id="setAllinConfirm"> 全下前确认</label></p>
 </details></section>
 <section class="panel"><details><summary>快捷下注设置</summary>
 <p class="small">翻前（加注到）：</p>
@@ -516,8 +576,8 @@ const ROSTER46=[
 const DIFFICULTIES=[{"key": "novice", "name": "新手", "index": 40, "noise": 0.24, "tight": -0.06, "fishRatio": 0.6, "proDefault": 0, "proRange": [0, 0], "readsLevel": 0, "exploit": 0.4}, {"key": "starter", "name": "入门", "index": 51, "noise": 0.16, "tight": -0.02, "fishRatio": 0.45, "proDefault": 1, "proRange": [0, 1], "readsLevel": 1, "exploit": 0.6}, {"key": "intermediate", "name": "进阶", "index": 64, "noise": 0.1, "tight": 0.03, "fishRatio": 0.3, "proDefault": 2, "proRange": [1, 2], "readsLevel": 2, "exploit": 0.8}, {"key": "expert", "name": "高手", "index": 81, "noise": 0.06, "tight": 0.08, "fishRatio": 0.15, "proDefault": 3, "proRange": [2, 3], "readsLevel": 3, "exploit": 1}, {"key": "pro", "name": "职业", "index": 100, "noise": 0.03, "tight": 0.14, "fishRatio": 0, "proDefault": 4, "proRange": [3, 5], "readsLevel": 4, "exploit": 1.15}];
 const ENGBASES=ROSTER46.map((e,i)=>Object.freeze({id:i,code:e.id,kind:e.kind,style:e.archetype,vpip:e.params[0],aggression:e.params[1],bluff:e.params[2],call:e.params[3],trap:e.params[4],size:e.params[5],tiltGain:e.params[6]}));
 const SETTINGS_KEY="holdem-settings-v1";
-let settings={preBB:[2.5,3,4,5],postPct:[33,50,66,100],difficultyKey:"intermediate",proCount:null};
-try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s){if(Array.isArray(s.preBB)&&s.preBB.length)settings.preBB=s.preBB;if(Array.isArray(s.postPct)&&s.postPct.length)settings.postPct=s.postPct;if(DIFFICULTIES.some(d=>d.key===s.difficultyKey))settings.difficultyKey=s.difficultyKey;if(Number.isInteger(s.proCount)&&s.proCount>=0&&s.proCount<=8)settings.proCount=s.proCount}}catch(e){}
+let settings={preBB:[2.5,3,4,5],postPct:[33,50,66,100],difficultyKey:"intermediate",proCount:null,allinConfirm:false};
+try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s){if(Array.isArray(s.preBB)&&s.preBB.length)settings.preBB=s.preBB;if(Array.isArray(s.postPct)&&s.postPct.length)settings.postPct=s.postPct;if(DIFFICULTIES.some(d=>d.key===s.difficultyKey))settings.difficultyKey=s.difficultyKey;if(Number.isInteger(s.proCount)&&s.proCount>=0&&s.proCount<=8)settings.proCount=s.proCount;if(s.allinConfirm===true)settings.allinConfirm=true}}catch(e){}
 
 const BrainModule = (() => {
 "use strict";
@@ -1765,11 +1825,11 @@ let d=providers[p.seat](p,view);
 return {type:d.type,to:d.amount||0,eq:1};
 }
 function isFishBase(b){return b.kind!=="pro"&&(b.vpip>=.5||b.call>=.8)}
-function drawLineup(slots,seatedBases){
+function drawLineup(slots,seatedBases,excludeOnly){
 let diff=currentDifficulty(),proTarget=settings.proCount!=null?settings.proCount:diff.proDefault,fishTarget=Math.min(8-proTarget,Math.round(8*diff.fishRatio));
 let used=new Set(seatedBases.map(b=>b.id)),pool=ENGBASES.filter(b=>!used.has(b.id));
 let pros=shuffle(pool.filter(b=>b.kind==="pro")),fish=shuffle(pool.filter(isFishBase)),reg=shuffle(pool.filter(b=>b.kind!=="pro"&&!isFishBase(b)));
-let proSeats=seatedBases.filter(b=>b.kind==="pro").length,fishSeats=seatedBases.filter(isFishBase).length,out=[];
+let proSeats=excludeOnly?0:seatedBases.filter(b=>b.kind==="pro").length,fishSeats=excludeOnly?0:seatedBases.filter(isFishBase).length,out=[];
 while(out.length<slots){
 let nxt=null;
 if(proSeats<proTarget&&pros.length){nxt=pros.pop();proSeats++}
@@ -1791,7 +1851,7 @@ let replays=Array.isArray(saved?.replays)?saved.replays:[];
 let handRecord=null;
 let players=[],board=[],deck=[],button=-1,sb=-1,bb=-1,street=0,highest=0,minRaise=2,actor=-1;
 let pending=new Set(),acted=new Set(),running=false,reveal=false,instant=false,skipRest=false,timer=null,iteration=0,handNo=stats.hands;
-let startStack=0,humanActions=[],handVpip=false,handPfr=false,handFaced=false,handCalled=false,handRaised=false,seated="",equityCache="",equityValue=null;
+let startStack=0,humanActions=[],handVpip=false,handPfr=false,handFaced=false,handCalled=false,handRaised=false,handGtoWorst=-1,seated="",equityCache="",equityValue=null;
 const streetNames=["翻牌前","翻牌","转牌","河牌"];
 const categories=["高牌","一对","两对","三条","顺子","同花","葫芦","四条","同花顺"];
 const EMOJIS=["🦅","🐕","🐷","🗿","🐟","🎭","🕷️","⚖️","🦊","🤖","🐣","👨","🌋","❄️","🎯","♠️","🐺","🦁","🐯","🦈","🐙","🦉","🐴","🦄","🐲","🦂","🐌","🦋","🐢","🦎","🐳","🦩","🦜","🐿️","🦔","🌵","🍀","🔥","💎","🎲","🃏","👑","⚡","🌊","🏔️","🌙"];
@@ -1914,7 +1974,7 @@ function updateControls(){
 let p=players[0],turn=running&&actor===0,call=Math.min(p.stack,Math.max(0,highest-p.bet)),raiseOK=turn&&mayRaise(p);
 $("fold").disabled=!turn;$("check").disabled=!turn||call>0;$("call").disabled=!turn||call===0;$("call").textContent="跟注 "+fmtBB(call)+(call===p.stack&&call>0?"（全下）":"");
 for(let id of ["raise","raiseSlider","raiseNumber","allin"])$(id).disabled=!raiseOK;for(let b of document.querySelectorAll(".qbtn"))b.disabled=!raiseOK;
-$("quickPre").style.display=running&&street===0?"":"none";$("quickPost").style.display=running&&street>0?"":"none";
+$("quickPre").style.display=running&&street===0?"":"none";$("quickPost").style.display=running&&street>0?"":"none";$("quickPot").style.display=running?"":"none";$("changeTable").disabled=running;
 if(raiseOK){let lo=minTo(p),hi=p.bet+p.stack;$("raiseSlider").min=$("raiseNumber").min=lo/2;$("raiseSlider").max=$("raiseNumber").max=hi/2;
 let v=clamp(Number($("raiseNumber").value)||lo/2,lo/2,hi/2);$("raiseSlider").value=$("raiseNumber").value=v}
 }
@@ -1936,7 +1996,7 @@ for(let p of players){
 p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.initial=p.stack;
 }
 running=true;reveal=false;instant=false;skipRest=false;iteration=0;board=[];deck=shuffle(Array.from({length:52},(_,i)=>i));street=0;highest=2;minRaise=2;actor=-1;
-handNo=stats.hands+1;startStack=players[0].stack;humanActions=[];handVpip=false;handPfr=false;handFaced=false;handCalled=false;handRaised=false;
+handNo=stats.hands+1;startStack=players[0].stack;humanActions=[];handVpip=false;handPfr=false;handFaced=false;handCalled=false;handRaised=false;handGtoWorst=-1;
 seated=players.slice(1).map(p=>p.name).join("、");$("result").textContent="";
 button=nextSeat(button,p=>p.inHand);sb=nextSeat(button,p=>p.inHand);bb=nextSeat(sb,p=>p.inHand);
 for(let round=0;round<2;round++)for(let j=1;j<=9;j++){let p=players[(button+j)%9];if(p.inHand)p.hole.push(deck.pop())}
@@ -2035,6 +2095,7 @@ else if(a.rec==="fold"&&myType==="call"&&a.eq>=a.odds-.05){verdict="接近";mark
 else if(a.rec==="call"&&myType==="raise"&&a.eq>=.55){verdict="接近";mark="△";cls="gto-mid"}
 else if(a.rec==="raise"&&(myType==="call"||myType==="check")&&a.eq>=.55){verdict="接近";mark="△";cls="gto-mid"}
 else{verdict="不对";mark="✗";cls="gto-bad"}
+let sev=cls==="gto-bad"?2:cls==="gto-mid"?1:0;if(sev>handGtoWorst)handGtoWorst=sev;
 let line=mark+" "+verdict+(mark==="✓"?"":" · 参考："+names[a.rec]);
 gtoLog.unshift(`<span class="gto-line ${cls}">${line}</span>`);
 gtoLog=gtoLog.slice(0,3);
@@ -2076,7 +2137,7 @@ let net=players[0].stack-startStack;
 stats.hands++;if(handVpip)stats.vpip++;if(handPfr)stats.pfr++;if(players[0].won>0)stats.wins++;
 let pos=positionName(0);
 let result=descriptions.join("；");
-history.push({no:handNo,pos,hole:cardsText(players[0].hole),board:cardsText(board),actions:humanActions.join(" / ")||"无主动操作",result,net,bots:seated});
+history.push({no:handNo,pos,hole:cardsText(players[0].hole),board:cardsText(board),actions:humanActions.join(" / ")||"无主动操作",result,net,bots:seated,...(handGtoWorst>=0?{gto:["ok","mid","bad"][handGtoWorst]}:{})});
 history=history.slice(-200);running=false;
 $("result").textContent=result+"。你本手："+signedBB(net)+"。";
 log("你本手 "+signedBB(net)+"；剩余 "+fmtBB(players[0].stack));
@@ -2088,13 +2149,27 @@ function positionName(seat){
 let order=[];for(let j=0;j<9;j++){let s=(button+j)%9;if(players[s].inHand)order.push(s)}
 let idx=order.indexOf(seat);return ["BTN","SB","BB","UTG","UTG+1","中位","中位+1","HJ","CO"][idx]||"未入局"
 }
+let historyFilter="all";
+function historyMatches(h){
+if(historyFilter==="bigwin")return h.net>=40;
+if(historyFilter==="bigloss")return h.net<=-40;
+if(historyFilter==="review")return h.gto==="bad";
+return true;
+}
+function setHistoryFilter(f){
+historyFilter=f;
+[["hfAll","all"],["hfWin","bigwin"],["hfLoss","bigloss"],["hfReview","review"]].forEach(([id,v])=>{let b=$(id);if(b)b.className="hf"+(v===f?" on":"")});
+renderHistory();
+}
 function renderHistory(){
 $("history").replaceChildren();
 for(let h of [...history].reverse()){
+if(!historyMatches(h))continue;
 let e=document.createElement("article");e.textContent=`#${h.no} ${h.pos}｜${h.hole}｜公共牌 ${h.board}｜${h.actions}｜${h.result}｜你 ${signedBB(h.net)}`;$("history").append(e)
 }
 }
 function quickRaise(v){setRaise(v);act(players[0],"raise",Math.round(Number($("raiseNumber").value)*2))}
+function potRatioTo(r){let p=players[0],owed=Math.max(0,highest-p.bet);return highest+Math.round((potTotal()+owed)*r)}
 function setRaise(v){let p=players[0];let n=clamp(Math.round(Number(v)||minTo(p)),minTo(p),p.bet+p.stack);$("raiseSlider").value=$("raiseNumber").value=n/2}
 $("fold").onclick=()=>act(players[0],"fold");
 $("check").onclick=()=>act(players[0],"check");
@@ -2106,14 +2181,21 @@ $("raiseNumber").onchange=e=>setRaise(Number(e.target.value)*2);
 function syncDifficultyInputs(){let d=$("setDifficulty"),pc=$("setPros");if(d)d.value=settings.difficultyKey;if(pc)pc.value=settings.proCount==null?"default":String(settings.proCount);let hint=$("diffHint");if(hint){let df=currentDifficulty();hint.textContent="当前难度："+df.name+"（强度指数 "+df.index+"）· 默认职业 "+df.proDefault+" 人 · 切换下一手起生效"}}
 if($("setDifficulty"))$("setDifficulty").onchange=e=>{settings.difficultyKey=e.target.value;saveSettings();syncDifficultyInputs();log("难度切换为「"+currentDifficulty().name+"」，下一手起生效")};
 if($("setPros"))$("setPros").onchange=e=>{settings.proCount=e.target.value==="default"?null:Math.min(8,Math.max(0,Number(e.target.value)||0));saveSettings();log("本桌职业人数已调整，下一手起生效")};
+if($("setAllinConfirm"))$("setAllinConfirm").onchange=e=>{settings.allinConfirm=!!e.target.checked;saveSettings();log(settings.allinConfirm?"全下前确认已开启":"全下前确认已关闭")};
+$("hfAll").onclick=()=>setHistoryFilter("all");
+$("hfWin").onclick=()=>setHistoryFilter("bigwin");
+$("hfLoss").onclick=()=>setHistoryFilter("bigloss");
+$("hfReview").onclick=()=>setHistoryFilter("review");
 function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch(e){}}
 function renderQuick(){
 let qp=$("quickPre");qp.replaceChildren();
 settings.preBB.forEach(bb=>{let b=document.createElement("button");b.className="qbtn";b.textContent="到 "+bb+"BB";b.onclick=()=>quickRaise(Math.round(bb*2));qp.append(b)});
 let qf=$("quickPost");qf.replaceChildren();
 settings.postPct.forEach(pc=>{let b=document.createElement("button");b.className="qbtn";b.textContent=pc+"% 池";b.onclick=()=>quickRaise(highest+Math.round((potTotal()+Math.max(0,highest-players[0].bet))*pc/100));qf.append(b)});
+let qt=$("quickPot");qt.replaceChildren();
+[["半池",.5],["2/3 池",2/3],["满池",1]].forEach(([label,r])=>{let b=document.createElement("button");b.className="qbtn potbtn";b.textContent=label;b.onclick=()=>quickRaise(potRatioTo(r));qt.append(b)});
 }
-function fillSettingsInputs(){[1,2,3,4].forEach(i=>{let a=$("setPre"+i),b=$("setPost"+i);if(a)a.value=settings.preBB[i-1]??"";if(b)b.value=settings.postPct[i-1]??""});syncDifficultyInputs()}
+function fillSettingsInputs(){[1,2,3,4].forEach(i=>{let a=$("setPre"+i),b=$("setPost"+i);if(a)a.value=settings.preBB[i-1]??"";if(b)b.value=settings.postPct[i-1]??""});let ac=$("setAllinConfirm");if(ac)ac.checked=!!settings.allinConfirm;syncDifficultyInputs()}
 renderQuick();fillSettingsInputs();
 $("saveSettings").onclick=()=>{
 let pre=[1,2,3,4].map(i=>Number($("setPre"+i).value)).filter(v=>v>0&&v<=200);
@@ -2121,7 +2203,17 @@ let post=[1,2,3,4].map(i=>Number($("setPost"+i).value)).filter(v=>v>0&&v<=500);
 if(pre.length)settings.preBB=pre;if(post.length)settings.postPct=post;
 saveSettings();renderQuick();fillSettingsInputs();draw();log("快捷下注设置已保存");
 };
-$("allin").onclick=()=>quickRaise(players[0].bet+players[0].stack);
+$("allin").onclick=()=>{if(settings.allinConfirm&&!confirm("确认全下 "+fmtBB(players[0].bet+players[0].stack)+"？"))return;quickRaise(players[0].bet+players[0].stack)};
+function changeTable(){
+if(running)return;
+clearTimeout(timer);
+let cur=players.slice(1).map(p=>p.base),drawn=drawLineup(8,cur,true);
+players=[players[0],...drawn.map((b,i)=>makePlayer(i+1,b))];
+brain=null;providers={};
+log("换桌："+drawn.map(b=>b.code).join("、")+" 入座");
+draw()
+}
+$("changeTable").onclick=changeTable;
 $("next").onclick=startHand;
 $("skip").onclick=()=>{
 if(!running||!(players[0].folded||players[0].allin))return;
