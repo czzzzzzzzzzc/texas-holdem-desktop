@@ -299,6 +299,30 @@ header{width:100%}
 #tab-table .controls input[type=range]{min-width:70px}
 }
 </style>
+<style>
+/* layout v9: GTO verdict slimming. The panel now shows one glanceable verdict
+   line for the latest hero action (colored mark + verdict + recommended action
+   only when not correct). Colors reuse the existing palette: winner green
+   #57d894 for correct, seat-state amber #f0c778 for close, a lightened tint of
+   the raise/all-in terracotta family for wrong. View layer only. */
+#tab-table .below-bar #gtoPanel .gto-line{font-size:14px;font-weight:600}
+#tab-table .below-bar #gtoPanel .gto-ok{color:#57d894}
+#tab-table .below-bar #gtoPanel .gto-mid{color:#f0c778}
+#tab-table .below-bar #gtoPanel .gto-bad{color:#e07a5f}
+</style>
+<style>
+/* layout v10: stats bar readability. Pre-fix (measured in real Chromium at
+   440x956): spans computed at 11px / weight 400 / color inherited from body
+   (#e5edf3, no explicit stats color), and the bar bg #10141a sat almost
+   flush on the page bg #0b1119, so the strip read as faint grey text on
+   black; even realistic values needed 419px of the 418px available.
+   Fix = explicit near-white semibold text at 13px on a defined opaque bar,
+   tighter span padding/gap so all six items fit at 440px without scrolling
+   (the v7 overflow-x:auto stays as fallback for 390px / extreme values).
+   View layer only: no scripts, ids, positions or storage touched. */
+#tab-table .stats{background:#131c26;border-color:#39485c;color:#f5f9fc;padding:6px 6px;gap:2px}
+#tab-table .stats span{color:#f5f9fc;font-size:13px;font-weight:600;padding:2px 2px;border-right-color:#39485c}
+</style>
 </head>
 <body>
 <header><h1>♠ 九人无限注德州扑克</h1><div class="small">现金桌 · 小盲 1 / 大盲 2 · 买入 100 · 永不升盲</div></header>
@@ -316,7 +340,7 @@ header{width:100%}
 </div>
 <div class="raise-row" id="quickPre"></div><div class="raise-row" id="quickPost" style="display:none"></div><div class="raise-row" id="raiseControls"><input type="range" id="raiseSlider" step="0.5"><input type="number" id="raiseNumber" step="0.5"><span class="small">BB</span><button id="allin">全下</button><button id="raise" class="gold">确认加注</button></div>
 </div>
-<div class="below-bar"><label class="small"><input type="checkbox" id="showEquity"> 显示我的胜率</label> <span class="small" id="gtoPanel">GTO 参考线（简化模型）：你每次行动后，这里会显示参考打法与你的选择对比。</span></div>
+<div class="below-bar"><label class="small"><input type="checkbox" id="showEquity"> 显示我的胜率</label> <span class="small" id="gtoPanel">GTO 参考：行动后标注对错</span></div>
 <div id="result"></div>
 </div>
 <div class="tabpage" id="tab-feed" hidden>
@@ -1798,7 +1822,7 @@ let pots=layers().filter(x=>x.contributors.length>1);
 $("sidepots").textContent=pots.length>1?pots.map((p,i)=>(i?"边池 "+i:"主池")+"："+fmtBB(p.amount)).join(" · "):"";
 $("street").textContent=handNo?"第 "+handNo+" 手 · "+streetNames[street]:"等待开局";
 $("status").textContent=running?(actor>=0?players[actor].name+" 行动中":"正在发牌…"):"";
-$("stats").innerHTML=[`手数 ${stats.hands}`,`VPIP ${pct(stats.vpip,stats.hands)}`,`PFR ${pct(stats.pfr,stats.hands)}`,`胜率 ${pct(stats.wins,stats.hands)}`,`买入 ${stats.buyins} 次`, `净胜 ${signedBB(players[0].stack+(running?players[0].total:0)-stats.bought)}`].map(t=>"<span>"+t+"</span>").join("");
+$("stats").innerHTML=[`手数 ${stats.hands}`,`VPIP ${pct(stats.vpip,stats.hands)}`,`PFR ${pct(stats.pfr,stats.hands)}`,`胜率 ${pct(stats.wins,stats.hands)}`,`买入 ${stats.buyins}`, `净胜 ${signedBB(players[0].stack+(running?players[0].total:0)-stats.bought)}`].map(t=>"<span>"+t+"</span>").join("");
 $("lineup").innerHTML="<b>在场代号</b>：" + players.slice(1).map(p=>`${p.name} ${EMOJIS[p.base.id]} · ${fmtBB(p.stack)}`).join(" · ");
 $("reads").textContent=`对你的共同观察：面对下注 ${reads.faced} 次，弃牌 ${pct(reads.fold,reads.faced)}，跟注 ${pct(reads.call,reads.faced)}。`+(reads.bigN>=6?`面对大注（≥12BB）${reads.bigN} 次，跟注 ${pct(reads.bigC,reads.bigN)}。`:"");
 $("next").hidden=running;$("next").textContent=players[0].stack<=0?"重新买入并开始":(stats.hands>0?"下一手":"开始第一手");
@@ -1930,16 +1954,16 @@ function renderGto(s,myType){
 let gp=document.getElementById("gtoPanel");if(!gp)return;
 let a=gtoAdvice(s);
 let names={fold:"弃牌",check:"让牌",call:"跟注",raise:"加注"};
-let verdict,mark;
-if(myType===a.rec){verdict="与参考线一致";mark="✓"}
-else if(a.rec==="fold"&&myType==="call"&&a.eq>=a.odds-.05){verdict="边界跟注，可接受";mark="≈"}
-else if(a.rec==="call"&&myType==="raise"&&a.eq>=.55){verdict="偏凶一档，可接受";mark="≈"}
-else if(a.rec==="raise"&&(myType==="call"||myType==="check")&&a.eq>=.55){verdict="偏弱一档，可接受";mark="≈"}
-else{verdict="与参考线偏差";mark="✗"}
-let bluffNote=(myType==="raise"&&a.eq!==null&&a.eq<.34&&s.street>0)?"（此为诈唬下注）":"";
-gtoLog.unshift(`#${handNo} ${streetNames[s.street]}：你【${names[myType]}】· GTO 参考【${names[a.rec]}】— ${a.why} ${mark} ${verdict}${bluffNote}`);
+let verdict,mark,cls;
+if(myType===a.rec){verdict="正确";mark="✓";cls="gto-ok"}
+else if(a.rec==="fold"&&myType==="call"&&a.eq>=a.odds-.05){verdict="接近";mark="△";cls="gto-mid"}
+else if(a.rec==="call"&&myType==="raise"&&a.eq>=.55){verdict="接近";mark="△";cls="gto-mid"}
+else if(a.rec==="raise"&&(myType==="call"||myType==="check")&&a.eq>=.55){verdict="接近";mark="△";cls="gto-mid"}
+else{verdict="不对";mark="✗";cls="gto-bad"}
+let line=mark+" "+verdict+(mark==="✓"?"":" · 参考："+names[a.rec]);
+gtoLog.unshift(`<span class="gto-line ${cls}">${line}</span>`);
 gtoLog=gtoLog.slice(0,3);
-gp.innerHTML=gtoLog.join("<br>");
+gp.innerHTML=gtoLog[0];
 }
 function boardWet(b){
 if(!b||b.length<3)return 0;
