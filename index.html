@@ -346,11 +346,11 @@ header{width:100%}
 <div class="tabpage" id="tab-feed" hidden>
 <div class="columns">
 <section class="panel"><strong>牌局播报</strong><div id="log"></div></section>
-<section class="panel"><details open><summary>本桌阵容与动态</summary><div id="lineup" class="small"></div></details><p class="small">机器人依据牌力、底池赔率与个性行动。诈唬反馈、情绪与对你的观察会随牌局变化。</p><div id="reads" class="small"></div></section>
+<section class="panel"><details open><summary>本桌阵容与动态</summary><div id="lineup" class="small"></div></details><div id="reads" class="small"></div></section>
 </div>
 </div>
 <div class="tabpage" id="tab-review" hidden>
-<section class="panel"><details><summary>复盘记录（最近 200 手）</summary><div id="history" class="history"></div></details><p><button id="openReplay">⏪ 牌局回放</button> <button id="share" class="gold">分享数据</button> <button id="export">导出复盘数据</button> <button id="copy" hidden>复制数据</button></p><p class="small">进度保存在本机浏览器本地，重开自动恢复；导出文件可跨设备转移、或发我做复盘。恢复进度：<input type="file" id="importFile" accept=".json,application/json"> <button id="importText">从文本框恢复</button></p><textarea id="exportText" hidden readonly></textarea><span id="copyStatus" class="small"></span></section>
+<section class="panel"><details><summary>复盘记录（最近 200 手）</summary><div id="history" class="history"></div></details><p><button id="openReplay">⏪ 牌局回放</button> <button id="share" class="gold">分享数据</button> <button id="export">导出复盘数据</button> <button id="copy" hidden>复制数据</button></p><p class="small">恢复进度：<input type="file" id="importFile" accept=".json,application/json"> <button id="importText">从文本框恢复</button></p><textarea id="exportText" hidden readonly></textarea><span id="copyStatus" class="small"></span></section>
 </div>
 <div class="tabpage" id="tab-settings" hidden>
 <section class="panel"><details open><summary>对局设置（难度与职业人数）</summary>
@@ -363,21 +363,21 @@ header{width:100%}
 </select></label></p>
 <p class="small" id="diffHint"></p>
 </details></section>
-<section class="panel"><details><summary>快捷下注设置（预设按钮可自定义，跟其他扑克软件一样）</summary>
-<p class="small">翻前快捷按钮 = 加注到多少 BB（点按钮即出手）：</p>
+<section class="panel"><details><summary>快捷下注设置</summary>
+<p class="small">翻前（加注到）：</p>
 <p><input type="number" id="setPre1" step="0.5" style="width:72px"> <input type="number" id="setPre2" step="0.5" style="width:72px"> <input type="number" id="setPre3" step="0.5" style="width:72px"> <input type="number" id="setPre4" step="0.5" style="width:72px"> <span class="small">BB</span></p>
-<p class="small">翻后快捷按钮 = 下注为底池的百分之多少（点按钮即出手）：</p>
+<p class="small">翻后（底池 %）：</p>
 <p><input type="number" id="setPost1" step="1" style="width:72px"> <input type="number" id="setPost2" step="1" style="width:72px"> <input type="number" id="setPost3" step="1" style="width:72px"> <input type="number" id="setPost4" step="1" style="width:72px"> <span class="small">%</span></p>
-<p><button id="saveSettings" class="gold">保存设置</button> <span class="small">设置保存在本机，关掉重开也在。</span></p>
+<p><button id="saveSettings" class="gold">保存设置</button></p>
 </details></section>
 <section class="panel"><details open><summary>会话管理</summary>
-<p><button id="reset">重置整个会话</button> <span class="small">重置全部筹码、战绩与买入记录，点击后会先弹窗确认。</span></p>
+<p><button id="reset">重置整个会话</button></p>
 </details></section>
 </div>
 <section class="panel" id="replayView" style="display:none">
 <div class="bar" style="justify-content:space-between"><strong>⏪ 牌局回放</strong><span class="small" id="rpsessionInfo"></span><span><button id="rpuseGame">↻ 刷新本桌记录</button> <button id="closeReplay">返回牌桌</button></span></div>
 <div id="rploader">
-<p class="small">默认回放本桌刚打的牌局。也可以载入导出的 holdem-review.json（比如手机上打的那场）：</p>
+<p class="small">载入导出的 holdem-review.json：</p>
 <p><input type="file" id="rpfileInput" accept=".json,application/json"></p>
 <textarea id="rppasteBox" placeholder="或把导出的 JSON 粘贴到这里"></textarea>
 <p><button id="rploadPaste" class="gold">解析粘贴的数据</button> <span id="rploadMsg" class="small"></span></p>
@@ -401,9 +401,8 @@ header{width:100%}
 </div>
 <div class="panel" id="rpnotePanel"><strong>复盘注释</strong><div id="rpnote" style="margin-top:6px"></div></div>
 </div>
-<p class="small">结算步会亮出所有未弃牌玩家的底牌，方便对照学习。</p>
 </section>
-</main><footer>桌面版 · 本地单机 · 筹码无现金价值 · 战绩保存在本机浏览器</footer>
+</main>
 <nav id="tabbar" aria-label="主导航">
 <button type="button" data-tab="table" class="on" aria-selected="true"><span class="tic">♠</span>牌桌</button>
 <button type="button" data-tab="feed" aria-selected="false"><span class="tic">📜</span>动态</button>
@@ -1847,7 +1846,7 @@ function updateEquity(){
 let p=players[0];if(!$("showEquity").checked||!running||p.folded){$("equity").textContent="";return}
 let n=contenders().length-1,key=p.hole.join(",")+"|"+board.join(",")+"|"+n;
 if(key!==equityCache){equityCache=key;equityValue=equity(p.hole,board,n)}
-$("equity").textContent="你的估计胜率："+(100*equityValue).toFixed(1)+"%（含平分，250 次模拟）"
+$("equity").textContent="胜率："+(100*equityValue).toFixed(1)+"%"
 }
 function pay(p,n){n=Math.max(0,Math.min(p.stack,Math.floor(n)));p.stack-=n;p.bet+=n;p.total+=n;p.allin=p.stack===0;return n}
 function startHand(){
@@ -2005,7 +2004,7 @@ history.push({no:handNo,pos,hole:cardsText(players[0].hole),board:cardsText(boar
 history=history.slice(-200);running=false;
 $("result").textContent=result+"。你本手："+signedBB(net)+"。";
 log("你本手 "+signedBB(net)+"；剩余 "+fmtBB(players[0].stack));
-for(let p of players){p.total=0;p.bet=0;if(p.stack===0&&p.base)log(p.name+" 破产离桌，下一手补充新玩家")}
+for(let p of players){p.total=0;p.bet=0;if(p.stack===0&&p.base)log(p.name+" 破产离桌")}
 if(handRecord){handRecord.board=[...board];handRecord.result=descriptions.concat(refunds).join("；");handRecord.winners=[...winners].map(p=>p.seat);handRecord.nets=players.map(p=>p.stack-p.initial);replays.push(handRecord);if(replays.length>60)replays.splice(0,replays.length-60);handRecord=null}
 $("next").textContent="下一手";persist();renderHistory();draw();timer=setTimeout(()=>{if(!running)startHand()},skipRest?60:2600)
 }
@@ -2074,9 +2073,9 @@ $("share").onclick=async()=>{
 let text=buildExportText();
 try{
 let file=new File([text],"holdem-review.json",{type:"application/json"});
-if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});log("已通过系统分享发送复盘数据")}
-else log("当前环境不支持直接分享：请点「导出复盘数据」下载文件，再在聊天里用 + 添加附件发给我");
-}catch(e){if(e&&e.name!=="AbortError")log("分享没有成功，请用导出+附件的方式")}
+if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});log("已分享复盘数据")}
+else log("当前环境不支持分享，请用「导出复盘数据」下载后以附件发送");
+}catch(e){if(e&&e.name!=="AbortError")log("分享失败，请用导出+附件")}
 };
 $("export").onclick=()=>{
 let text=buildExportText();
@@ -2116,7 +2115,7 @@ else if(k==="arrowdown"&&actor===0){e.preventDefault();setRaise(Math.round(Numbe
 else if(k==="enter"&&actor===0&&!$("raise").disabled)act(players[0],"raise",Math.round(Number($("raiseNumber").value)*2));
 else if(k==="n"&&!running)$("next").click();
 });
-renderHistory();draw();log("欢迎入座。盲注 0.5/1BB，每次买入 50BB。点击开始发牌。");
+renderHistory();draw();
 const ReplayView = (() => {
 
 const EMOJIS = ["🦅","🐕","🐷","🗿","🐟","🎭","🕷️","⚖️","🦊","🤖","🐣","👨","🌋","❄️","🎯","♠️","🐺","🦁","🐯","🦈","🐙","🦉","🐴","🦄","🐲","🦂","🐌","🦋","🐢","🦎","🐳","🦩","🦜","🐿️","🦔","🌵","🍀","🔥","💎","🎲","🃏","👑","⚡","🌊","🏔️","🌙"];
@@ -2189,7 +2188,7 @@ $("pot").textContent = "底池 " + fmtBB(st.ps.reduce((n, q) => n + q.total, 0))
 $("street").textContent = "第 " + r.no + " 手 · " + SN[st.street] + (fin? " · 已结算": "");
 $("status").textContent = "你的手牌 " + r.players[0].hole.map(cardText).join(" ") + " · 本手净额 " + signedBB(r.nets[0]);
 let cap = "";
-if (step === 0) cap = "发牌完毕，盲注已下：小盲 0.5BB / 大盲 1BB。点「下一步」或「播放」开始回放。";
+if (step === 0) cap = "发牌完毕，盲注已下：小盲 0.5BB / 大盲 1BB。";
 else if (fin) cap = "结算：" + r.result;
 else {
 const prevTotals = {};
@@ -2204,7 +2203,7 @@ let nh = "";
 if (notes.hand) nh += notes.hand;
 const snote = notes.steps && step >= 1 && step <= r.actions.length? notes.steps[String(step - 1)]: null;
 if (snote) nh += (nh? "\n": "") + "" + snote;
-$("note").textContent = nh || "（这一手暂无注释）";
+$("note").textContent = nh || "暂无注释";
 $("handSel").value = String(handIdx);
 }
 function stopPlay(){ if (playTimer){ clearInterval(playTimer); playTimer = null; $("playBtn").textContent = "▶ 播放";}}
@@ -2247,7 +2246,7 @@ if (e.key === "ArrowLeft"){ stopPlay(); setStep(step - 1);}
 function loadGameData(){
 const d = window.__getReplayData ? window.__getReplayData() : null;
 if (d && Array.isArray(d.replays) && d.replays.length) loadData(d);
-else { $("loader").style.display = ""; $("app").style.display = "none"; $("loadMsg").textContent = "本桌还没有可回放的牌局，先打几手再来；也可以在下面载入导出文件。"; }
+else { $("loader").style.display = ""; $("app").style.display = "none"; $("loadMsg").textContent = "暂无回放"; }
 }
 $("useGame").onclick = () => loadGameData();
 return { loadGameData, stop: stopPlay };
