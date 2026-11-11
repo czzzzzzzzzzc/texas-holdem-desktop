@@ -170,15 +170,11 @@ footer{color:#5f6d76}
 #replayView .pot{font-variant-numeric:tabular-nums}
 #replayView .bet-chip{border-color:#c9a24d}
 
-/* tabs v1: bottom tab bar, one page at a time (view layer only; game DOM/logic untouched) */
-body{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
+/* tabs v1: one page at a time (view layer only; game DOM/logic untouched).
+   Bottom tab bar removed by layout v12: navigation is now side hidden rails,
+   and the safe-area bottom inset moved to the table page shell (v12 block). */
 .tabpage[hidden]{display:none!important}
-#tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:1200px;display:flex;background:#10141af5;border-top:1px solid #c9a24d55;box-shadow:0 -6px 24px #000a;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
-#tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:58px;padding:6px 2px;background:transparent;border:none;border-top:2px solid transparent;border-radius:0;color:#94a8b4;font-size:11px;letter-spacing:.14em;cursor:pointer}
-#tabbar button .tic{font-size:20px;line-height:1.1;letter-spacing:0}
-#tabbar button:hover:enabled{background:#ffffff10}
-#tabbar button.on{color:#f4c76b;border-top-color:#c9a24d;background:#c9a24d12}
-body.replay-open #tabbar,body.replay-open .tabpage{display:none!important}
+body.replay-open .tabpage{display:none!important}
 </style>
 <style>#replayView button,#replayView input,#replayView textarea,#replayView select{font:inherit}#replayView button{border:1px solid #415164;background:#233549;color:white;border-radius:8px;padding:9px 12px;cursor:pointer}#replayView button:hover:enabled{background:#34516c}#replayView button:disabled{opacity:.35;cursor:default}#replayView .gold{background:#745421;color:#ffe8ac}#replayView .table-wrap{position:relative;height:600px;margin:10px 0}#replayView .felt{position:absolute;inset:64px 60px 84px;border:12px solid #44382c;border-radius:48%;background:radial-gradient(ellipse,#145e50,#083d35);box-shadow:0 12px 35px #0008,inset 0 0 30px #0007}#replayView .seat{position:absolute;width:100px;padding:2px;text-align:center;transform:translate(-50%,-50%);z-index:2}#replayView .seat.folded{opacity:.5}#replayView .seat.avatar{width:52px;height:52px;border-radius:50%;background:#233549;border:2px solid #415164;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto;position:relative}#replayView .seat.actor.avatar{border-color:var(--gold);box-shadow:0 0 0 3px #e6bc48,0 0 18px #e6bc4888}#replayView .seat.winner.avatar{border-color:#61f2a0;box-shadow:0 0 0 3px #4ce39b,0 0 18px #4ce39b88}#replayView .seat:first-child.avatar{width:66px;height:66px;font-size:37px}#replayView .seat.dealer{position:absolute;right:-9px;top:-5px;background:#ffd21f;color:#111;border-radius:50%;width:21px;height:21px;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px #0009}#replayView .seat.code{font-size:9px;color:#cfe0ee;background:#0008;border-radius:4px;padding:1px 5px;display:inline-block;margin-top:2px}#replayView .seat.pill{background:#101418e0;color:#fff;border-radius:7px;padding:2px 9px;font-weight:700;font-size:13px;display:inline-block;margin-top:3px;min-width:62px}#replayView .seat.cards{display:flex;justify-content:center;gap:4px;min-height:46px;margin-top:3px}#replayView .card{display:inline-flex;align-items:center;justify-content:center;width:34px;height:46px;border-radius:5px;background:#f3f2ed;color:#151b26;font-weight:800;font-size:15px;box-shadow:0 2px 3px #0005}#replayView .card.red{color:#c63341}#replayView .card.back{color:#9bb3d4;background:repeating-linear-gradient(45deg,#1d3b64,#1d3b64 3px,#294b77 3px,#294b77 6px);border:1px solid #7189aa}#replayView .seat:first-child.card{width:40px;height:54px;font-size:17px}#replayView .center{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);width:65%;text-align:center;z-index:1}#replayView .board{display:flex;justify-content:center;gap:4px;min-height:70px}#replayView .board.card{width:52px;height:70px;font-size:22px}#replayView .pot{font-size:22px;font-weight:bold;color:#ffe0a0;margin:10px 0 4px}#replayView .small{font-size:12px;color:var(--muted)}#replayView .bet-chip{position:absolute;transform:translate(-50%,-50%);background:#0d1117f2;border:1.5px solid #f4c76b;color:#ffe9b0;font-weight:800;font-size:13px;border-radius:999px;padding:3px 10px;z-index:3;box-shadow:0 2px 7px #000b;white-space:nowrap}#replayView .bet-chip::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:radial-gradient(circle,#ffedb5,#d9a441);margin-right:5px;vertical-align:-1px}#replayView .panel{padding:14px;background:#141f2b;border:1px solid #29394a;border-radius:12px;margin:10px 0}#replayView .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}#replayView #rpcaption{font-size:16px;line-height:1.7;color:#ffe1a5;text-align:center;min-height:27px}#replayView #rpnote{line-height:1.8;color:#d7ecdf;white-space:pre-wrap}#replayView #rpnote.steptag{color:#f0c778;font-weight:700}#replayView select{background:#0c1722;color:white;border:1px solid #415164;border-radius:6px;padding:8px}#replayView textarea{width:100%;height:110px;background:#0a121c;color:#bcd1df;border:1px solid #40556b;padding:10px;margin-top:10px}#replayView input[type=file]{color:#bdcad5}@media(max-width:700px){#replayView .table-wrap{height:600px;margin:5px -9px}#replayView .felt{inset:52px 16px 76px;border-width:7px}#replayView .seat{width:82px}#replayView .seat.avatar{width:44px;height:44px;font-size:23px}#replayView .seat:first-child.avatar{width:56px;height:56px;font-size:31px}#replayView .seat.pill{font-size:11px;min-width:52px;padding:2px 6px}#replayView .seat.dealer{width:18px;height:18px;font-size:10px;right:-7px}#replayView .seat.card{width:26px;height:35px;font-size:12px}#replayView .seat:first-child.card{width:34px;height:46px;font-size:15px}#replayView .seat.cards{min-height:35px}#replayView .seat:first-child.cards{min-height:46px}#replayView .board.card{width:36px;height:50px;font-size:16px}#replayView .board{min-height:50px}#replayView .pot{font-size:17px}#replayView .bet-chip{font-size:12px;padding:2px 8px}}
 /* texture v5 (replay): match main table */
@@ -256,7 +252,6 @@ header h1{font-size:15px}
 #seats .seat:nth-child(4),#seats .seat:nth-child(7){transform:translate(-50%,-38%)}
 }
 /* --- replay: same one-screen treatment --- */
-body.replay-open{padding-bottom:0}
 body.replay-open #replayView{display:flex;flex-direction:column;height:100%;min-height:0;margin:0}
 #rpapp{display:flex;flex-direction:column;flex:1;min-height:0}
 #replayView .table-wrap{flex:1;min-height:0;height:auto;margin:6px 0}
@@ -323,9 +318,60 @@ header{width:100%}
 #tab-table .stats{background:#131c26;border-color:#39485c;color:#f5f9fc;padding:6px 6px;gap:2px}
 #tab-table .stats span{color:#f5f9fc;font-size:13px;font-weight:600;padding:2px 2px;border-right-color:#39485c}
 </style>
+<style>
+/* v11: 牌面质感重做：纸纹 + 双角标 + 标准点位阵列 + 镜像几何花牌 + 精细牌背 */
+.card{position:relative;display:inline-block;overflow:hidden;vertical-align:top;background:linear-gradient(168deg,#ffffff 0%,#f7f5ee 58%,#ebe8da 100%);border:1px solid #c8c2ae;border-radius:.17em;color:#1d2733;box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
+.card::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+.card.red{color:#b02e3e}
+.card .cnr{position:absolute;top:3%;left:6%;z-index:2;display:flex;flex-direction:column;align-items:center;font-style:normal;line-height:.94}
+.card .cnr b{font-size:.64em;font-weight:700;letter-spacing:-.02em}
+.card .cnr s{font-size:.5em;text-decoration:none;line-height:1.05}
+.card .cnr.dn{top:auto;left:auto;bottom:3%;right:6%;transform:rotate(180deg)}
+.card .fld{position:absolute;inset:4% 16%;z-index:1}
+.card .fld.ct{inset:5.5% 11%}
+.card .fld svg{width:100%;height:100%;display:block}
+.card .pip{position:absolute;z-index:1;transform:translate(-50%,-50%);font-size:.62em;line-height:1}
+.card .pip.iv{transform:translate(-50%,-50%) rotate(180deg)}
+.card .ace{position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);font-size:1.8em;line-height:1}
+.card.back{background:radial-gradient(circle at 50% 46%,#38639c 0%,rgba(56,99,156,0) 58%),repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),linear-gradient(160deg,#2b4e7d,#132740);border:1px solid #7189aa;box-shadow:inset 0 0 0 2px #e9e5d6,inset 0 0 0 3.5px #1e3c63,inset 0 0 0 5px rgba(233,229,214,.45),0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
+.card.back::after{content:"";position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;transform:translate(-50%,-50%) rotate(45deg);border:1.5px solid rgba(219,201,148,.8);background:rgba(219,201,148,.08);box-shadow:inset 0 0 0 3px #1a324f,inset 0 0 0 4.5px rgba(219,201,148,.45);z-index:2}
+#replayView .card{position:relative;display:inline-block;overflow:hidden;vertical-align:top;background:linear-gradient(168deg,#ffffff 0%,#f7f5ee 58%,#ebe8da 100%);border:1px solid #c8c2ae;border-radius:.17em;color:#1d2733;box-shadow:inset 0 1px 0 #fff,0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
+#replayView .card.red{color:#b02e3e}
+#replayView .card.back{background:radial-gradient(circle at 50% 46%,#38639c 0%,rgba(56,99,156,0) 58%),repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),repeating-linear-gradient(-45deg,rgba(255,255,255,.06) 0 2px,transparent 2px 7px),linear-gradient(160deg,#2b4e7d,#132740);border:1px solid #7189aa;box-shadow:inset 0 0 0 2px #e9e5d6,inset 0 0 0 3.5px #1e3c63,inset 0 0 0 5px rgba(233,229,214,.45),0 1px 1px rgba(8,12,18,.5),0 4px 9px rgba(8,12,18,.34),0 12px 24px rgba(8,12,18,.2)}
+</style>
+<style>
+/* layout v12: side hidden navigation + safe-area shell (user call, 2026-11-11).
+   The bottom tab bar is gone: two fixed rails hug the left/right screen edges,
+   translated off-canvas except a ~15px translucent grip strip. The left rail
+   carries 牌桌/动态, the right rail 复盘/设置; a gold dot on the grip marks the
+   side that holds the current page. Rails are position:fixed overlays, so an
+   open rail never reflows the table. The app shell also gains safe-area
+   clearance: top padding drops the header/stats below the status bar and
+   Dynamic Island (status-bar style is black-translucent + viewport-fit=cover,
+   so without it the shell underlaps the island), and the table page takes the
+   bottom inset the deleted tab bar used to absorb. View layer only. */
+body{padding-top:calc(env(safe-area-inset-top, 0px) + 6px)}
+#tab-table{padding-bottom:env(safe-area-inset-bottom, 0px)}
+.sidenav{position:fixed;top:50%;z-index:60;width:178px;max-width:64vw;display:flex;flex-direction:column;gap:6px;padding:10px 8px;background:#10141af2;border:1px solid #c9a24d55;box-shadow:0 10px 30px #000b;transition:transform .22s ease}
+.sidenav.left{left:0;border-left:none;border-radius:0 12px 12px 0;padding-right:21px;transform:translate(calc(-100% + 15px),-50%)}
+.sidenav.right{right:0;border-right:none;border-radius:12px 0 0 12px;padding-left:21px;transform:translate(calc(100% - 15px),-50%)}
+.sidenav.open{transform:translate(0,-50%)}
+.sidenav .grip{position:absolute;top:0;bottom:0;width:15px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:transparent;border:none;border-radius:0;box-shadow:none;color:#cdb271;cursor:pointer}
+.sidenav.left .grip{right:0}
+.sidenav.right .grip{left:0}
+.sidenav .grip .gdot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px #f4c76b;opacity:0}
+.sidenav.has-cur .grip .gdot{opacity:1}
+.sidenav .grip .gtxt{writing-mode:vertical-rl;font-size:10px;letter-spacing:.22em;line-height:1}
+.sidenav .grip .garr{font-size:11px;line-height:1}
+.sidenav button[data-tab]{display:flex;align-items:center;gap:9px;min-height:48px;padding:10px 12px;background:#ffffff08;border:1px solid #2b333d;border-radius:9px;box-shadow:none;color:#94a8b4;font-size:13px;letter-spacing:.12em;cursor:pointer;text-align:left}
+.sidenav button[data-tab] .tic{font-size:19px;line-height:1.1}
+.sidenav button[data-tab]:hover:enabled{background:#ffffff12}
+.sidenav button[data-tab].on{color:#f4c76b;border-color:#c9a24d;background:#c9a24d14}
+body.replay-open .sidenav{display:none!important}
+</style>
 </head>
 <body>
-<header><h1>♠ 九人无限注德州扑克</h1><div class="small">现金桌 · 小盲 1 / 大盲 2 · 买入 100 · 永不升盲</div></header>
+<header><h1>♠ 九人无限注德州扑克</h1></header>
 <main>
 <div class="tabpage" id="tab-table">
 <div class="stats" id="stats"></div>
@@ -354,7 +400,6 @@ header{width:100%}
 </div>
 <div class="tabpage" id="tab-settings" hidden>
 <section class="panel"><details open><summary>对局设置（难度与职业人数）</summary>
-<p class="small">难度五档：新手 / 入门 / 进阶（默认，与原版手感最接近）/ 高手 / 职业。难度按新版行为校准（参数缩放，不靠放水），切换后<b>下一手起生效</b>，不会中途改变已发牌的一手。职业人数可选「按难度默认」或 0–8 人，同样下一手起生效。</p>
 <p><label class="small">难度 <select id="setDifficulty" style="min-height:44px;background:#0c1722;color:white;border:1px solid #415164;border-radius:6px;padding:7px">
 <option value="novice">新手</option><option value="starter">入门</option><option value="intermediate">进阶</option><option value="expert">高手</option><option value="pro">职业</option>
 </select></label>
@@ -403,9 +448,13 @@ header{width:100%}
 </div>
 </section>
 </main>
-<nav id="tabbar" aria-label="主导航">
+<nav class="sidenav left" id="sidenavL" aria-label="主导航（左）">
+<button type="button" class="grip" aria-label="展开左侧导航"><span class="gdot"></span><span class="gtxt">导航</span><span class="garr">›</span></button>
 <button type="button" data-tab="table" class="on" aria-selected="true"><span class="tic">♠</span>牌桌</button>
 <button type="button" data-tab="feed" aria-selected="false"><span class="tic">📜</span>动态</button>
+</nav>
+<nav class="sidenav right" id="sidenavR" aria-label="主导航（右）">
+<button type="button" class="grip" aria-label="展开右侧导航"><span class="gdot"></span><span class="gtxt">导航</span><span class="garr">‹</span></button>
 <button type="button" data-tab="review" aria-selected="false"><span class="tic">⏪</span>复盘</button>
 <button type="button" data-tab="settings" aria-selected="false"><span class="tic">⚙</span>设置</button>
 </nav>
@@ -535,6 +584,13 @@ const READ_DEFAULTS = Object.freeze({
   rfF: 0,
   rfN: 0
 });
+
+// 读牌样本门槛按 readsLevel 逐档查表；L0/L1 不查表（L1 的 big 通道门槛沿用 6）。
+const READ_MINIMUMS = {
+  2: { faced: 20, big: 6, rf: 8 },
+  3: { faced: 17, big: 5, rf: 7 },
+  4: { faced: 14, big: 4, rf: 6 }
+};
 
 // 未传 difficulty 时直接返回原概率，不改变旧行为或随机数消耗。
 function exploitProbability(p, difficulty) {
@@ -1028,9 +1084,10 @@ function botDecision(p, ctx, reads) {
   const { board, street, highest, minRaise, button, players, stats, bb } = ctx;
   const difficulty = ctx.difficulty;
   const readsLevel = difficulty ? difficulty.readsLevel : 2;
-  const facedMinimum = readsLevel >= 4 ? 14 : 20;
-  const bigMinimum = readsLevel >= 4 ? 4 : 6;
-  const rfMinimum = readsLevel >= 4 ? 6 : 8;
+  const minimums = READ_MINIMUMS[Math.min(readsLevel, 4)] || READ_MINIMUMS[2];
+  const facedMinimum = minimums.faced;
+  const bigMinimum = minimums.big;
+  const rfMinimum = minimums.rf;
   const b = p.base;
   const L = readsLevel >= 2
     ? p.live
@@ -1369,7 +1426,7 @@ function createBrain({ roster = ROSTER, reads = {}, difficulty } = {}) {
         : 0
     });
 
-  // 保留调用方 reads 对象身份，便于调用方持久化；只补齐缺失计数。
+  // 保留调用方 reads 对象身份（本场会话内共享，不落盘）；只补齐缺失计数。
   for (const [key, value] of Object.entries(READ_DEFAULTS)) {
     if (reads[key] === undefined) reads[key] = value;
   }
@@ -1526,6 +1583,9 @@ function createBrain({ roster = ROSTER, reads = {}, difficulty } = {}) {
 
   function observe(evt) {
     if (evt.type === "handStart") {
+      // 记牌本场制：每手开始先统一衰减，近期行为权重更高。
+      for (const key of Object.keys(READ_DEFAULTS)) reads[key] *= .98;
+
       if (evt.stats) syncStats(evt.stats);
 
       handRaised = false;
@@ -1726,7 +1786,7 @@ let saved;try{saved=JSON.parse(localStorage.getItem(KEY)||"null")}catch{}
 let stats=saved?.stats||{hands:0,vpip:0,pfr:0,wins:0,buyins:1,bought:100};
 let history=Array.isArray(saved?.history)?saved.history.slice(-200):[];
 let humanStack=Number.isInteger(saved?.stack)&&saved.stack>=0?saved.stack:100;
-let reads=Object.assign({faced:0,fold:0,call:0,bigN:0,bigC:0,rfF:0,rfN:0},saved?.reads||{});
+let reads={faced:0,fold:0,call:0,bigN:0,bigC:0,rfF:0,rfN:0}; // 记牌本场制：存档里的 reads 不恢复，每次打开从零开始
 let replays=Array.isArray(saved?.replays)?saved.replays:[];
 let handRecord=null;
 let players=[],board=[],deck=[],button=-1,sb=-1,bb=-1,street=0,highest=0,minRaise=2,actor=-1;
@@ -1740,10 +1800,26 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function makePlayer(seat,base=null,stack=100){return {seat,base,name:base?base.code:"你",stack,hole:[],bet:0,total:0,folded:false,inHand:false,allin:false,winner:false,last:"",won:0,pace:.85+Math.random()*.4}}
 players=[makePlayer(0,null,humanStack),...drawLineup(8,[]).map((b,i)=>makePlayer(i+1,b))];
-function persist(){try{localStorage.setItem(KEY,JSON.stringify({stats,history,reads,stack:players[0].stack,replays}))}catch{}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({stats,history,stack:players[0].stack,replays}))}catch{}}
 function cardText(c){return "23456789TJQKA"[c%13]+["♠","♥","♦","♣"][Math.floor(c/13)]}
 function cardsText(a){return a.length?a.map(cardText).join(" "):"—"}
-function cardHTML(c,back=false){return back?'<span class="card back">◆</span>':`<span class="card ${[1,2].includes(Math.floor(c/13))?"red":""}">${cardText(c)}</span>`}
+const PIPS={2:[[50,8],[50,92,1]],3:[[50,8],[50,50],[50,92,1]],4:[[12,8],[88,8],[12,92,1],[88,92,1]],5:[[12,8],[88,8],[50,50],[12,92,1],[88,92,1]],6:[[12,8],[88,8],[12,50],[88,50],[12,92,1],[88,92,1]],7:[[12,8],[88,8],[50,29],[12,50],[88,50],[12,92,1],[88,92,1]],8:[[12,8],[88,8],[50,29],[12,50],[88,50],[50,71,1],[12,92,1],[88,92,1]],9:[[12,8],[88,8],[12,36],[88,36],[50,50],[12,64,1],[88,64,1],[12,92,1],[88,92,1]],10:[[12,8],[88,8],[50,22],[12,36],[88,36],[12,64,1],[88,64,1],[50,78,1],[12,92,1],[88,92,1]]};
+function courtSVG(rk,su,red){
+const G="#b08d3e",K="#2a3441",BG=red?"#f6e9e2":"#e9edf3";
+const T=rk==="K"?'<path d="M21.5 21.5 24 10.5 28.5 17.2 31 9 33.5 17.2 38 10.5 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':rk==="Q"?'<circle cx="24.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="31" cy="8.4" r="2.3" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="37.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><path d="M21.5 21.5 24.5 12.8 31 18.2 37.5 12.8 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':'<path d="M21.5 22.5C23 12.5 39 12.5 40.5 22.5L40.5 25 21.5 25Z" fill="currentColor" stroke="'+K+'" stroke-width=".9"/><path d="M38.5 14C40.5 8.8 44 6.8 47 7.2 45.8 11.4 42.8 14.4 39.8 15.6Z" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/>';
+const F='<path d="M18 50 L23.5 37.8 Q31 34.4 38.5 37.8 L44 50Z" fill="currentColor"/><path d="M27.5 36.8 L31 41.5 34.5 36.8 31 39Z" fill="#f7f2df" opacity=".9"/><circle cx="31" cy="28.5" r="6.4" fill="#f2ddba" stroke="'+K+'" stroke-width="1"/><circle cx="31" cy="44.6" r="3.3" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/><text x="31" y="47.3" font-size="7.6" text-anchor="middle" fill="'+K+'" font-family="Georgia,serif">'+su+'</text>'+T;
+return '<svg viewBox="0 0 62 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="2.5" y="2.5" width="57" height="95" rx="5" fill="'+BG+'" stroke="'+G+'" stroke-width="1.6"/><rect x="6" y="6" width="50" height="88" rx="3" fill="none" stroke="'+G+'" stroke-width=".7" opacity=".6"/><g>'+F+'</g><g transform="rotate(180 31 50)">'+F+'</g><path d="M31 45.5 35.5 50 31 54.5 26.5 50Z" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/></svg>';
+}
+function cardHTML(c,back=false){
+if(back)return '<span class="card back"></span>';
+const s=Math.floor(c/13),r=c%13,su="♠♥♦♣"[s],red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+const cnr='<i class="cnr"><b>'+rk+'</b><s>'+su+'</s></i><i class="cnr dn"><b>'+rk+'</b><s>'+su+'</s></i>';
+let fld;
+if(r===12)fld='<span class="fld"><span class="ace">'+su+'</span></span>';
+else if(r>=9)fld='<span class="fld ct">'+courtSVG(rk,su,red)+'</span>';
+else fld='<span class="fld">'+PIPS[r+2].map(function(p){return '<span class="pip'+(p[2]?" iv":"")+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+su+'</span>';}).join("")+'</span>';
+return '<span class="card'+(red?" red":"")+'">'+cnr+fld+'</span>';
+}
 function log(s){let d=document.createElement("div");d.textContent=s;$("log").append(d);if($("log").children.length>400)$("log").firstChild.remove();$("log").scrollTop=$("log").scrollHeight}
 function rank(cards){
 const counts=Array(15).fill(0),suits=[[],[],[],[]];
@@ -1823,7 +1899,7 @@ $("street").textContent=handNo?"第 "+handNo+" 手 · "+streetNames[street]:"等
 $("status").textContent=running?(actor>=0?players[actor].name+" 行动中":"正在发牌…"):"";
 $("stats").innerHTML=[`手数 ${stats.hands}`,`VPIP ${pct(stats.vpip,stats.hands)}`,`PFR ${pct(stats.pfr,stats.hands)}`,`胜率 ${pct(stats.wins,stats.hands)}`,`买入 ${stats.buyins}`, `净胜 ${signedBB(players[0].stack+(running?players[0].total:0)-stats.bought)}`].map(t=>"<span>"+t+"</span>").join("");
 $("lineup").innerHTML="<b>在场代号</b>：" + players.slice(1).map(p=>`${p.name} ${EMOJIS[p.base.id]} · ${fmtBB(p.stack)}`).join(" · ");
-$("reads").textContent=`对你的共同观察：面对下注 ${reads.faced} 次，弃牌 ${pct(reads.fold,reads.faced)}，跟注 ${pct(reads.call,reads.faced)}。`+(reads.bigN>=6?`面对大注（≥12BB）${reads.bigN} 次，跟注 ${pct(reads.bigC,reads.bigN)}。`:"");
+$("reads").textContent=`本场对你的共同观察：面对下注 ${Math.round(reads.faced)} 次，弃牌 ${pct(reads.fold,reads.faced)}，跟注 ${pct(reads.call,reads.faced)}。`+(reads.bigN>=6?`面对大注（≥12BB）${Math.round(reads.bigN)} 次，跟注 ${pct(reads.bigC,reads.bigN)}。`:"");
 $("next").hidden=running;$("next").textContent=players[0].stack<=0?"重新买入并开始":(stats.hands>0?"下一手":"开始第一手");
 $("rebuy").hidden=running||players[0].stack>0;
 $("skip").hidden=!running||!(players[0].folded||players[0].allin);
@@ -2126,10 +2202,22 @@ function $(id){ return document.getElementById("rp" + id);}
 function fmtBB(n){ const v = n/2; return (Number.isInteger(v)? v: v.toFixed(1)) + "BB";}
 function signedBB(n){ return (n >= 0? "+": "") + fmtBB(n);}
 function cardText(c){ return RANKS[c % 13] + SUITS[Math.floor(c / 13)];}
-function cardHTML(c, back){
-if (back) return '<span class="card back">◆</span>';
-const red = Math.floor(c / 13) === 1 || Math.floor(c / 13) === 2;
-return '<span class="card' + (red? " red": "") + '">' + cardText(c) + '</span>';
+const PIPS={2:[[50,8],[50,92,1]],3:[[50,8],[50,50],[50,92,1]],4:[[12,8],[88,8],[12,92,1],[88,92,1]],5:[[12,8],[88,8],[50,50],[12,92,1],[88,92,1]],6:[[12,8],[88,8],[12,50],[88,50],[12,92,1],[88,92,1]],7:[[12,8],[88,8],[50,29],[12,50],[88,50],[12,92,1],[88,92,1]],8:[[12,8],[88,8],[50,29],[12,50],[88,50],[50,71,1],[12,92,1],[88,92,1]],9:[[12,8],[88,8],[12,36],[88,36],[50,50],[12,64,1],[88,64,1],[12,92,1],[88,92,1]],10:[[12,8],[88,8],[50,22],[12,36],[88,36],[12,64,1],[88,64,1],[50,78,1],[12,92,1],[88,92,1]]};
+function courtSVG(rk,su,red){
+const G="#b08d3e",K="#2a3441",BG=red?"#f6e9e2":"#e9edf3";
+const T=rk==="K"?'<path d="M21.5 21.5 24 10.5 28.5 17.2 31 9 33.5 17.2 38 10.5 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':rk==="Q"?'<circle cx="24.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="31" cy="8.4" r="2.3" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><circle cx="37.5" cy="10.2" r="2" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/><path d="M21.5 21.5 24.5 12.8 31 18.2 37.5 12.8 40.5 21.5Z" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/><rect x="21.5" y="21.5" width="19" height="3.2" fill="'+G+'" stroke="'+K+'" stroke-width=".9"/>':'<path d="M21.5 22.5C23 12.5 39 12.5 40.5 22.5L40.5 25 21.5 25Z" fill="currentColor" stroke="'+K+'" stroke-width=".9"/><path d="M38.5 14C40.5 8.8 44 6.8 47 7.2 45.8 11.4 42.8 14.4 39.8 15.6Z" fill="'+G+'" stroke="'+K+'" stroke-width=".8"/>';
+const F='<path d="M18 50 L23.5 37.8 Q31 34.4 38.5 37.8 L44 50Z" fill="currentColor"/><path d="M27.5 36.8 L31 41.5 34.5 36.8 31 39Z" fill="#f7f2df" opacity=".9"/><circle cx="31" cy="28.5" r="6.4" fill="#f2ddba" stroke="'+K+'" stroke-width="1"/><circle cx="31" cy="44.6" r="3.3" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/><text x="31" y="47.3" font-size="7.6" text-anchor="middle" fill="'+K+'" font-family="Georgia,serif">'+su+'</text>'+T;
+return '<svg viewBox="0 0 62 100" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect x="2.5" y="2.5" width="57" height="95" rx="5" fill="'+BG+'" stroke="'+G+'" stroke-width="1.6"/><rect x="6" y="6" width="50" height="88" rx="3" fill="none" stroke="'+G+'" stroke-width=".7" opacity=".6"/><g>'+F+'</g><g transform="rotate(180 31 50)">'+F+'</g><path d="M31 45.5 35.5 50 31 54.5 26.5 50Z" fill="'+G+'" stroke="'+K+'" stroke-width=".7"/></svg>';
+}
+function cardHTML(c,back){
+if(back)return '<span class="card back"></span>';
+const s=Math.floor(c/13),r=c%13,su="♠♥♦♣"[s],red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+const cnr='<i class="cnr"><b>'+rk+'</b><s>'+su+'</s></i><i class="cnr dn"><b>'+rk+'</b><s>'+su+'</s></i>';
+let fld;
+if(r===12)fld='<span class="fld"><span class="ace">'+su+'</span></span>';
+else if(r>=9)fld='<span class="fld ct">'+courtSVG(rk,su,red)+'</span>';
+else fld='<span class="fld">'+PIPS[r+2].map(function(p){return '<span class="pip'+(p[2]?" iv":"")+'" style="left:'+p[0]+'%;top:'+p[1]+'%">'+su+'</span>';}).join("")+'</span>';
+return '<span class="card'+(red?" red":"")+'">'+cnr+fld+'</span>';
 }
 let DATA = null, handIdx = 0, step = 0, playTimer = null;
 function rec(){ return DATA.replays[handIdx];}
@@ -2212,7 +2300,7 @@ function setHand(i){ stopPlay(); handIdx = Math.max(0, Math.min(DATA.replays.len
 function buildHands(){
 $("handSel").innerHTML = DATA.replays.map((r, i) => '<option value="' + i + '">第 ' + r.no + ' 手 · ' + r.players[0].hole.map(cardText).join(" ") + ' · ' + signedBB(r.nets[0]) + '</option>').join("");
 const s = DATA.stats;
-if (s) $("sessionInfo").textContent = "共 " + DATA.replays.length + " 手可回放 · VPIP " + (s.hands? (100 * s.vpip / s.hands).toFixed(1): "0") + "% · 买入 " + s.buyins + " 次";
+if (s) $("sessionInfo").textContent = "共 " + DATA.replays.length + " 手可回放 · VPIP " + (s.hands? (100 * s.vpip / s.hands).toFixed(1): "0") + "% · 买入 " + s.buyins;
 }
 function loadData(d){
 if (!d ||!Array.isArray(d.replays) ||!d.replays.length){ $("loadMsg").textContent = "没读到有效的回放数据。"; return;}
@@ -2254,20 +2342,34 @@ return { loadGameData, stop: stopPlay };
 </script>
 <script>
 "use strict";
-/* tab navigation (view layer only; game logic above is untouched) */
+/* side hidden navigation (view layer only; game logic above is untouched).
+   Same pages, tab values and show() semantics as the old bottom tab bar;
+   the rails live off-canvas with a slim grip showing, slide out on grip tap,
+   and auto-close after a page pick or any tap outside the rail. */
 (function(){
   var pages={table:document.getElementById("tab-table"),feed:document.getElementById("tab-feed"),review:document.getElementById("tab-review"),settings:document.getElementById("tab-settings")};
-  var btns=document.querySelectorAll("#tabbar button[data-tab]");
+  var btns=document.querySelectorAll(".sidenav button[data-tab]");
+  var navL=document.getElementById("sidenavL"),navR=document.getElementById("sidenavR");
+  var sideOf={table:"L",feed:"L",review:"R",settings:"R"};
   var cur="table",beforeReplay="table";
+  function closeNavs(){navL.classList.remove("open");navR.classList.remove("open");}
+  function markSide(){navL.classList.toggle("has-cur",sideOf[cur]==="L");navR.classList.toggle("has-cur",sideOf[cur]==="R");}
   function show(name){
     if(!pages[name])name="table";
     cur=name;
     for(var k in pages)pages[k].hidden=(k!==name);
     btns.forEach(function(b){var on=b.getAttribute("data-tab")===name;b.classList.toggle("on",on);b.setAttribute("aria-selected",on?"true":"false");});
+    markSide();closeNavs();
     window.scrollTo(0,0);
   }
   btns.forEach(function(b){b.addEventListener("click",function(){show(b.getAttribute("data-tab"));});});
-  document.getElementById("openReplay").addEventListener("click",function(){beforeReplay=cur;document.body.classList.add("replay-open");});
+  [navL,navR].forEach(function(nav){
+    nav.querySelector(".grip").addEventListener("click",function(){
+      var was=nav.classList.contains("open");closeNavs();if(!was)nav.classList.add("open");
+    });
+  });
+  document.addEventListener("click",function(e){if(!e.target.closest||!e.target.closest(".sidenav"))closeNavs();});
+  document.getElementById("openReplay").addEventListener("click",function(){beforeReplay=cur;closeNavs();document.body.classList.add("replay-open");});
   document.getElementById("closeReplay").addEventListener("click",function(){document.body.classList.remove("replay-open");show(beforeReplay);});
   show("table");
 })();
