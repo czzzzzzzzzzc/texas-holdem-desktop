@@ -1346,8 +1346,8 @@ const SUIT_INNER=[
 '<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
 '<path d="M50 4 86 50 50 96 14 50Z"/>',
 '<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
-function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
-function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'</span>'}
+function suitSVG(s){return '<img class="su" src="assets/cards/suit-'+s+'.webp" alt="" draggable="false">'}
+function courtHTML(rk,s){return '<span class="court"><img class="art" src="assets/cards/court-'+rk.toLowerCase()+'.webp" alt="" draggable="false"><i class="cnr idx"><b>'+rk+'</b>'+suitSVG(s)+'</i></span>'}
 function cardHTML(c,back=false){
 if(back)return '<span class="card back"></span>';
 const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
