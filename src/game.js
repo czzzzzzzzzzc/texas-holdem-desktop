@@ -54,8 +54,8 @@ const ROSTER46=[
 const DIFFICULTIES=[{"key": "novice", "name": "新手", "index": 40, "noise": 0.24, "tight": -0.06, "fishRatio": 0.6, "proDefault": 0, "proRange": [0, 0], "readsLevel": 0, "exploit": 0.4}, {"key": "starter", "name": "入门", "index": 51, "noise": 0.16, "tight": -0.02, "fishRatio": 0.45, "proDefault": 1, "proRange": [0, 1], "readsLevel": 1, "exploit": 0.6}, {"key": "intermediate", "name": "进阶", "index": 64, "noise": 0.1, "tight": 0.03, "fishRatio": 0.3, "proDefault": 2, "proRange": [1, 2], "readsLevel": 2, "exploit": 0.8}, {"key": "expert", "name": "高手", "index": 81, "noise": 0.06, "tight": 0.08, "fishRatio": 0.15, "proDefault": 3, "proRange": [2, 3], "readsLevel": 3, "exploit": 1}, {"key": "pro", "name": "职业", "index": 100, "noise": 0.03, "tight": 0.14, "fishRatio": 0, "proDefault": 4, "proRange": [3, 5], "readsLevel": 4, "exploit": 1.15}];
 const ENGBASES=ROSTER46.map((e,i)=>Object.freeze({id:i,code:e.id,kind:e.kind,style:e.archetype,vpip:e.params[0],aggression:e.params[1],bluff:e.params[2],call:e.params[3],trap:e.params[4],size:e.params[5],tiltGain:e.params[6]}));
 const SETTINGS_KEY="holdem-settings-v1";
-let settings={preBB:[2.5,3,4,5],postPct:[33,50,66,100],difficultyKey:"intermediate",proCount:null};
-try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s){if(Array.isArray(s.preBB)&&s.preBB.length)settings.preBB=s.preBB;if(Array.isArray(s.postPct)&&s.postPct.length)settings.postPct=s.postPct;if(DIFFICULTIES.some(d=>d.key===s.difficultyKey))settings.difficultyKey=s.difficultyKey;if(Number.isInteger(s.proCount)&&s.proCount>=0&&s.proCount<=8)settings.proCount=s.proCount}}catch(e){}
+let settings={preBB:[2.5,3,4,5],postPct:[33,50,66,100],difficultyKey:"intermediate",proCount:null,allinConfirm:false};
+try{let s=JSON.parse(localStorage.getItem(SETTINGS_KEY));if(s){if(Array.isArray(s.preBB)&&s.preBB.length)settings.preBB=s.preBB;if(Array.isArray(s.postPct)&&s.postPct.length)settings.postPct=s.postPct;if(DIFFICULTIES.some(d=>d.key===s.difficultyKey))settings.difficultyKey=s.difficultyKey;if(Number.isInteger(s.proCount)&&s.proCount>=0&&s.proCount<=8)settings.proCount=s.proCount;if(s.allinConfirm===true)settings.allinConfirm=true}}catch(e){}
 
 const BrainModule = (() => {
 "use strict";
@@ -122,6 +122,13 @@ const READ_DEFAULTS = Object.freeze({
   rfF: 0,
   rfN: 0
 });
+
+// 读牌样本门槛按 readsLevel 逐档查表；L0/L1 不查表（L1 的 big 通道门槛沿用 6）。
+const READ_MINIMUMS = {
+  2: { faced: 20, big: 6, rf: 8 },
+  3: { faced: 17, big: 5, rf: 7 },
+  4: { faced: 14, big: 4, rf: 6 }
+};
 
 // 未传 difficulty 时直接返回原概率，不改变旧行为或随机数消耗。
 function exploitProbability(p, difficulty) {
@@ -615,9 +622,10 @@ function botDecision(p, ctx, reads) {
   const { board, street, highest, minRaise, button, players, stats, bb } = ctx;
   const difficulty = ctx.difficulty;
   const readsLevel = difficulty ? difficulty.readsLevel : 2;
-  const facedMinimum = readsLevel >= 4 ? 14 : 20;
-  const bigMinimum = readsLevel >= 4 ? 4 : 6;
-  const rfMinimum = readsLevel >= 4 ? 6 : 8;
+  const minimums = READ_MINIMUMS[Math.min(readsLevel, 4)] || READ_MINIMUMS[2];
+  const facedMinimum = minimums.faced;
+  const bigMinimum = minimums.big;
+  const rfMinimum = minimums.rf;
   const b = p.base;
   const L = readsLevel >= 2
     ? p.live
@@ -956,7 +964,7 @@ function createBrain({ roster = ROSTER, reads = {}, difficulty } = {}) {
         : 0
     });
 
-  // 保留调用方 reads 对象身份，便于调用方持久化；只补齐缺失计数。
+  // 保留调用方 reads 对象身份（本场会话内共享，不落盘）；只补齐缺失计数。
   for (const [key, value] of Object.entries(READ_DEFAULTS)) {
     if (reads[key] === undefined) reads[key] = value;
   }
@@ -1113,6 +1121,9 @@ function createBrain({ roster = ROSTER, reads = {}, difficulty } = {}) {
 
   function observe(evt) {
     if (evt.type === "handStart") {
+      // 记牌本场制：每手开始先统一衰减，近期行为权重更高。
+      for (const key of Object.keys(READ_DEFAULTS)) reads[key] *= .98;
+
       if (evt.stats) syncStats(evt.stats);
 
       handRaised = false;
@@ -1292,11 +1303,11 @@ let d=providers[p.seat](p,view);
 return {type:d.type,to:d.amount||0,eq:1};
 }
 function isFishBase(b){return b.kind!=="pro"&&(b.vpip>=.5||b.call>=.8)}
-function drawLineup(slots,seatedBases){
+function drawLineup(slots,seatedBases,excludeOnly){
 let diff=currentDifficulty(),proTarget=settings.proCount!=null?settings.proCount:diff.proDefault,fishTarget=Math.min(8-proTarget,Math.round(8*diff.fishRatio));
 let used=new Set(seatedBases.map(b=>b.id)),pool=ENGBASES.filter(b=>!used.has(b.id));
 let pros=shuffle(pool.filter(b=>b.kind==="pro")),fish=shuffle(pool.filter(isFishBase)),reg=shuffle(pool.filter(b=>b.kind!=="pro"&&!isFishBase(b)));
-let proSeats=seatedBases.filter(b=>b.kind==="pro").length,fishSeats=seatedBases.filter(isFishBase).length,out=[];
+let proSeats=excludeOnly?0:seatedBases.filter(b=>b.kind==="pro").length,fishSeats=excludeOnly?0:seatedBases.filter(isFishBase).length,out=[];
 while(out.length<slots){
 let nxt=null;
 if(proSeats<proTarget&&pros.length){nxt=pros.pop();proSeats++}
@@ -1313,12 +1324,12 @@ let saved;try{saved=JSON.parse(localStorage.getItem(KEY)||"null")}catch{}
 let stats=saved?.stats||{hands:0,vpip:0,pfr:0,wins:0,buyins:1,bought:100};
 let history=Array.isArray(saved?.history)?saved.history.slice(-200):[];
 let humanStack=Number.isInteger(saved?.stack)&&saved.stack>=0?saved.stack:100;
-let reads=Object.assign({faced:0,fold:0,call:0,bigN:0,bigC:0,rfF:0,rfN:0},saved?.reads||{});
+let reads={faced:0,fold:0,call:0,bigN:0,bigC:0,rfF:0,rfN:0}; // 记牌本场制：存档里的 reads 不恢复，每次打开从零开始
 let replays=Array.isArray(saved?.replays)?saved.replays:[];
 let handRecord=null;
 let players=[],board=[],deck=[],button=-1,sb=-1,bb=-1,street=0,highest=0,minRaise=2,actor=-1;
 let pending=new Set(),acted=new Set(),running=false,reveal=false,instant=false,skipRest=false,timer=null,iteration=0,handNo=stats.hands;
-let startStack=0,humanActions=[],handVpip=false,handPfr=false,handFaced=false,handCalled=false,handRaised=false,seated="",equityCache="",equityValue=null;
+let startStack=0,humanActions=[],handVpip=false,handPfr=false,handFaced=false,handCalled=false,handRaised=false,handGtoWorst=-1,seated="",equityCache="",equityValue=null;
 const streetNames=["翻牌前","翻牌","转牌","河牌"];
 const categories=["高牌","一对","两对","三条","顺子","同花","葫芦","四条","同花顺"];
 const EMOJIS=["🦅","🐕","🐷","🗿","🐟","🎭","🕷️","⚖️","🦊","🤖","🐣","👨","🌋","❄️","🎯","♠️","🐺","🦁","🐯","🦈","🐙","🦉","🐴","🦄","🐲","🦂","🐌","🦋","🐢","🦎","🐳","🦩","🦜","🐿️","🦔","🌵","🍀","🔥","💎","🎲","🃏","👑","⚡","🌊","🏔️","🌙"];
@@ -1327,10 +1338,26 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function makePlayer(seat,base=null,stack=100){return {seat,base,name:base?base.code:"你",stack,hole:[],bet:0,total:0,folded:false,inHand:false,allin:false,winner:false,last:"",won:0,pace:.85+Math.random()*.4}}
 players=[makePlayer(0,null,humanStack),...drawLineup(8,[]).map((b,i)=>makePlayer(i+1,b))];
-function persist(){try{localStorage.setItem(KEY,JSON.stringify({stats,history,reads,stack:players[0].stack,replays}))}catch{}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify({stats,history,stack:players[0].stack,replays}))}catch{}}
 function cardText(c){return "23456789TJQKA"[c%13]+["♠","♥","♦","♣"][Math.floor(c/13)]}
 function cardsText(a){return a.length?a.map(cardText).join(" "):"—"}
-function cardHTML(c,back=false){return back?'<span class="card back">◆</span>':`<span class="card ${[1,2].includes(Math.floor(c/13))?"red":""}">${cardText(c)}</span>`}
+const SUIT_INNER=[
+'<path d="M50 6C40 24 12 42 12 62a17 17 0 0 0 28 11c4-1 7-4 8-8 0 10-3 20-8 27h20c-5-7-8-17-8-27 1 4 4 7 8 8a17 17 0 0 0 28-11C88 42 60 24 50 6Z"/>',
+'<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
+'<path d="M50 4 86 50 50 96 14 50Z"/>',
+'<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
+function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
+function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'</span>'}
+function cardHTML(c,back=false){
+if(back)return '<span class="card back"></span>';
+const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+if(r>=9&&r<=11)return '<span class="card'+(red?" red":"")+'">'+courtHTML(rk,s)+'</span>';
+const cnr='<i class="cnr"><b>'+rk+'</b>'+suitSVG(s)+'</i>';
+let mid;
+if(r===12)mid='<span class="big ace">'+suitSVG(s)+'</span>';
+else mid='<span class="big">'+suitSVG(s)+'</span>';
+return '<span class="card'+(red?" red":"")+'">'+cnr+mid+'</span>';
+}
 function log(s){let d=document.createElement("div");d.textContent=s;$("log").append(d);if($("log").children.length>400)$("log").firstChild.remove();$("log").scrollTop=$("log").scrollHeight}
 function rank(cards){
 const counts=Array(15).fill(0),suits=[[],[],[],[]];
@@ -1393,11 +1420,11 @@ for(let l of levels){let contributors=players.filter(p=>p.total>=l);out.push({am
 }
 function dyn(p){if(!p.base||!brain)return "";return brain.dynFor(p.seat)}
 function draw(){
-const positions=[[50,68],[13,68],[10,48],[14,26],[35,12],[65,12],[86,26],[90,48],[87,68]];
+const positions=[[50,86],[18,77],[12,48],[19,22],[38,11],[62,11],[81,22],[88,48],[82,77]];
 $("seats").innerHTML=players.map((p,i)=>`<div class="seat ${actor===i&&running?"actor":""} ${p.folded?"folded":""} ${p.winner?"winner":""}" style="left:${positions[i][0]}%;top:${positions[i][1]}%">
-<div class="avatar">${p.base?EMOJIS[p.base.id]:"😎"}${button===i?'<span class="dealer">D</span>':""}</div>${p.base?`<div class="code">${p.name}</div>`:""}
-<div class="cards">${p.hole.map(c=>cardHTML(c,i!==0&&!reveal)).join("")}</div>
-<div class="pill">${fmtBB(p.stack)}</div>
+${p.base?`<div class="avatar">${EMOJIS[p.base.id]}${button===i?'<span class="dealer">D</span>':""}</div><div class="code">${p.name}</div>`:""}
+<div class="cards${i!==0&&reveal?" rev":""}">${p.hole.map(c=>cardHTML(c,i!==0&&!reveal)).join("")}</div>
+<div class="pill">${p.base?fmtBB(p.stack):`<span class="you">你</span> ${fmtBB(p.stack)}${button===i?'<span class="dealer-inline">D</span>':""}`}</div>
 <div class="bet">${p.folded?"已弃牌":p.allin?"全下":p.last||""}</div>
 <div class="state-mini">${p.base&&dyn(p)!==p.base.style?dyn(p):""}</div></div>`).join("");
 const betPos=positions.map(([x,y])=>[x+(50-x)*.34,y+(44-y)*.34]);
@@ -1408,9 +1435,9 @@ let pots=layers().filter(x=>x.contributors.length>1);
 $("sidepots").textContent=pots.length>1?pots.map((p,i)=>(i?"边池 "+i:"主池")+"："+fmtBB(p.amount)).join(" · "):"";
 $("street").textContent=handNo?"第 "+handNo+" 手 · "+streetNames[street]:"等待开局";
 $("status").textContent=running?(actor>=0?players[actor].name+" 行动中":"正在发牌…"):"";
-$("stats").innerHTML=[`手数 ${stats.hands}`,`VPIP ${pct(stats.vpip,stats.hands)}`,`PFR ${pct(stats.pfr,stats.hands)}`,`胜率 ${pct(stats.wins,stats.hands)}`,`买入 ${stats.buyins} 次`, `净胜 ${signedBB(players[0].stack+(running?players[0].total:0)-stats.bought)}`].map(t=>"<span>"+t+"</span>").join("");
+$("stats").innerHTML=[`手数 ${stats.hands}`,`VPIP ${pct(stats.vpip,stats.hands)}`,`PFR ${pct(stats.pfr,stats.hands)}`,`胜率 ${pct(stats.wins,stats.hands)}`,`买入 ${stats.buyins}`, `净胜 ${signedBB(players[0].stack+(running?players[0].total:0)-stats.bought)}`].map(t=>"<span>"+t+"</span>").join("");
 $("lineup").innerHTML="<b>在场代号</b>：" + players.slice(1).map(p=>`${p.name} ${EMOJIS[p.base.id]} · ${fmtBB(p.stack)}`).join(" · ");
-$("reads").textContent=`对你的共同观察：面对下注 ${reads.faced} 次，弃牌 ${pct(reads.fold,reads.faced)}，跟注 ${pct(reads.call,reads.faced)}。`+(reads.bigN>=6?`面对大注（≥12BB）${reads.bigN} 次，跟注 ${pct(reads.bigC,reads.bigN)}。`:"");
+$("reads").textContent=`本场对你的共同观察：面对下注 ${Math.round(reads.faced)} 次，弃牌 ${pct(reads.fold,reads.faced)}，跟注 ${pct(reads.call,reads.faced)}。`+(reads.bigN>=6?`面对大注（≥12BB）${Math.round(reads.bigN)} 次，跟注 ${pct(reads.bigC,reads.bigN)}。`:"");
 $("next").hidden=running;$("next").textContent=players[0].stack<=0?"重新买入并开始":(stats.hands>0?"下一手":"开始第一手");
 $("rebuy").hidden=running||players[0].stack>0;
 $("skip").hidden=!running||!(players[0].folded||players[0].allin);
@@ -1425,7 +1452,7 @@ function updateControls(){
 let p=players[0],turn=running&&actor===0,call=Math.min(p.stack,Math.max(0,highest-p.bet)),raiseOK=turn&&mayRaise(p);
 $("fold").disabled=!turn;$("check").disabled=!turn||call>0;$("call").disabled=!turn||call===0;$("call").textContent="跟注 "+fmtBB(call)+(call===p.stack&&call>0?"（全下）":"");
 for(let id of ["raise","raiseSlider","raiseNumber","allin"])$(id).disabled=!raiseOK;for(let b of document.querySelectorAll(".qbtn"))b.disabled=!raiseOK;
-$("quickPre").style.display=running&&street===0?"":"none";$("quickPost").style.display=running&&street>0?"":"none";
+$("quickPre").style.display=running&&street===0?"":"none";$("quickPost").style.display=running&&street>0?"":"none";$("quickPot").style.display=running?"":"none";$("changeTable").disabled=running;
 if(raiseOK){let lo=minTo(p),hi=p.bet+p.stack;$("raiseSlider").min=$("raiseNumber").min=lo/2;$("raiseSlider").max=$("raiseNumber").max=hi/2;
 let v=clamp(Number($("raiseNumber").value)||lo/2,lo/2,hi/2);$("raiseSlider").value=$("raiseNumber").value=v}
 }
@@ -1433,7 +1460,7 @@ function updateEquity(){
 let p=players[0];if(!$("showEquity").checked||!running||p.folded){$("equity").textContent="";return}
 let n=contenders().length-1,key=p.hole.join(",")+"|"+board.join(",")+"|"+n;
 if(key!==equityCache){equityCache=key;equityValue=equity(p.hole,board,n)}
-$("equity").textContent="你的估计胜率："+(100*equityValue).toFixed(1)+"%（含平分，250 次模拟）"
+$("equity").textContent="胜率："+(100*equityValue).toFixed(1)+"%"
 }
 function pay(p,n){n=Math.max(0,Math.min(p.stack,Math.floor(n)));p.stack-=n;p.bet+=n;p.total+=n;p.allin=p.stack===0;return n}
 function startHand(){
@@ -1447,7 +1474,7 @@ for(let p of players){
 p.hole=[];p.bet=0;p.total=0;p.folded=false;p.inHand=p.stack>0;p.allin=false;p.winner=false;p.last="";p.won=0;p.initial=p.stack;
 }
 running=true;reveal=false;instant=false;skipRest=false;iteration=0;board=[];deck=shuffle(Array.from({length:52},(_,i)=>i));street=0;highest=2;minRaise=2;actor=-1;
-handNo=stats.hands+1;startStack=players[0].stack;humanActions=[];handVpip=false;handPfr=false;handFaced=false;handCalled=false;handRaised=false;
+handNo=stats.hands+1;startStack=players[0].stack;humanActions=[];handVpip=false;handPfr=false;handFaced=false;handCalled=false;handRaised=false;handGtoWorst=-1;
 seated=players.slice(1).map(p=>p.name).join("、");$("result").textContent="";
 button=nextSeat(button,p=>p.inHand);sb=nextSeat(button,p=>p.inHand);bb=nextSeat(sb,p=>p.inHand);
 for(let round=0;round<2;round++)for(let j=1;j<=9;j++){let p=players[(button+j)%9];if(p.inHand)p.hole.push(deck.pop())}
@@ -1540,16 +1567,17 @@ function renderGto(s,myType){
 let gp=document.getElementById("gtoPanel");if(!gp)return;
 let a=gtoAdvice(s);
 let names={fold:"弃牌",check:"让牌",call:"跟注",raise:"加注"};
-let verdict,mark;
-if(myType===a.rec){verdict="与参考线一致";mark="✓"}
-else if(a.rec==="fold"&&myType==="call"&&a.eq>=a.odds-.05){verdict="边界跟注，可接受";mark="≈"}
-else if(a.rec==="call"&&myType==="raise"&&a.eq>=.55){verdict="偏凶一档，可接受";mark="≈"}
-else if(a.rec==="raise"&&(myType==="call"||myType==="check")&&a.eq>=.55){verdict="偏弱一档，可接受";mark="≈"}
-else{verdict="与参考线偏差";mark="✗"}
-let bluffNote=(myType==="raise"&&a.eq!==null&&a.eq<.34&&s.street>0)?"（此为诈唬下注）":"";
-gtoLog.unshift(`#${handNo} ${streetNames[s.street]}：你【${names[myType]}】· GTO 参考【${names[a.rec]}】— ${a.why} ${mark} ${verdict}${bluffNote}`);
+let verdict,mark,cls;
+if(myType===a.rec){verdict="正确";mark="✓";cls="gto-ok"}
+else if(a.rec==="fold"&&myType==="call"&&a.eq>=a.odds-.05){verdict="接近";mark="△";cls="gto-mid"}
+else if(a.rec==="call"&&myType==="raise"&&a.eq>=.55){verdict="接近";mark="△";cls="gto-mid"}
+else if(a.rec==="raise"&&(myType==="call"||myType==="check")&&a.eq>=.55){verdict="接近";mark="△";cls="gto-mid"}
+else{verdict="不对";mark="✗";cls="gto-bad"}
+let sev=cls==="gto-bad"?2:cls==="gto-mid"?1:0;if(sev>handGtoWorst)handGtoWorst=sev;
+let line=mark+" "+verdict+(mark==="✓"?"":" · 参考："+names[a.rec]);
+gtoLog.unshift(`<span class="gto-line ${cls}">${line}</span>`);
 gtoLog=gtoLog.slice(0,3);
-gp.innerHTML=gtoLog.join("<br>");
+gp.innerHTML=gtoLog[0];
 }
 function boardWet(b){
 if(!b||b.length<3)return 0;
@@ -1587,11 +1615,11 @@ let net=players[0].stack-startStack;
 stats.hands++;if(handVpip)stats.vpip++;if(handPfr)stats.pfr++;if(players[0].won>0)stats.wins++;
 let pos=positionName(0);
 let result=descriptions.join("；");
-history.push({no:handNo,pos,hole:cardsText(players[0].hole),board:cardsText(board),actions:humanActions.join(" / ")||"无主动操作",result,net,bots:seated});
+history.push({no:handNo,pos,hole:cardsText(players[0].hole),board:cardsText(board),actions:humanActions.join(" / ")||"无主动操作",result,net,bots:seated,...(handGtoWorst>=0?{gto:["ok","mid","bad"][handGtoWorst]}:{})});
 history=history.slice(-200);running=false;
 $("result").textContent=result+"。你本手："+signedBB(net)+"。";
 log("你本手 "+signedBB(net)+"；剩余 "+fmtBB(players[0].stack));
-for(let p of players){p.total=0;p.bet=0;if(p.stack===0&&p.base)log(p.name+" 破产离桌，下一手补充新玩家")}
+for(let p of players){p.total=0;p.bet=0;if(p.stack===0&&p.base)log(p.name+" 破产离桌")}
 if(handRecord){handRecord.board=[...board];handRecord.result=descriptions.concat(refunds).join("；");handRecord.winners=[...winners].map(p=>p.seat);handRecord.nets=players.map(p=>p.stack-p.initial);replays.push(handRecord);if(replays.length>60)replays.splice(0,replays.length-60);handRecord=null}
 $("next").textContent="下一手";persist();renderHistory();draw();timer=setTimeout(()=>{if(!running)startHand()},skipRest?60:2600)
 }
@@ -1599,13 +1627,27 @@ function positionName(seat){
 let order=[];for(let j=0;j<9;j++){let s=(button+j)%9;if(players[s].inHand)order.push(s)}
 let idx=order.indexOf(seat);return ["BTN","SB","BB","UTG","UTG+1","中位","中位+1","HJ","CO"][idx]||"未入局"
 }
+let historyFilter="all";
+function historyMatches(h){
+if(historyFilter==="bigwin")return h.net>=40;
+if(historyFilter==="bigloss")return h.net<=-40;
+if(historyFilter==="review")return h.gto==="bad";
+return true;
+}
+function setHistoryFilter(f){
+historyFilter=f;
+[["hfAll","all"],["hfWin","bigwin"],["hfLoss","bigloss"],["hfReview","review"]].forEach(([id,v])=>{let b=$(id);if(b)b.className="hf"+(v===f?" on":"")});
+renderHistory();
+}
 function renderHistory(){
 $("history").replaceChildren();
 for(let h of [...history].reverse()){
+if(!historyMatches(h))continue;
 let e=document.createElement("article");e.textContent=`#${h.no} ${h.pos}｜${h.hole}｜公共牌 ${h.board}｜${h.actions}｜${h.result}｜你 ${signedBB(h.net)}`;$("history").append(e)
 }
 }
 function quickRaise(v){setRaise(v);act(players[0],"raise",Math.round(Number($("raiseNumber").value)*2))}
+function potRatioTo(r){let p=players[0],owed=Math.max(0,highest-p.bet);return highest+Math.round((potTotal()+owed)*r)}
 function setRaise(v){let p=players[0];let n=clamp(Math.round(Number(v)||minTo(p)),minTo(p),p.bet+p.stack);$("raiseSlider").value=$("raiseNumber").value=n/2}
 $("fold").onclick=()=>act(players[0],"fold");
 $("check").onclick=()=>act(players[0],"check");
@@ -1617,14 +1659,21 @@ $("raiseNumber").onchange=e=>setRaise(Number(e.target.value)*2);
 function syncDifficultyInputs(){let d=$("setDifficulty"),pc=$("setPros");if(d)d.value=settings.difficultyKey;if(pc)pc.value=settings.proCount==null?"default":String(settings.proCount);let hint=$("diffHint");if(hint){let df=currentDifficulty();hint.textContent="当前难度："+df.name+"（强度指数 "+df.index+"）· 默认职业 "+df.proDefault+" 人 · 切换下一手起生效"}}
 if($("setDifficulty"))$("setDifficulty").onchange=e=>{settings.difficultyKey=e.target.value;saveSettings();syncDifficultyInputs();log("难度切换为「"+currentDifficulty().name+"」，下一手起生效")};
 if($("setPros"))$("setPros").onchange=e=>{settings.proCount=e.target.value==="default"?null:Math.min(8,Math.max(0,Number(e.target.value)||0));saveSettings();log("本桌职业人数已调整，下一手起生效")};
+if($("setAllinConfirm"))$("setAllinConfirm").onchange=e=>{settings.allinConfirm=!!e.target.checked;saveSettings();log(settings.allinConfirm?"全下前确认已开启":"全下前确认已关闭")};
+$("hfAll").onclick=()=>setHistoryFilter("all");
+$("hfWin").onclick=()=>setHistoryFilter("bigwin");
+$("hfLoss").onclick=()=>setHistoryFilter("bigloss");
+$("hfReview").onclick=()=>setHistoryFilter("review");
 function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings))}catch(e){}}
 function renderQuick(){
 let qp=$("quickPre");qp.replaceChildren();
 settings.preBB.forEach(bb=>{let b=document.createElement("button");b.className="qbtn";b.textContent="到 "+bb+"BB";b.onclick=()=>quickRaise(Math.round(bb*2));qp.append(b)});
 let qf=$("quickPost");qf.replaceChildren();
 settings.postPct.forEach(pc=>{let b=document.createElement("button");b.className="qbtn";b.textContent=pc+"% 池";b.onclick=()=>quickRaise(highest+Math.round((potTotal()+Math.max(0,highest-players[0].bet))*pc/100));qf.append(b)});
+let qt=$("quickPot");qt.replaceChildren();
+[["半池",.5],["2/3 池",2/3],["满池",1]].forEach(([label,r])=>{let b=document.createElement("button");b.className="qbtn potbtn";b.textContent=label;b.onclick=()=>quickRaise(potRatioTo(r));qt.append(b)});
 }
-function fillSettingsInputs(){[1,2,3,4].forEach(i=>{let a=$("setPre"+i),b=$("setPost"+i);if(a)a.value=settings.preBB[i-1]??"";if(b)b.value=settings.postPct[i-1]??""});syncDifficultyInputs()}
+function fillSettingsInputs(){[1,2,3,4].forEach(i=>{let a=$("setPre"+i),b=$("setPost"+i);if(a)a.value=settings.preBB[i-1]??"";if(b)b.value=settings.postPct[i-1]??""});let ac=$("setAllinConfirm");if(ac)ac.checked=!!settings.allinConfirm;syncDifficultyInputs()}
 renderQuick();fillSettingsInputs();
 $("saveSettings").onclick=()=>{
 let pre=[1,2,3,4].map(i=>Number($("setPre"+i).value)).filter(v=>v>0&&v<=200);
@@ -1632,7 +1681,17 @@ let post=[1,2,3,4].map(i=>Number($("setPost"+i).value)).filter(v=>v>0&&v<=500);
 if(pre.length)settings.preBB=pre;if(post.length)settings.postPct=post;
 saveSettings();renderQuick();fillSettingsInputs();draw();log("快捷下注设置已保存");
 };
-$("allin").onclick=()=>quickRaise(players[0].bet+players[0].stack);
+$("allin").onclick=()=>{if(settings.allinConfirm&&!confirm("确认全下 "+fmtBB(players[0].bet+players[0].stack)+"？"))return;quickRaise(players[0].bet+players[0].stack)};
+function changeTable(){
+if(running)return;
+clearTimeout(timer);
+let cur=players.slice(1).map(p=>p.base),drawn=drawLineup(8,cur,true);
+players=[players[0],...drawn.map((b,i)=>makePlayer(i+1,b))];
+brain=null;providers={};
+log("换桌："+drawn.map(b=>b.code).join("、")+" 入座");
+draw()
+}
+$("changeTable").onclick=changeTable;
 $("next").onclick=startHand;
 $("skip").onclick=()=>{
 if(!running||!(players[0].folded||players[0].allin))return;
@@ -1660,9 +1719,9 @@ $("share").onclick=async()=>{
 let text=buildExportText();
 try{
 let file=new File([text],"holdem-review.json",{type:"application/json"});
-if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});log("已通过系统分享发送复盘数据")}
-else log("当前环境不支持直接分享：请点「导出复盘数据」下载文件，再在聊天里用 + 添加附件发给我");
-}catch(e){if(e&&e.name!=="AbortError")log("分享没有成功，请用导出+附件的方式")}
+if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});log("已分享复盘数据")}
+else log("当前环境不支持分享，请用「导出复盘数据」下载后以附件发送");
+}catch(e){if(e&&e.name!=="AbortError")log("分享失败，请用导出+附件")}
 };
 $("export").onclick=()=>{
 let text=buildExportText();
@@ -1702,4 +1761,4 @@ else if(k==="arrowdown"&&actor===0){e.preventDefault();setRaise(Math.round(Numbe
 else if(k==="enter"&&actor===0&&!$("raise").disabled)act(players[0],"raise",Math.round(Number($("raiseNumber").value)*2));
 else if(k==="n"&&!running)$("next").click();
 });
-renderHistory();draw();log("欢迎入座。盲注 0.5/1BB，每次买入 50BB。点击开始发牌。");
+renderHistory();draw();
