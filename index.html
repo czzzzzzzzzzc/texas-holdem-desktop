@@ -384,7 +384,11 @@ body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;mar
 </style>
 <style>
 /* v14: card remodel — GG-style single corner index + one big centre suit
-   (spec: research_notes/poker-card-modeling-20261111/spec.md). Suits are
+   (spec: research_notes/poker-card-modeling-20261111/spec.md).
+   v14.1 (2026-11-17, user-reported overlap): corner index slimmed and the
+   centre suit moved to top:66% so the two never touch at phone tiers;
+   court cards (J/Q/K) drop the corner index entirely — the centred badge
+   is the only rank carrier, so no doubled letters. Suits are
    inline SVG paths, never font glyphs, so iOS cannot emoji-render them;
    colour comes from currentColor (.card = black suits #23272E, .red =
    #C0272D — recolouring those two values is the only step to a 4-colour
@@ -396,16 +400,16 @@ body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;mar
 .card{position:relative;display:inline-block;overflow:hidden;vertical-align:top;background:linear-gradient(180deg,#FAFAF7,#F1EFE9);border:1px solid #C9C4B8;border-radius:10%/7.2%;color:#23272E;box-shadow:0 1px 2px rgba(0,0,0,.35),0 4px 10px rgba(0,0,0,.18)}
 .card.red{color:#C0272D}
 .card .cnr{position:absolute;left:7%;top:4.5%;z-index:2;display:flex;flex-direction:column;align-items:center;font-style:normal;line-height:1}
-.card .cnr b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.16em;line-height:.8;letter-spacing:-.04em}
-.card .cnr .su{width:.55em;height:auto;display:block;margin-top:-.04em}
+.card .cnr b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.02em;line-height:.8;letter-spacing:-.04em}
+.card .cnr .su{width:.5em;height:auto;display:block;margin-top:-.04em}
 .card .su path,.card .su circle{fill:currentColor}
-.card .big{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);z-index:1;line-height:0}
-.card .big .su{width:1.24em;height:auto;display:block}
-.card .big.ace .su{width:1.38em}
+.card .big{position:absolute;left:50%;top:66%;transform:translate(-50%,-50%);z-index:1;line-height:0}
+.card .big .su{width:1.02em;height:auto;display:block}
+.card .big.ace .su{width:1.18em}
 .card .court{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
 .card .court::before{content:"";position:absolute;inset:4.2% 3%;border:1px solid currentColor;opacity:.35;border-radius:7%/5%}
-.card .court b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.42em;line-height:1}
-.card .court .su{width:.89em;height:auto;display:block;margin-top:.1em}
+.card .court b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:1.55em;line-height:1}
+.card .court .su{width:.95em;height:auto;display:block;margin-top:.1em}
 /* back: navy gradient + 45° crosshatch (SVG tile, 1px lines / 5px pitch,
    white 7%) + cream double frame at 6% inset + gold diamond emblem (30%)
    with a small spade inside. No text on the back. */
@@ -430,6 +434,7 @@ body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;mar
 #replayView .card.back{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Cpath d='M0 7L7 0M0 0l7 7' stroke='rgba(255,255,255,0.07)' stroke-width='1' fill='none'/%3E%3C/svg%3E"),linear-gradient(180deg,#1E2A44,#16203A);border:1px solid #5F7694;color:transparent}
 /* replay seat faces are small (22px): centre suit 50%, court frame dropped;
    the corner index already lands at ≈40% via that tier's font-size ratio */
+#replayView .seat .card .big{top:72%}
 #replayView .seat .card .big .su{width:1em}
 #replayView .seat .card .court::before{display:none}
 </style>
@@ -520,6 +525,7 @@ body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;mar
 </nav>
 <nav class="sidenav right" id="sidenavR" aria-label="主导航（右）">
 <button type="button" class="grip" aria-label="展开右侧导航"><span class="gdot"></span><span class="gtxt">导航</span><span class="garr">‹</span></button>
+<button type="button" data-tab="table" aria-selected="false"><span class="tic">♠</span>牌桌</button>
 <button type="button" data-tab="review" aria-selected="false"><span class="tic">⏪</span>复盘</button>
 <button type="button" data-tab="settings" aria-selected="false"><span class="tic">⚙</span>设置</button>
 </nav>
@@ -1878,10 +1884,10 @@ function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'
 function cardHTML(c,back=false){
 if(back)return '<span class="card back"></span>';
 const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+if(r>=9&&r<=11)return '<span class="card'+(red?" red":"")+'">'+courtHTML(rk,s)+'</span>';
 const cnr='<i class="cnr"><b>'+rk+'</b>'+suitSVG(s)+'</i>';
 let mid;
 if(r===12)mid='<span class="big ace">'+suitSVG(s)+'</span>';
-else if(r>=9)mid=courtHTML(rk,s);
 else mid='<span class="big">'+suitSVG(s)+'</span>';
 return '<span class="card'+(red?" red":"")+'">'+cnr+mid+'</span>';
 }
@@ -1950,7 +1956,7 @@ function draw(){
 const positions=[[50,86],[18,77],[12,48],[19,22],[38,11],[62,11],[81,22],[88,48],[82,77]];
 $("seats").innerHTML=players.map((p,i)=>`<div class="seat ${actor===i&&running?"actor":""} ${p.folded?"folded":""} ${p.winner?"winner":""}" style="left:${positions[i][0]}%;top:${positions[i][1]}%">
 ${p.base?`<div class="avatar">${EMOJIS[p.base.id]}${button===i?'<span class="dealer">D</span>':""}</div><div class="code">${p.name}</div>`:""}
-<div class="cards${i!==0&&reveal?" rev":""}">${p.hole.map(c=>cardHTML(c,i!==0&&!reveal)).join("")}</div>
+<div class="cards${i!==0&&reveal&&!p.folded?" rev":""}">${p.hole.map(c=>cardHTML(c,i!==0&&!(reveal&&!p.folded))).join("")}</div>
 <div class="pill">${p.base?fmtBB(p.stack):`<span class="you">你</span> ${fmtBB(p.stack)}${button===i?'<span class="dealer-inline">D</span>':""}`}</div>
 <div class="bet">${p.folded?"已弃牌":p.allin?"全下":p.last||""}</div>
 <div class="state-mini">${p.base&&dyn(p)!==p.base.style?dyn(p):""}</div></div>`).join("");
@@ -2309,10 +2315,10 @@ function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'
 function cardHTML(c,back){
 if(back)return '<span class="card back"></span>';
 const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
+if(r>=9&&r<=11)return '<span class="card'+(red?" red":"")+'">'+courtHTML(rk,s)+'</span>';
 const cnr='<i class="cnr"><b>'+rk+'</b>'+suitSVG(s)+'</i>';
 let mid;
 if(r===12)mid='<span class="big ace">'+suitSVG(s)+'</span>';
-else if(r>=9)mid=courtHTML(rk,s);
 else mid='<span class="big">'+suitSVG(s)+'</span>';
 return '<span class="card'+(red?" red":"")+'">'+cnr+mid+'</span>';
 }
