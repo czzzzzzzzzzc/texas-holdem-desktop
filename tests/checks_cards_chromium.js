@@ -36,7 +36,15 @@ const near = (got, exp, tol, msg) => assert(Math.abs(got - exp) <= tol, msg + ':
 const HTML = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 
 (async () => {
-  const server = http.createServer((req, res) => { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(HTML); });
+  const server = http.createServer((req, res) => {
+    // v15: card faces load image assets — serve the repo folder like Pages does
+    if (req.url.startsWith('/assets/')){
+      const fp = path.join(__dirname, '..', decodeURIComponent(req.url.split('?')[0]));
+      if (fs.existsSync(fp)){ res.writeHead(200, { 'Content-Type': 'image/webp' }); res.end(fs.readFileSync(fp)); return; }
+      res.writeHead(404); res.end(); return;
+    }
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' }); res.end(HTML);
+  });
   await new Promise(r => server.listen(0, '127.0.0.1', r));
   const port = server.address().port;
   const browser = await puppeteer.launch({ executablePath: chromePath(), args: ['--no-sandbox', '--disable-gpu'] });
@@ -86,13 +94,12 @@ const HTML = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
         let r;
         if (big){ r = big.getBoundingClientRect(); }
         else {
-          const b = court.querySelector('b').getBoundingClientRect();
-          const s = court.querySelector('.su').getBoundingClientRect();
-          r = { left: Math.min(b.left, s.left), right: Math.max(b.right, s.right), top: Math.min(b.top, s.top), bottom: Math.max(b.bottom, s.bottom), width: 0, height: 0 };
-          r.width = r.right - r.left; r.height = r.bottom - r.top;
+          // v15 court: the portrait art is the centre element (pill index aside)
+          r = court.querySelector('.art').getBoundingClientRect();
         }
         item.centre = { x: (r.left + r.width / 2 - cr.left) / cr.width * 100, y: (r.top + r.height / 2 - cr.top) / cr.height * 100 };
         item.courtCentreY = court ? 50 : 66;
+        item.courtCentreX = court ? 60.3 : 50;
         item.centreTop = (r.top - cr.top) / cr.height * 100;
         const cnrEl = card.querySelector('.cnr');
         item.cnrBottom = cnrEl ? (cnrEl.getBoundingClientRect().bottom - cr.top) / cr.height * 100 : 0;
@@ -109,12 +116,11 @@ const HTML = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   assert(gallery.length === 14, 'gallery should hold 14 cards, got ' + gallery.length);
   for (const it of gallery){
     if (it.back){ assert(it.cnr === 0, 'back card must have no corner index'); continue; }
-    if (it.i >= 9 && it.i <= 11) assert(it.cnr === 0, 'gallery card #' + it.i + ' (court): corner index must be absent (badge only), got ' + it.cnr);
-    else assert(it.cnr === 1, 'gallery card #' + it.i + ': exactly 1 corner index required, got ' + it.cnr);
+    assert(it.cnr === 1, 'gallery card #' + it.i + ': exactly 1 corner index required, got ' + it.cnr);
     if (!it.court) assert(it.centreTop >= it.cnrBottom - 1, 'gallery card #' + it.i + ': centre suit overlaps corner stack (top ' + it.centreTop.toFixed(1) + '% < corner bottom ' + it.cnrBottom.toFixed(1) + '%)');
     assert(it.legacy === 0, 'gallery card #' + it.i + ': legacy pip/fld markup present');
     assert(it.centre, 'gallery card #' + it.i + ': centre element missing');
-    assert(Math.abs(it.centre.x - 50) < 3, 'gallery card #' + it.i + ': centre x off by ' + (it.centre.x - 50).toFixed(1) + '%');
+    assert(Math.abs(it.centre.x - it.courtCentreX) < 4, 'gallery card #' + it.i + ': centre x off by ' + (it.centre.x - it.courtCentreX).toFixed(1) + '%');
     assert(Math.abs(it.centre.y - it.courtCentreY) < 3, 'gallery card #' + it.i + ': centre y off by ' + (it.centre.y - it.courtCentreY).toFixed(1) + '%');
     if (it.i >= 9 && it.i <= 11) assert(it.court, 'gallery card #' + it.i + ' (J/Q/K) must use the court badge');
     if (it.i === 12) assert(it.ace, 'gallery card #12 (A) must use the ace centre');
@@ -178,7 +184,7 @@ const HTML = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
       overlap };
   });
   near(s.w, 40, 2, '440 revealed bot width = board tier'); near(s.h, 56, 2, '440 revealed bot height = board tier');
-  assert(!s.back && s.rev && !s.heroRev && (s.court ? s.cnr === 0 : s.cnr === 1), 'revealed bot card state wrong: ' + JSON.stringify(s));
+  assert(!s.back && s.rev && !s.heroRev && s.cnr === 1, 'revealed bot card state wrong: ' + JSON.stringify(s));
   assert(s.foldedBack && !s.foldedRev, 'folded bot must stay mucked at showdown: ' + JSON.stringify(s));
   assert(!s.overlap, 'revealed card centre suit overlaps corner stack: ' + s.overlap);
   await page.evaluate(() => { players[3].folded = false; });
@@ -213,9 +219,9 @@ const HTML = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   near(rp.hero.w, 34, 1.5, 'replay hero width (unchanged)'); near(rp.hero.h, 46, 1.5, 'replay hero height (unchanged)');
   near(rp.bot.w, 22, 1.5, 'replay bot width (unchanged)'); near(rp.bot.h, 30, 1.5, 'replay bot height (unchanged)');
   near(rp.board.w, 34, 1.5, 'replay board width (unchanged)'); near(rp.board.h, 48, 1.5, 'replay board height (unchanged)');
-  // hero hole is J♥ + 10♠: the court card carries no corner index (badge
-  // only, v14.1); the number card keeps exactly one.
-  assert(rp.heroCnr === 0 && rp.heroCourt && rp.hero2Cnr === 1 && rp.heroCentre && rp.legacy === 0, 'replay design check failed: ' + JSON.stringify(rp));
+  // hero hole is J♥ + 10♠: both cards carry exactly one corner index
+  // (the court's sits on a pill over its portrait, v15).
+  assert(rp.heroCnr === 1 && rp.heroCourt && rp.hero2Cnr === 1 && rp.heroCentre && rp.legacy === 0, 'replay design check failed: ' + JSON.stringify(rp));
   console.log('replay: new design at unchanged sizes (34x46 / 22x30 / 34x48) OK');
   await page.screenshot({ path: '/tmp/cards-replay-440.png' });
   const ov0 = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
