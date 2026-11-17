@@ -438,6 +438,25 @@ body.replay-open #replayView{position:fixed;inset:0;height:100dvh;z-index:80;mar
 #replayView .seat .card .big .su{width:1em}
 #replayView .seat .card .court::before{display:none}
 </style>
+<style>
+/* v15 (2026-11-17, user: regenerate the card art): faces now use generated
+   image assets instead of drawn SVG suits — glossy suit emblems
+   (assets/cards/suit-0..3.webp, ♠♥♦♣), engraved court portraits
+   (court-j/q/k.webp) and a photographic navy card back (back.webp).
+   Layout metrics stay v14.1 (corner stack vs centre suit never overlap);
+   only the artwork source changed. */
+.card{background:#FFFFFF}
+.card img.su{object-fit:contain}
+.card.back{background-image:url("assets/cards/back.webp");background-size:cover;background-position:center;border-color:#5F7694}
+.card.back::before,.card.back::after{display:none}
+.card .court::before{display:none}
+.card .court .art{position:absolute;top:6%;bottom:6%;left:26%;right:5.5%;width:68.5%;height:88%;object-fit:cover;border:1px solid #A89E83;border-radius:4px}
+.card .cnr.idx{background:rgba(250,250,247,.95);border:1px solid #D9D5C7;border-radius:5px;padding:.07em .06em;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.card .cnr.idx b{font-size:1.02em}
+.card .cnr.idx .su{width:.5em;margin-top:-.04em}
+#replayView .card{background:#FFFFFF}
+#replayView .card.back{background-image:url("assets/cards/back.webp");background-size:cover;background-position:center}
+</style>
 </head>
 <body>
 <header><h1>♠ 九人无限注德州扑克</h1></header>
@@ -1879,8 +1898,8 @@ const SUIT_INNER=[
 '<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
 '<path d="M50 4 86 50 50 96 14 50Z"/>',
 '<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
-function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
-function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'</span>'}
+function suitSVG(s){return '<img class="su" src="assets/cards/suit-'+s+'.webp" alt="" draggable="false">'}
+function courtHTML(rk,s){return '<span class="court"><img class="art" src="assets/cards/court-'+rk.toLowerCase()+'.webp" alt="" draggable="false"><i class="cnr idx"><b>'+rk+'</b>'+suitSVG(s)+'</i></span>'}
 function cardHTML(c,back=false){
 if(back)return '<span class="card back"></span>';
 const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
@@ -2310,8 +2329,8 @@ const SUIT_INNER=[
 '<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
 '<path d="M50 4 86 50 50 96 14 50Z"/>',
 '<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
-function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
-function courtHTML(rk,s){return '<span class="court"><b>'+rk+'</b>'+suitSVG(s)+'</span>'}
+function suitSVG(s){return '<img class="su" src="assets/cards/suit-'+s+'.webp" alt="" draggable="false">'}
+function courtHTML(rk,s){return '<span class="court"><img class="art" src="assets/cards/court-'+rk.toLowerCase()+'.webp" alt="" draggable="false"><i class="cnr idx"><b>'+rk+'</b>'+suitSVG(s)+'</i></span>'}
 function cardHTML(c,back){
 if(back)return '<span class="card back"></span>';
 const s=Math.floor(c/13),r=c%13,red=s===1||s===2,rk=r===8?"10":"23456789TJQKA"[r];
