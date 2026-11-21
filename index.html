@@ -592,7 +592,7 @@ body.replay-open #bottombar{display:none!important}
 <div class="tabpage" id="tab-drill" hidden>
 <section class="panel">
 <div class="drill-head"><strong>🎯 胜率练习</strong><span class="small" id="drillScore"></span></div>
-<p class="small">看牌面估算你的胜率（对手按随机手牌计算），从三个选项里选最接近的一个。练的是人脑的估法：先判断现在的牌有多强，再数真正有用的补牌；标准答案由蒙特卡洛模拟给出、只用来核对。</p>
+<p class="small">看牌面估算你的胜率（对手按随机手牌计算），从三个选项里选最接近的一个。练的是人脑的估法：先判断现在的牌有多强，再数能让你变强的补牌；标准答案只用来核对——转牌、河牌的单挑题是完全枚举的精确值，其余由蒙特卡洛模拟给出。</p>
 <div class="drill-ctrl">
 <label class="small">阶段 <select id="drillStreet">
 <option value="random">随机</option><option value="pre">翻前</option><option value="flop">翻牌</option><option value="turn">转牌</option><option value="river">河牌</option>
