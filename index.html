@@ -522,15 +522,15 @@ body.replay-open #bottombar{display:none!important}
 }
 </style>
 <style>
-/* v18 solid-colour faces (user-picked reference, two colours only): the whole
-   face is the suit colour — red suits red, black suits near-black — with white
-   glyphs, ONE top-left corner index (rank + suit) and ONE huge rank centred.
-   No centre suit, no bottom-right index. Card back unchanged. */
+/* v19 white faces (user correction of v18): same layout as the reference —
+   ONE top-left corner index (rank + suit) and ONE huge rank centred, no
+   centre suit, no bottom-right index — but on a plain WHITE face, glyphs in
+   the suit colour (red / near-black). Card back unchanged. */
 .card{font-family:"Helvetica Neue",Helvetica,Arial,system-ui,sans-serif;font-weight:800}
-.card:not(.back){background:#191D24;color:#F5F7FA;border-color:rgba(0,0,0,.45)}
-.card.red:not(.back){background:#B3202C;color:#F5F7FA}
-#replayView .card:not(.back){background:#191D24;color:#F5F7FA}
-#replayView .card.red:not(.back){background:#B3202C;color:#F5F7FA}
+.card:not(.back){background:#FFFFFF;color:#191D24;border-color:#B9BEC7}
+.card.red:not(.back){background:#FFFFFF;color:#C0272D}
+#replayView .card:not(.back){background:#FFFFFF;color:#191D24}
+#replayView .card.red:not(.back){background:#FFFFFF;color:#C0272D}
 .card .cnr{font-size:.66em;top:4px;left:5px}
 .card .cnr b{font-family:inherit;font-size:1em}
 .card .cnr .su{width:.78em}
@@ -2008,8 +2008,8 @@ const SUIT_INNER=[
 '<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
 '<path d="M50 4 86 50 50 96 14 50Z"/>',
 '<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
-// v18: solid-colour faces (user-picked reference): one top-left corner index,
-// one huge rank in the centre, white glyphs on the suit colour (red / black).
+// v19: white faces, reference layout: one top-left corner index, one huge
+// rank in the centre, glyphs in the suit colour (red / near-black).
 function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
 function cardHTML(c,back=false){
 if(back)return '<span class="card back"></span>';
@@ -2437,8 +2437,8 @@ const SUIT_INNER=[
 '<path d="M50 88C22 66 8 50 8 31 8 17 18 8 30 8c9 0 16 4 20 12 4-8 11-12 20-12 12 0 22 9 22 23C92 50 78 66 50 88Z"/>',
 '<path d="M50 4 86 50 50 96 14 50Z"/>',
 '<circle cx="50" cy="28" r="19"/><circle cx="29" cy="62" r="19"/><circle cx="71" cy="62" r="19"/><path d="M50 50c1 13-2 24-9 34h18c-7-10-10-21-9-34Z"/>'];
-// v18: solid-colour faces (user-picked reference): one top-left corner index,
-// one huge rank in the centre, white glyphs on the suit colour (red / black).
+// v19: white faces, reference layout: one top-left corner index, one huge
+// rank in the centre, glyphs in the suit colour (red / near-black).
 function suitSVG(s){return '<svg class="su" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">'+SUIT_INNER[s]+'</svg>'}
 function cardHTML(c,back){
 if(back)return '<span class="card back"></span>';
