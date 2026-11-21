@@ -2575,14 +2575,18 @@ return { loadGameData, stop: stopPlay };
     }
     return CATS[catOf(hole.concat(board))];
   }
-  function outsCount(hole,board){
-    if(board.length!==3&&board.length!==4)return 0;
+  function outsDetail(hole,board){
+    if(board.length!==3&&board.length!==4)return null;
     var curCat=catOf(hole.concat(board)),known={},i;
     for(i=0;i<hole.length;i++)known[hole[i]]=1;
     for(i=0;i<board.length;i++)known[board[i]]=1;
-    var outs=0;
-    for(var c=0;c<52;c++){if(known[c])continue;if(catOf(hole.concat(board,[c]))>curCat)outs++;}
-    return outs;
+    var groups={},total=0;
+    for(var c=0;c<52;c++){
+      if(known[c])continue;
+      var cat=catOf(hole.concat(board,[c]));
+      if(cat>curCat){var nm=CATS[cat];if(!groups[nm])groups[nm]=[];groups[nm].push(cardText(c));total++;}
+    }
+    return total?{total:total,groups:groups}:null;
   }
   function streetName(blen){return blen===0?"翻前":blen===3?"翻牌圈":blen===4?"转牌圈":"河牌圈";}
   function newQ(){
@@ -2624,9 +2628,16 @@ return { loadGameData, stop: stopPlay };
     });
     if(!ok)btn.classList.add("wrong");
     var lines=[(ok?"✓ 答对了！":"✗ 不对，你选了 "+picked+"%。")+"真实胜率约 "+cur.correct+"%（"+SAMPLES+" 次模拟）",
-      "当前牌型："+madeText(cur.hole,cur.board)+" · 对手 "+cur.n+" 人"];
-    var outs=outsCount(cur.hole,cur.board);
-    if(outs>=4)lines.push("听牌提示：约 "+outs+" 张补牌能让你在下一张反超成更大牌");
+      "当前牌型："+madeText(cur.hole,cur.board)+" · 对手 "+cur.n+" 人",
+      "胜率公式：把剩余牌随机发完、给 "+cur.n+" 个对手随机手牌，模拟 "+SAMPLES+" 次，胜率 = 获胜次数（含平局分池）÷ "+SAMPLES];
+    var od=outsDetail(cur.hole,cur.board);
+    if(od){
+      var parts=[];
+      for(var nm in od.groups)parts.push("成"+nm+"："+od.groups[nm].join(" "));
+      lines.push("补牌共 "+od.total+" 张 —— "+parts.join("；"));
+      if(cur.board.length===3)lines.push("速算公式（四二法则）：翻牌后还有两张牌要发，听牌成牌概率 ≈ 补牌 "+od.total+" × 4% ≈ "+(od.total*4)+"%；你已成牌本身还有摊牌价值，总胜率比这个数高");
+      else lines.push("速算公式（四二法则）：转牌后只剩一张牌要发，听牌成牌概率 ≈ 补牌 "+od.total+" × 2% ≈ "+(od.total*2)+"%；你已成牌本身还有摊牌价值，总胜率比这个数高");
+    }
     if(cur.n>=3)lines.push("多人底池会明显摊薄胜率：同样的牌，对手越多越难赢");
     $("drillFeedback").textContent=lines.join("\n");
     $("drillNext").hidden=false;
