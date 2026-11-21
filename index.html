@@ -2629,28 +2629,86 @@ return { loadGameData, stop: stopPlay };
     }
     return CATS[catOf(hole.concat(board))];
   }
-  // v17.1: only REAL outs — cards that make a hand that can actually win.
-  // Any category bump to two pair+ counts. A one-pair bump counts only when
-  // it pairs the player's own hole card above every board rank (top pair);
-  // pairing the board or making a small pair usually still loses, so those
-  // cards are NOT outs (the old any-improvement count overstated them).
+  // v20 (Astra general rewrite, verified against an 8-case battery):
+  // "improvement candidates" — a card counts only if it makes the HERO's own
+  // hand strictly stronger in a way that is his: it pairs/completes with his
+  // hole cards (top pair, two pair, trips, quads), builds a full house his
+  // hole cards help form, or completes a straight/flush whose best five
+  // actually use a hole card and are not simply the board itself. Pairing
+  // the board (everyone improves together) never counts. Backdoor draws are
+  // not single-card candidates. Comparison uses the full hand value rank(),
+  // so a higher flush/straight of the same category also counts.
+  function keyRanksOf(v){var cat=Math.floor(v/759375),rem=v-cat*759375;var k1=Math.floor(rem/50625);var k2=Math.floor((rem-k1*50625)/3375);return [k1,k2];}
   function outsDetail(hole,board){
     if(board.length!==3&&board.length!==4)return null;
-    var curCat=catOf(hole.concat(board)),known={},i;
-    for(i=0;i<hole.length;i++)known[hole[i]]=1;
-    for(i=0;i<board.length;i++)known[board[i]]=1;
-    var boardMax=0;for(i=0;i<board.length;i++)boardMax=Math.max(boardMax,board[i]%13+2);
-    var holeRanks={};holeRanks[hole[0]%13+2]=1;holeRanks[hole[1]%13+2]=1;
+    var base=hole.concat(board),known={},holeRanks={},boardMax=0,i;
+    for(i=0;i<base.length;i++)known[base[i]]=1;
+    for(i=0;i<hole.length;i++)holeRanks[hole[i]%13+2]=1;
+    for(i=0;i<board.length;i++)boardMax=Math.max(boardMax,board[i]%13+2);
+    var origVal=rank(base),origCat=Math.floor(origVal/759375);
+    function countsOf(list){var cn=new Array(15);for(var j=0;j<15;j++)cn[j]=0;for(j=0;j<list.length;j++)cn[list[j]%13+2]++;return cn;}
+    function privateBest(candidate,nextBoard,bestVal){
+      if(nextBoard.length===5&&rank(nextBoard)===bestVal)return false;
+      for(var a=0;a<base.length-3;a++)for(var b=a+1;b<base.length-2;b++)for(var d=b+1;d<base.length-1;d++)for(var e=d+1;e<base.length;e++){
+        if(a>=2)continue; // the four chosen cards must include a hole card
+        if(rank([base[a],base[b],base[d],base[e],candidate])===bestVal)return true;
+      }
+      return false;
+    }
     var groups={},total=0;
     for(var c=0;c<52;c++){
       if(known[c])continue;
-      var cat=catOf(hole.concat(board,[c]));
-      if(cat<=curCat)continue;
-      var real=cat>=2||(cat===1&&curCat===0&&holeRanks[c%13+2]&&(c%13+2)>boardMax);
-      if(!real)continue;
-      var nm=CATS[cat];if(!groups[nm])groups[nm]=[];groups[nm].push(cardText(c));total++;
+      var nextBoard=board.concat([c]),all=base.concat([c]);
+      var nextVal=rank(all);
+      if(nextVal<=origVal)continue;
+      var nextCat=Math.floor(nextVal/759375),r=c%13+2,useful=false;
+      if(nextCat===4||nextCat===5||nextCat===8){
+        useful=privateBest(c,nextBoard,nextVal);
+      }else{
+        if(nextCat<=origCat)continue; // kicker-only gains are not listed
+        var allCounts=countsOf(all);
+        if(nextCat===1)useful=origCat===0&&!!holeRanks[r]&&r>boardMax;
+        else if(nextCat===2)useful=!!holeRanks[r]&&allCounts[r]===2;
+        else if(nextCat===3)useful=!!holeRanks[r]&&allCounts[r]===3;
+        else if(nextCat===7)useful=!!holeRanks[r]&&allCounts[r]===4;
+        else if(nextCat===6){var kr=keyRanksOf(nextVal),bc=countsOf(nextBoard);useful=(r===kr[0]||r===kr[1])&&(bc[kr[0]]<3||bc[kr[1]]<2);}
+      }
+      if(!useful)continue;
+      var nm=CATS[nextCat];if(!groups[nm])groups[nm]=[];groups[nm].push(cardText(c));total++;
     }
     return total?{total:total,groups:groups}:null;
+  }
+  // Exact equity vs ONE random opponent by full enumeration (turn: every
+  // river x every opponent combo = 45,540 states; river: 990 states).
+  // Ties split the pot. Used for the quiz answer when n===1 on turn/river;
+  // everything else keeps the Monte Carlo equity().
+  function equityExact1(hole,board){
+    var known={},i,j,k;
+    for(i=0;i<hole.length;i++)known[hole[i]]=1;
+    for(i=0;i<board.length;i++)known[board[i]]=1;
+    var rest=[];for(i=0;i<52;i++)if(!known[i])rest.push(i);
+    var score=0,states=0;
+    function showdown(hv,finalBoard,skip){
+      var s=0,n=0;
+      for(var a=0;a<rest.length;a++){
+        if(rest[a]===skip)continue;
+        for(var b=a+1;b<rest.length;b++){
+          if(rest[b]===skip)continue;
+          var ov=rank([rest[a],rest[b]].concat(finalBoard));
+          s+=hv>ov?1:(hv===ov?0.5:0);n++;
+        }
+      }
+      return [s,n];
+    }
+    if(board.length===5){
+      var hv0=rank(hole.concat(board)),r0=showdown(hv0,board,-1);
+      return r0[0]/r0[1];
+    }
+    for(i=0;i<rest.length;i++){
+      var fb=board.concat([rest[i]]),hv=rank(hole.concat(fb)),rr=showdown(hv,fb,rest[i]);
+      score+=rr[0];states+=rr[1];
+    }
+    return score/states;
   }
   function streetName(blen){return blen===0?"翻前":blen===3?"翻牌圈":blen===4?"转牌圈":"河牌圈";}
   function newQ(){
@@ -2660,14 +2718,15 @@ return { loadGameData, stop: stopPlay };
     var om=$("drillOpps").value,n=om==="random"?1+Math.floor(Math.random()*4):parseInt(om,10);
     var deck=shuffle(Array.from({length:52},function(_,i){return i;}));
     var hole=deck.slice(0,2),board=deck.slice(2,2+blen);
-    var eq=equity(hole,board,n,SAMPLES);
+    var exact=n===1&&(blen===4||blen===5);
+    var eq=exact?equityExact1(hole,board):equity(hole,board,n,SAMPLES);
     var correct=Math.round(eq*100);
     var d1=8+Math.floor(Math.random()*8),d2=8+Math.floor(Math.random()*8);
     var cand=[correct+d1,correct-d2,correct+d1+7,correct-d2-7,correct+18,correct-18,correct+24,correct-24];
     var opts=[correct];
     for(var i=0;i<cand.length&&opts.length<3;i++){var v=cand[i];if(v>=2&&v<=98&&opts.indexOf(v)<0)opts.push(v);}
     shuffle(opts);
-    cur={hole:hole,board:board,n:n,eq:eq,correct:correct,opts:opts,answered:false};
+    cur={hole:hole,board:board,n:n,eq:eq,correct:correct,opts:opts,answered:false,exact:exact};
     $("drillMeta").textContent=streetName(blen)+" · 对手 "+n+" 人（随机手牌）· 第 "+(stats.total+1)+" 题";
     $("drillHole").innerHTML=hole.map(function(c){return cardHTML(c);}).join("");
     var bh=board.map(function(c){return cardHTML(c);});
@@ -2691,22 +2750,24 @@ return { loadGameData, stop: stopPlay };
       if(cur.opts[parseInt(b.getAttribute("data-i"),10)]===cur.correct)b.classList.add("right");
     });
     if(!ok)btn.classList.add("wrong");
-    var lines=[(ok?"✓ 答对了！":"✗ 不对，你选了 "+picked+"%。")+"真实胜率约 "+cur.correct+"%（"+SAMPLES+" 次模拟）",
+    var lines=[(ok?"✓ 答对了！":"✗ 不对，你选了 "+picked+"%。")+(cur.exact?"精确胜率 "+cur.correct+"%（完全枚举）":"真实胜率约 "+cur.correct+"%（"+SAMPLES+" 次模拟）"),
       "当前牌型："+madeText(cur.hole,cur.board)+" · 对手 "+cur.n+" 人",
-      "标准答案怎么来的：把剩余牌随机发完、给 "+cur.n+" 个对手随机手牌，模拟 "+SAMPLES+" 次取胜率——这是核对用的真值；人靠下面两步估：先看现在的牌有多强，再数真正有用的补牌"];
+      cur.exact?"标准答案怎么来的：把剩下的牌和对手手牌的每一种可能都算一遍（完全枚举），平局分池——这是精确值；人靠下面两步估：先看现在的牌有多强，再数能让你变强的补牌":"标准答案怎么来的：把剩余牌随机发完、给 "+cur.n+" 个对手随机手牌，模拟 "+SAMPLES+" 次取胜率——这是核对用的真值；人靠下面两步估：先看现在的牌有多强，再数能让你变强的补牌"];
+    if(cur.board.length===0)lines.push("翻前没有补牌可数：胜率来自手牌本身的强度（口袋对、高张、同花、连张更强）和对手人数——对手越多，同样的手牌胜率越低");
+    if(cur.board.length===5)lines.push("河牌已经发完，没有补牌、也没有四二法则：胜率只看摊牌——你这手牌能赢多少随机手牌（本题对手都是随机手牌，不看下注）");
     var od=outsDetail(cur.hole,cur.board);
     if(cur.board.length===3||cur.board.length===4){
       if(od){
         var parts=[];
         for(var nm in od.groups)parts.push("成"+nm+"："+od.groups[nm].join(" "));
-        lines.push("真正有用的补牌共 "+od.total+" 张（只算能成两对以上、或配出顶对的牌；配成小对子赢不了的没算）—— "+parts.join("；"));
+        lines.push("能让你变强的补牌共 "+od.total+" 张（只算靠你自己的牌成更大牌型：配自己的牌、完成顺子/同花；配公共牌那种大家一起变强的没算，中了也不保证赢）—— "+parts.join("；"));
         var prob=cur.board.length===3?(od.total<=8?od.total*4:od.total*4-(od.total-8)):od.total*2;
         lines.push("四二法则：这些补牌中一张的概率 ≈ "+od.total+" × "+(cur.board.length===3?"4":"2")+"% ≈ "+prob+"%——注意这只是“中牌概率”，不是胜率");
         if(cur.correct>=prob+12)lines.push("为什么真值更高：你现在的牌本身就领先，不中补牌也经常赢，总胜率明显高于中牌概率");
         else if(cur.correct<=prob-8)lines.push("为什么真值更低：中补牌 ≠ 赢牌——你现在落后、中了也未必最大，对手多时尤其如此，总胜率会低于中牌概率");
         else lines.push("这题你的胜率主要就来自这些补牌，和四二法则估的差不多");
       }else{
-        lines.push("没有真正有用的补牌：剩下的牌就算配成一对，也基本赢不了——这时胜率只看你现在的牌还剩多少摊牌价值");
+        lines.push("没有能让你变强的补牌：剩下的牌要么是配公共牌（大家一起变强）、要么只配成小对子，都不算你的补牌——这时胜率只看你现在的牌还剩多少摊牌价值");
       }
     }
     if(cur.n>=3)lines.push("多人底池会明显摊薄胜率：同样的牌，对手越多越难赢");
@@ -2714,6 +2775,7 @@ return { loadGameData, stop: stopPlay };
     $("drillNext").hidden=false;
   }
   window.__drillOuts=outsDetail; // regression-check hook (tests/checks_drill)
+  window.__equityExact1=equityExact1; // regression-check hook (tests/checks_drill)
   $("drillNew").addEventListener("click",newQ);
   $("drillNext").addEventListener("click",newQ);
   $("drillReset").addEventListener("click",function(){stats={total:0,correct:0,streak:0,best:0};save();renderScore();});
