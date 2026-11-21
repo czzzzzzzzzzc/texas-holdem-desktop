@@ -575,7 +575,7 @@ body.replay-open #bottombar{display:none!important}
 <div class="tabpage" id="tab-drill" hidden>
 <section class="panel">
 <div class="drill-head"><strong>🎯 胜率练习</strong><span class="small" id="drillScore"></span></div>
-<p class="small">看牌面估算你的胜率（对手按随机手牌计算），从三个选项里选最接近的一个。答案由蒙特卡洛模拟算出。</p>
+<p class="small">看牌面估算你的胜率（对手按随机手牌计算），从三个选项里选最接近的一个。练的是人脑的估法：先判断现在的牌有多强，再数真正有用的补牌；标准答案由蒙特卡洛模拟给出、只用来核对。</p>
 <div class="drill-ctrl">
 <label class="small">阶段 <select id="drillStreet">
 <option value="random">随机</option><option value="pre">翻前</option><option value="flop">翻牌</option><option value="turn">转牌</option><option value="river">河牌</option>
@@ -2614,16 +2614,26 @@ return { loadGameData, stop: stopPlay };
     }
     return CATS[catOf(hole.concat(board))];
   }
+  // v17.1: only REAL outs — cards that make a hand that can actually win.
+  // Any category bump to two pair+ counts. A one-pair bump counts only when
+  // it pairs the player's own hole card above every board rank (top pair);
+  // pairing the board or making a small pair usually still loses, so those
+  // cards are NOT outs (the old any-improvement count overstated them).
   function outsDetail(hole,board){
     if(board.length!==3&&board.length!==4)return null;
     var curCat=catOf(hole.concat(board)),known={},i;
     for(i=0;i<hole.length;i++)known[hole[i]]=1;
     for(i=0;i<board.length;i++)known[board[i]]=1;
+    var boardMax=0;for(i=0;i<board.length;i++)boardMax=Math.max(boardMax,board[i]%13+2);
+    var holeRanks={};holeRanks[hole[0]%13+2]=1;holeRanks[hole[1]%13+2]=1;
     var groups={},total=0;
     for(var c=0;c<52;c++){
       if(known[c])continue;
       var cat=catOf(hole.concat(board,[c]));
-      if(cat>curCat){var nm=CATS[cat];if(!groups[nm])groups[nm]=[];groups[nm].push(cardText(c));total++;}
+      if(cat<=curCat)continue;
+      var real=cat>=2||(cat===1&&curCat===0&&holeRanks[c%13+2]&&(c%13+2)>boardMax);
+      if(!real)continue;
+      var nm=CATS[cat];if(!groups[nm])groups[nm]=[];groups[nm].push(cardText(c));total++;
     }
     return total?{total:total,groups:groups}:null;
   }
@@ -2668,19 +2678,27 @@ return { loadGameData, stop: stopPlay };
     if(!ok)btn.classList.add("wrong");
     var lines=[(ok?"✓ 答对了！":"✗ 不对，你选了 "+picked+"%。")+"真实胜率约 "+cur.correct+"%（"+SAMPLES+" 次模拟）",
       "当前牌型："+madeText(cur.hole,cur.board)+" · 对手 "+cur.n+" 人",
-      "胜率公式：把剩余牌随机发完、给 "+cur.n+" 个对手随机手牌，模拟 "+SAMPLES+" 次，胜率 = 获胜次数（含平局分池）÷ "+SAMPLES];
+      "标准答案怎么来的：把剩余牌随机发完、给 "+cur.n+" 个对手随机手牌，模拟 "+SAMPLES+" 次取胜率——这是核对用的真值；人靠下面两步估：先看现在的牌有多强，再数真正有用的补牌"];
     var od=outsDetail(cur.hole,cur.board);
-    if(od){
-      var parts=[];
-      for(var nm in od.groups)parts.push("成"+nm+"："+od.groups[nm].join(" "));
-      lines.push("补牌共 "+od.total+" 张 —— "+parts.join("；"));
-      if(cur.board.length===3)lines.push("速算公式（四二法则）：翻牌后还有两张牌要发，听牌成牌概率 ≈ 补牌 "+od.total+" × 4% ≈ "+(od.total*4)+"%；你已成牌本身还有摊牌价值，总胜率比这个数高");
-      else lines.push("速算公式（四二法则）：转牌后只剩一张牌要发，听牌成牌概率 ≈ 补牌 "+od.total+" × 2% ≈ "+(od.total*2)+"%；你已成牌本身还有摊牌价值，总胜率比这个数高");
+    if(cur.board.length===3||cur.board.length===4){
+      if(od){
+        var parts=[];
+        for(var nm in od.groups)parts.push("成"+nm+"："+od.groups[nm].join(" "));
+        lines.push("真正有用的补牌共 "+od.total+" 张（只算能成两对以上、或配出顶对的牌；配成小对子赢不了的没算）—— "+parts.join("；"));
+        var prob=cur.board.length===3?(od.total<=8?od.total*4:od.total*4-(od.total-8)):od.total*2;
+        lines.push("四二法则：这些补牌中一张的概率 ≈ "+od.total+" × "+(cur.board.length===3?"4":"2")+"% ≈ "+prob+"%——注意这只是“中牌概率”，不是胜率");
+        if(cur.correct>=prob+12)lines.push("为什么真值更高：你现在的牌本身就领先，不中补牌也经常赢，总胜率明显高于中牌概率");
+        else if(cur.correct<=prob-8)lines.push("为什么真值更低：中补牌 ≠ 赢牌——你现在落后、中了也未必最大，对手多时尤其如此，总胜率会低于中牌概率");
+        else lines.push("这题你的胜率主要就来自这些补牌，和四二法则估的差不多");
+      }else{
+        lines.push("没有真正有用的补牌：剩下的牌就算配成一对，也基本赢不了——这时胜率只看你现在的牌还剩多少摊牌价值");
+      }
     }
     if(cur.n>=3)lines.push("多人底池会明显摊薄胜率：同样的牌，对手越多越难赢");
     $("drillFeedback").textContent=lines.join("\n");
     $("drillNext").hidden=false;
   }
+  window.__drillOuts=outsDetail; // regression-check hook (tests/checks_drill)
   $("drillNew").addEventListener("click",newQ);
   $("drillNext").addEventListener("click",newQ);
   $("drillReset").addEventListener("click",function(){stats={total:0,correct:0,streak:0,best:0};save();renderScore();});
